@@ -8,6 +8,9 @@ non-biological research. For example, it includes tabular text as one
 of its main formats, and allows to manipulate the data using pure
 textual lists.
 
+The library works by implementing an internal representation of phylogenetic data and a set
+of input and output filters.
+
 The name is a homage to the well know [pandoc](https://pandoc.org) tool
 for converting documents, as well as a reminder of its origins as a
 tool for doing phylogenetic research in stemmatology (Panfilo is one
