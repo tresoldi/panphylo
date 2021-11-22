@@ -1,4 +1,4 @@
 # Dummy placeholder test
 
-def test_dummy_func():
+def test_dummy():
     assert True == True

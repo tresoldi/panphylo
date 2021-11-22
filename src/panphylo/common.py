@@ -20,6 +20,3 @@ def slug(label):
     label = "".join([char for char in label if char in string.ascii_letters])
 
     return label
-
-def common_dummy():
-    return 13

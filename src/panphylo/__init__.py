@@ -12,8 +12,6 @@ import chardet
 import logging
 
 # Import from local modules
-from argparse import Namespace
-from .common import common_dummy
 from .tabular import detect_delimiter, read_data_tabular
 
 # Dispatch the different reading methods
@@ -42,4 +40,4 @@ def read_input(args):
         print("autodetect")
 
 # Build namespace
-__all__ = ["common_dummy", "read_input"]
+__all__ = ["read_input"]
