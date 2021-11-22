@@ -22,7 +22,13 @@ def parse_args():
     """
 
     parser = argparse.ArgumentParser(description="Convert and manipulate phylodata.")
-    parser.add_argument("input", type=str, help="Read input from *FILE*.")
+    parser.add_argument(
+        "-i",
+        "--input",
+        type=str,
+        default="-",
+        help="Read input from *FILE*. If *FILE* is `-`, input will come from *stdin*.",
+    )
     parser.add_argument(
         "-o",
         "--output",
@@ -59,9 +65,7 @@ def parse_args():
     parser.add_argument(
         "--l-char", type=str, help="Label, column, or name for characters."
     )
-    parser.add_argument(
-        "--l-vals", type=str, help="Label, column, or name for values."
-    )
+    parser.add_argument("--l-vals", type=str, help="Label, column, or name for values.")
 
     parser.add_argument(
         "-v",
@@ -72,9 +76,21 @@ def parse_args():
         help="Set the logging level.",
     )
 
-    args = parser.parse_args()
+    args = parser.parse_args().__dict__
 
-    return args.__dict__
+    # Make sure we don't allow options that cannot be handled
+    if args["input"] == "-":
+        # TODO: allow autodetection by buffering?
+        if args["from"] in ["auto", "tabular"]:
+            raise ValueError(
+                "Cannot autodetect format from `stdin`; please specify it with `--from`."
+            )
+        if args["encoding"] == "auto":
+            raise ValueError(
+                "Cannot autodetect encoding from `stdin`: please specify it with `--encoding`."
+            )
+
+    return args
 
 
 def main():

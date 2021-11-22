@@ -7,7 +7,8 @@ import csv
 import logging
 
 # Import from local modules
-from .common import slug
+from .common import smart_open, slug
+from .internal import PhyloData
 
 # TODO: should really specify a default encoding?
 def detect_delimiter(filename, encoding):
@@ -31,6 +32,7 @@ def detect_delimiter(filename, encoding):
 
     return delimiter
 
+
 def _get_column_names(args, data):
     """
     Obtain column names, either provided or inferred.
@@ -45,10 +47,19 @@ def _get_column_names(args, data):
         logging.debug("Inferring column names.")
 
         # Get the keys we have and remove and column name already used
-        columns = [col for col in data[0].keys() if col not in [col_taxa, col_char, col_vals]]
+        columns = [
+            col for col in data[0].keys() if col not in [col_taxa, col_char, col_vals]
+        ]
 
         # Obtain the taxa column among potential candidates, picking the first one
-        for cand in ["taxon", "species", "language", "doculect", "manuscript", "witness"]:
+        for cand in [
+            "taxon",
+            "species",
+            "language",
+            "doculect",
+            "manuscript",
+            "witness",
+        ]:
             for column in columns:
                 if not col_taxa and cand in slug(column):
                     col_taxa = column
@@ -69,7 +80,8 @@ def _get_column_names(args, data):
     if len(set(column_names)) < 3:
         raise AssertionError("Non-unique column names in %s", str(column_names))
 
-    return column_names    
+    return column_names
+
 
 # TODO: allow to prohibit column inference (should even be default?)
 def read_data_tabular(args, delimiter, encoding):
@@ -78,9 +90,36 @@ def read_data_tabular(args, delimiter, encoding):
     """
 
     # Read all data
-    with open(args["input"], encoding=encoding) as handler:
+    with smart_open(args["input"], encoding=encoding) as handler:
         data = list(csv.DictReader(handler, delimiter=delimiter))
         logging.debug("Read %i entries from `%s`.", len(data), args["input"])
-    
+
     # Infer column names
     col_taxa, col_char, col_vals = _get_column_names(args, data)
+
+    # Build internal representation
+    phyd = PhyloData()
+    for entry in data:
+        phyd.add_value(entry[col_taxa], entry[col_char], entry[col_vals])
+
+    return phyd
+
+
+def write_data_tabular(args, phyd):
+    col_taxa, col_char, col_vals = "Taxon", "Character", "Value"
+    delimiter = ","
+
+    # Build output data
+    output = []
+    for character in sorted(phyd.characters):
+        for taxon in sorted(phyd.taxa):
+            for value in sorted(phyd[taxon, character]):  # TODO: deal with missing
+                output.append({col_taxa: taxon, col_char: character, col_vals: value})
+
+    # TODO: deal with stdout
+    with smart_open(args["output"], "w", encoding="utf-8") as handler:
+        writer = csv.DictWriter(
+            handler, delimiter=delimiter, fieldnames=[col_taxa, col_char, col_vals]
+        )
+        writer.writeheader()
+        writer.writerows(output)
