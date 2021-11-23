@@ -5,25 +5,23 @@ Module with functions and methods for tabular files.
 # Import Python libraries
 import csv
 import logging
+from io import StringIO
 
 # Import from local modules
 from .common import smart_open, slug
 from .internal import PhyloData
 
-# TODO: should really specify a default encoding?
-def detect_delimiter(filename, encoding):
+
+def detect_delimiter(source):
     """
     Detect the tabular dialect (e.g. CSV and TSV of a file).
 
     The detection is extremely simplified, based on frequency
     """
 
-    with open(filename, encoding=encoding) as handler:
-        logging.debug("Read header line from `%s`.", filename)
-        line = handler.readlines(1)[0]
-
-    commas = line.count(",")
-    tabs = line.count("\t")
+    lines = source.split("\n")
+    commas = lines[0].count(",")
+    tabs = lines[0].count("\t")
     logging.debug("Header has %i commas and %i tabs.", commas, tabs)
     if commas >= tabs:
         delimiter = ","
@@ -84,22 +82,22 @@ def _get_input_column_names(args, data):
 
 
 # TODO: allow to prohibit column inference (should even be default?)
-def read_data_tabular(args, delimiter, encoding):
+def read_data_tabular(source_str, delimiter, args):
     """
     Read data in tabular format.
     """
 
     # Read all data
-    with smart_open(args["input"], encoding=encoding) as handler:
-        data = list(csv.DictReader(handler, delimiter=delimiter))
-        logging.debug("Read %i entries from `%s`.", len(data), args["input"])
+    with StringIO(source_str) as handler:
+        source = list(csv.DictReader(handler, delimiter=delimiter))
+        logging.debug("Read %i entries from `%s`.", len(source), args["input"])
 
     # Infer column names
-    col_taxa, col_char, col_vals = _get_input_column_names(args, data)
+    col_taxa, col_char, col_vals = _get_input_column_names(args, source)
 
     # Build internal representation
     phyd = PhyloData()
-    for entry in data:
+    for entry in source:
         phyd.add_value(entry[col_taxa], entry[col_char], entry[col_vals])
 
     return phyd

@@ -104,16 +104,22 @@ def parse_args():
 
     args = parser.parse_args().__dict__
 
-    # Make sure we don't allow options that cannot be handled
-    if args["input"] == "-":
-        # TODO: allow autodetection by buffering?
-        if args["from"] in ["auto", "tabular"]:
+    # Decide on the right output function based on the output format or, if not
+    # provided, on the extension
+    if args["to"] == "auto":
+        if not "." in args["to"]:
             raise ValueError(
-                "Cannot autodetect format from `stdin`; please specify it with `--from`."
+                "Unable to detect output format; please specify it with `--to`."
             )
-        if args["encoding"] == "auto":
+
+        extension = args["to"].split(".")[-1]
+        if extension == "csv":
+            args["to"] = "csv"
+        elif extension == "tsv":
+            args["to"] = "tsv"
+        else:
             raise ValueError(
-                "Cannot autodetect encoding from `stdin`: please specify it with `--encoding`."
+                "Unable to detect output format; please specify it with `--to`."
             )
 
     return args
