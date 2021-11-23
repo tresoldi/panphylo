@@ -14,7 +14,7 @@ import logging
 # Import from local modules
 from .common import smart_open
 from .tabular import detect_delimiter, read_data_tabular, write_data_tabular
-from .nexus import read_data_nexus
+from .nexus import read_data_nexus, write_data_nexus
 
 
 def fetch_stream_data(args):
@@ -79,7 +79,7 @@ def read_input(args):
     elif args["to"] == "tsv":
         write_data_tabular(phyd, "\t", args)
     elif args["to"] == "nexus":
-        raise ValueError("Not implemented.")
+        write_data_nexus(phyd, args)
 
 
 # Build namespace

@@ -9,9 +9,11 @@ string manipulation strategy.
 import re
 from enum import Enum, auto
 from collections import defaultdict
+import string
 
 # Import from local modules
 from .internal import PhyloData
+from .common import smart_open
 
 
 def parse_nexus(source):
@@ -180,4 +182,71 @@ def read_data_nexus(source, args):
 
 
 def write_data_nexus(phyd, args):
-    pass
+    # TODO: this only implements multistate
+    # TODO: use user's missing and gap symbols (make sure they are not in the alphabet)
+
+    buffer = ""
+
+    # Taxa block
+    buffer += "BEGIN TAXA;\n"
+    buffer += f"\tDIMENSIONS NTAX={len(phyd.taxa)};\n"
+    buffer += "\tTAXLABELS\n"
+    for taxon in sorted(phyd.taxa):
+        buffer += f"\t\t{taxon}\n"
+    buffer += "\t\t;\nEND;"
+    buffer += "\n\n"
+
+    # Character block
+    # TODO: move to the internal representation? with cache?
+    # TODO: have some sorting, preferably by frequence or alphebetically (user should be able to decide)
+    charvalues = defaultdict(set)
+    for (_, character), value in phyd.values.items():
+        charvalues[character].update({v for v in value if v != "?"})
+    largest = max([len(value_set) for value_set in charvalues.values()])
+
+    symbols = [char for char in string.digits + string.ascii_uppercase][:largest]
+
+    buffer += "BEGIN CHARACTERS;\n"
+    buffer += f"\tDIMENSIONS NCHAR={len(charvalues)};\n"
+    buffer += (
+        f'\tFORMAT DATATYPE=STANDARD MISSING=? GAP=- SYMBOLS="{" ".join(symbols)}";\n'
+    )
+    buffer += "\tCHARSTATELABELS\n"
+    # TODO: keeping the final comma should be an option
+    # TODO: note the `sorted`
+    char_list = [
+        f"\t\t{charstate_idx+1} {character} /{' '.join(sorted(value_set))}"
+        for charstate_idx, (character, value_set) in enumerate(charvalues.items())
+    ]
+    buffer += ",\n".join(char_list)
+    buffer += ",\n"
+    buffer += ";"
+
+    buffer += "\n\n"
+
+    # MATRIX subblock
+    buffer += "MATRIX\n"
+    matrix = defaultdict(str)
+    for character, value_set in charvalues.items():
+        for taxon in phyd.taxa:
+            # TODO: assuming there is only one value per site!!! (value[0]), [None]
+            value = phyd.values.get((taxon, character), [None])
+            value = list(value)[0]
+            if not value:
+                matrix[taxon] += "-"
+            elif value == "?":
+                matrix[taxon] += "?"
+            else:
+                # TODO: note the sorted
+                symbol_idx = sorted(value_set).index(value)
+                matrix[taxon] += symbols[symbol_idx]
+
+    taxon_length = max([len(taxon) for taxon in matrix])
+    for taxon in sorted(matrix):
+        buffer += f"{taxon.ljust(taxon_length)}    {matrix[taxon]}\n"
+    buffer += ";\n"
+    buffer += "END;\n\n"
+
+    # Write to the stream
+    with smart_open(args["output"], "w", encoding="utf-8") as handler:
+        handler.write(buffer)
