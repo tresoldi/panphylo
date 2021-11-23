@@ -42,7 +42,7 @@ def parse_args():
         "--from",
         type=str,
         default="auto",
-        choices=["auto", "tabular", "csv", "tsv"],
+        choices=["auto", "tabular", "csv", "tsv", "nexus"],
         help="Specify input format.",
     )
     parser.add_argument(
@@ -57,7 +57,7 @@ def parse_args():
         "--to",
         type=str,
         default="auto",
-        choices=["auto", "csv", "tsv"],
+        choices=["auto", "csv", "tsv", "nexus"],
         help="Specify output format.",
     )
 
@@ -117,6 +117,8 @@ def parse_args():
             args["to"] = "csv"
         elif extension == "tsv":
             args["to"] = "tsv"
+        elif extension in ["nex", "nexus"]:
+            args["to"] = "nexus"
         else:
             raise ValueError(
                 "Unable to detect output format; please specify it with `--to`."

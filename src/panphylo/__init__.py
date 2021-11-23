@@ -14,6 +14,7 @@ import logging
 # Import from local modules
 from .common import smart_open
 from .tabular import detect_delimiter, read_data_tabular, write_data_tabular
+from .nexus import read_data_nexus
 
 
 def fetch_stream_data(args):
@@ -54,15 +55,21 @@ def read_input(args):
 
     # Decide on the right input function based on the input format, which might
     # involve auto-detection
+    # TODO: improve autodetection, without defaulting to tabular
+    if args["from"] == "auto":
+        if source.strip().startswith("#NEXUS"):
+            args["from"] = "nexus"
+        else:
+            args["from"] = "tabular"
+
     if args["from"] == "tabular":
         phyd = read_data_tabular(source, detect_delimiter(source), args)
     elif args["from"] == "csv":
         phyd = read_data_tabular(source, ",", args)
     elif args["from"] == "tsv":
         phyd = read_data_tabular(source, "\t", args)
-    else:
-        # Fallback, autodetect the format
-        print("autodetect")
+    elif args["from"] == "nexus":
+        phyd = read_data_nexus(source, args)
 
     # Write converted data in the requested format; note that the command-line
     # handling should have taken care of replacing the "auto" value for
@@ -71,6 +78,8 @@ def read_input(args):
         write_data_tabular(args, phyd, delimiter=",")
     elif args["to"] == "tsv":
         write_data_tabular(args, phyd, delimiter="\t")
+    elif args["to"] == "nexus":
+        raise ValueError("Not implemented.")
 
 
 # Build namespace
