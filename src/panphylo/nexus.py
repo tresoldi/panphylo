@@ -152,19 +152,18 @@ def read_data_nexus(source, args):
     # Parse the NEXUS source
     nexus_data = parse_nexus(source)
 
-    print("ntax, nchar", [nexus_data["ntax"], nexus_data["nchar"]])
-    print(
-        "datatype, missing, gap, symbols",
-        [
-            nexus_data["datatype"],
-            nexus_data["missing"],
-            nexus_data["gap"],
-            nexus_data["symbols"],
-        ],
-    )
-    print("charstatelabels", [len(nexus_data["charstatelabels"])])
-    print("matrix", [len(nexus_data["matrix"])])
-    print("charset", [len(nexus_data["charset"])])
+    # Build internal representation
+    # TODO: deal with multistate {}
+    # TODO: transform all binary in multistate internal representation
+    phyd = PhyloData()
+    for taxon, vector in nexus_data["matrix"].items():
+        for charstate, value in zip(nexus_data["charstatelabels"], vector):
+            # Skip over gaps and make sure we use the default missing symbol
+            if value == nexus_data["gap"]:
+                continue
+            if value == nexus_data["missing"]:
+                value = "?"
 
-    # TODO: temporary holder
-    return PhyloData()
+            phyd.add_value(taxon, charstate["charlabel"], value)
+
+    return phyd
