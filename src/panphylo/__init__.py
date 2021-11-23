@@ -75,9 +75,9 @@ def read_input(args):
     # handling should have taken care of replacing the "auto" value for
     # autodetecting the output
     if args["to"] == "csv":
-        write_data_tabular(args, phyd, delimiter=",")
+        write_data_tabular(phyd, ",", args)
     elif args["to"] == "tsv":
-        write_data_tabular(args, phyd, delimiter="\t")
+        write_data_tabular(phyd, "\t", args)
     elif args["to"] == "nexus":
         raise ValueError("Not implemented.")
 

@@ -103,7 +103,7 @@ def read_data_tabular(source_str, delimiter, args):
     return phyd
 
 
-def write_data_tabular(args, phyd, delimiter):
+def write_data_tabular(phyd, delimiter, args):
     # If the column names for taxa, characters, and values was not provided,
     # try to infer it; at the end, we make sure to check that they are all unique
     col_taxa = args.get("o-taxa", "Taxon")

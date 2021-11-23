@@ -8,8 +8,7 @@ string manipulation strategy.
 # Import Python libraries
 import re
 from enum import Enum, auto
-
-from panphylo.__main__ import parse_args
+from collections import defaultdict
 
 # Import from local modules
 from .internal import PhyloData
@@ -40,7 +39,7 @@ def parse_nexus(source):
         "missing": None,
         "gap": None,
         "symbols": None,
-        "charstatelabels": [],
+        "charstatelabels": {},
         "matrix": {},
         "charset": [],
     }
@@ -117,9 +116,7 @@ def parse_nexus(source):
                                 raise ValueError("Not implemented")
                             else:
                                 idx, charlabel = charstatelabel.split()
-                                nexus_data["charstatelabels"].append(
-                                    {"idx": idx, "charlabel": charlabel}
-                                )
+                                nexus_data["charstatelabels"][int(idx)] = charlabel
                     elif command == "MATRIX":
                         start_idx = buffer.find("MATRIX") + len("MATRIX")
                         for entry in buffer[start_idx + 1 : -1].strip().split("\n"):
@@ -155,15 +152,32 @@ def read_data_nexus(source, args):
     # Build internal representation
     # TODO: deal with multistate {}
     # TODO: transform all binary in multistate internal representation
-    phyd = PhyloData()
-    for taxon, vector in nexus_data["matrix"].items():
-        for charstate, value in zip(nexus_data["charstatelabels"], vector):
-            # Skip over gaps and make sure we use the default missing symbol
-            if value == nexus_data["gap"]:
-                continue
-            if value == nexus_data["missing"]:
-                value = "?"
+    # TODO: this is currently handling only binary and needs charsets
 
-            phyd.add_value(taxon, charstate["charlabel"], value)
+    # Build inverse map from position in the alignment to the charset and
+    # collect values
+    alm2charset = {}
+    for charset in nexus_data["charset"]:
+        for idx in range(charset["start"], charset["end"] + 1):
+            alm2charset[idx] = charset["charset"]
+
+    values = defaultdict(set)
+    for taxon, vector in nexus_data["matrix"].items():
+        for idx, value in enumerate(vector):
+            if value == nexus_data["missing"]:
+                values[taxon, alm2charset[idx + 1]].add("?")
+            elif value != "0":
+                values[taxon, alm2charset[idx + 1]].add(
+                    nexus_data["charstatelabels"][idx + 1]
+                )
+
+    phyd = PhyloData()
+    for (taxon, character), value_set in values.items():
+        for v in value_set:
+            phyd.add_value(taxon, character, v)
 
     return phyd
+
+
+def write_data_nexus(phyd, args):
+    pass
