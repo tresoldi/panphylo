@@ -43,7 +43,7 @@ def read_input(args):
         )
     elif args["from"] == "csv":
         phyd = read_data_tabular(args, ",", encoding)
-    elif args["to"] == "tsv":
+    elif args["from"] == "tsv":
         phyd = read_data_tabular(args, "\t", encoding)
     else:  # autodetect
         print("autodetect")
@@ -52,7 +52,29 @@ def read_input(args):
 
     # Decide on the right output function based on the output format or, if not
     # provided, on the extension
-    write_data_tabular(args, phyd)
+    # TODO: move to argument parsing?
+    if args["to"] != "auto":
+        args_to = args["to"]
+    else:
+        if not "." in args["to"]:
+            raise ValueError(
+                "Unable to detect output format; please specify it with `--to`."
+            )
+
+        extension = args["to"].split(".")[-1]
+        if extension == "csv":
+            args_to = "csv"
+        elif extension == "tsv":
+            args_to = "tsv"
+        else:
+            raise ValueError(
+                "Unable to detect output format; please specify it with `--to`."
+            )
+
+    if args_to == "csv":
+        write_data_tabular(args, phyd, delimiter=",")
+    elif args_to == "tsv":
+        write_data_tabular(args, phyd, delimiter="\t")
 
 
 # Build namespace

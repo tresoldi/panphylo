@@ -57,15 +57,41 @@ def parse_args():
         "--to",
         type=str,
         default="auto",
-        choices=["auto", "tabular", "csv", "tsv"],
+        choices=["auto", "csv", "tsv"],
         help="Specify output format.",
     )
 
-    parser.add_argument("--l-taxa", type=str, help="Label, column, or name for taxa.")
     parser.add_argument(
-        "--l-char", type=str, help="Label, column, or name for characters."
+        "--i-taxa",
+        type=str,
+        help="Input label, column, or name for taxa. Does not apply to all formats.",
     )
-    parser.add_argument("--l-vals", type=str, help="Label, column, or name for values.")
+    parser.add_argument(
+        "--i-char",
+        type=str,
+        help="Input label, column, or name for characters. Does not apply to all formats.",
+    )
+    parser.add_argument(
+        "--i-vals",
+        type=str,
+        help="Input label, column, or name for values. Does not apply to all formats.",
+    )
+
+    parser.add_argument(
+        "--o-taxa",
+        type=str,
+        help="Output label, column, or name for taxa. Does not apply to all formats.",
+    )
+    parser.add_argument(
+        "--o-char",
+        type=str,
+        help="Output label, column, or name for characters. Does not apply to all formats.",
+    )
+    parser.add_argument(
+        "--o-vals",
+        type=str,
+        help="Output label, column, or name for values. Does not apply to all formats.",
+    )
 
     parser.add_argument(
         "-v",

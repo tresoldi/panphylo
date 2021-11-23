@@ -33,16 +33,16 @@ def detect_delimiter(filename, encoding):
     return delimiter
 
 
-def _get_column_names(args, data):
+def _get_input_column_names(args, data):
     """
     Obtain column names, either provided or inferred.
     """
 
     # If the column names for taxa, characters, and values was not provided,
     # try to infer it; at the end, we make sure to check that they are all unique
-    col_taxa = args.get("l-taxa", None)
-    col_char = args.get("l-char", None)
-    col_vals = args.get("l-vals", None)
+    col_taxa = args.get("i-taxa", None)
+    col_char = args.get("i-char", None)
+    col_vals = args.get("i-vals", None)
     if not all([col_taxa, col_char, col_vals]):
         logging.debug("Inferring column names.")
 
@@ -95,7 +95,7 @@ def read_data_tabular(args, delimiter, encoding):
         logging.debug("Read %i entries from `%s`.", len(data), args["input"])
 
     # Infer column names
-    col_taxa, col_char, col_vals = _get_column_names(args, data)
+    col_taxa, col_char, col_vals = _get_input_column_names(args, data)
 
     # Build internal representation
     phyd = PhyloData()
@@ -105,9 +105,12 @@ def read_data_tabular(args, delimiter, encoding):
     return phyd
 
 
-def write_data_tabular(args, phyd):
-    col_taxa, col_char, col_vals = "Taxon", "Character", "Value"
-    delimiter = ","
+def write_data_tabular(args, phyd, delimiter):
+    # If the column names for taxa, characters, and values was not provided,
+    # try to infer it; at the end, we make sure to check that they are all unique
+    col_taxa = args.get("o-taxa", "Taxon")
+    col_char = args.get("o-char", "Character")
+    col_vals = args.get("o-vals", "Value")
 
     # Build output data
     output = []
@@ -116,7 +119,7 @@ def write_data_tabular(args, phyd):
             for value in sorted(phyd[taxon, character]):  # TODO: deal with missing
                 output.append({col_taxa: taxon, col_char: character, col_vals: value})
 
-    # TODO: deal with stdout
+    # Write to the stream
     with smart_open(args["output"], "w", encoding="utf-8") as handler:
         writer = csv.DictWriter(
             handler, delimiter=delimiter, fieldnames=[col_taxa, col_char, col_vals]
