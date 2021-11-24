@@ -181,20 +181,74 @@ def read_data_nexus(source, args):
     return phyd
 
 
+def build_taxa_block(phyd):
+    """
+    Build a NEXUS TAXA block.
+    """
+
+    buffer = """
+BEGIN TAXA;
+    DIMENSIONS NTAX=%i;
+    TAXLABELS
+%s
+    ;
+END;""" % (
+        len(phyd.taxa),
+        "\n".join(["        %s" % taxon for taxon in sorted(phyd.taxa)]),
+    )
+
+    return buffer
+
+
+def build_matrix_command(phyd, charvalues, symbols):
+    """
+    Build a NEXUS MATRIX command.
+    """
+
+    # Build a sorted list with the matrix
+    matrix_dict = defaultdict(str)
+    for character, value_set in charvalues.items():
+        for taxon in phyd.taxa:
+            # TODO: assuming there is only one value per site!!! (value[0]), [None]
+            value = phyd.values.get((taxon, character), [None])
+            value = list(value)[0]
+            if not value:
+                matrix_dict[taxon] += "-"
+            elif value == "?":
+                matrix_dict[taxon] += "?"
+            else:
+                # TODO: note the sorted
+                symbol_idx = sorted(value_set).index(value)
+                matrix_dict[taxon] += symbols[symbol_idx]
+
+    taxon_length = max([len(taxon) for taxon in matrix_dict])
+
+    matrix_list = sorted([(taxon, vector) for taxon, vector in matrix_dict.items()])
+
+    buffer = """
+MATRIX
+%s
+;
+""" % (
+        "\n".join(
+            [
+                "%s    %s" % (taxon.ljust(taxon_length), vector)
+                for taxon, vector in matrix_list
+            ]
+        )
+    )
+
+    return buffer
+
+
 def write_data_nexus(phyd, args):
     # TODO: this only implements multistate
     # TODO: use user's missing and gap symbols (make sure they are not in the alphabet)
 
-    buffer = ""
+    buffer = "#NEXUS\n\n"
 
     # Taxa block
-    buffer += "BEGIN TAXA;\n"
-    buffer += f"\tDIMENSIONS NTAX={len(phyd.taxa)};\n"
-    buffer += "\tTAXLABELS\n"
-    for taxon in sorted(phyd.taxa):
-        buffer += f"\t\t{taxon}\n"
-    buffer += "\t\t;\nEND;"
-    buffer += "\n\n"
+    buffer += build_taxa_block(phyd)
 
     # Character block
     # TODO: move to the internal representation? with cache?
@@ -224,27 +278,10 @@ def write_data_nexus(phyd, args):
 
     buffer += "\n\n"
 
-    # MATRIX subblock
-    buffer += "MATRIX\n"
-    matrix = defaultdict(str)
-    for character, value_set in charvalues.items():
-        for taxon in phyd.taxa:
-            # TODO: assuming there is only one value per site!!! (value[0]), [None]
-            value = phyd.values.get((taxon, character), [None])
-            value = list(value)[0]
-            if not value:
-                matrix[taxon] += "-"
-            elif value == "?":
-                matrix[taxon] += "?"
-            else:
-                # TODO: note the sorted
-                symbol_idx = sorted(value_set).index(value)
-                matrix[taxon] += symbols[symbol_idx]
+    # MATRIX command
+    # TODO: compute matrix_list/charvalues/symbols independently
+    buffer += build_matrix_command(phyd, charvalues, symbols)
 
-    taxon_length = max([len(taxon) for taxon in matrix])
-    for taxon in sorted(matrix):
-        buffer += f"{taxon.ljust(taxon_length)}    {matrix[taxon]}\n"
-    buffer += ";\n"
     buffer += "END;\n\n"
 
     # Write to the stream
