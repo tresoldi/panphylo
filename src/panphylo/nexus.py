@@ -9,7 +9,6 @@ string manipulation strategy.
 import re
 from enum import Enum, auto
 from collections import defaultdict
-import string
 
 # Import from local modules
 from .internal import PhyloData
@@ -197,17 +196,48 @@ END;""" % (
         "\n".join(["        %s" % taxon for taxon in sorted(phyd.taxa)]),
     )
 
-    return buffer
+    return buffer.strip()
 
 
-def build_matrix_command(phyd, charvalues, symbols):
+def build_character_block(phyd):
+    # TODO: keeping the final comma in charstatelabels should be an option
+    buffer = """
+BEGIN CHARACTERS;
+    DIMENSIONS NCHAR=%i;
+    FORMAT DATATYPE=STANDARD MISSING=? GAP=- SYMBOLS="%s";
+    CHARSTATELABELS
+%s
+    ;
+
+%s
+
+END;""" % (
+        len(phyd.charvalues),
+        " ".join(phyd.symbols),
+        ",\n".join(
+            [
+                "        %i %s /%s"
+                % (charstate_idx + 1, character, " ".join(value_set))
+                for charstate_idx, (character, value_set) in enumerate(
+                    phyd.charvalues.items()
+                )
+            ]
+        ),
+        build_matrix_command(phyd),
+    )
+
+    return buffer.strip()
+
+
+def build_matrix_command(phyd):
     """
     Build a NEXUS MATRIX command.
     """
 
     # Build a sorted list with the matrix
     matrix_dict = defaultdict(str)
-    for character, value_set in charvalues.items():
+    symbols = phyd.symbols
+    for character, value_set in phyd.charvalues.items():
         for taxon in phyd.taxa:
             # TODO: assuming there is only one value per site!!! (value[0]), [None]
             value = phyd.values.get((taxon, character), [None])
@@ -218,7 +248,7 @@ def build_matrix_command(phyd, charvalues, symbols):
                 matrix_dict[taxon] += "?"
             else:
                 # TODO: note the sorted
-                symbol_idx = sorted(value_set).index(value)
+                symbol_idx = value_set.index(value)
                 matrix_dict[taxon] += symbols[symbol_idx]
 
     taxon_length = max([len(taxon) for taxon in matrix_dict])
@@ -228,8 +258,7 @@ def build_matrix_command(phyd, charvalues, symbols):
     buffer = """
 MATRIX
 %s
-;
-""" % (
+;""" % (
         "\n".join(
             [
                 "%s    %s" % (taxon.ljust(taxon_length), vector)
@@ -238,51 +267,16 @@ MATRIX
         )
     )
 
-    return buffer
+    return buffer.strip()
 
 
 def write_data_nexus(phyd, args):
     # TODO: this only implements multistate
-    # TODO: use user's missing and gap symbols (make sure they are not in the alphabet)
 
-    buffer = "#NEXUS\n\n"
-
-    # Taxa block
-    buffer += build_taxa_block(phyd)
-
-    # Character block
-    # TODO: move to the internal representation? with cache?
-    # TODO: have some sorting, preferably by frequence or alphebetically (user should be able to decide)
-    charvalues = defaultdict(set)
-    for (_, character), value in phyd.values.items():
-        charvalues[character].update({v for v in value if v != "?"})
-    largest = max([len(value_set) for value_set in charvalues.values()])
-
-    symbols = [char for char in string.digits + string.ascii_uppercase][:largest]
-
-    buffer += "BEGIN CHARACTERS;\n"
-    buffer += f"\tDIMENSIONS NCHAR={len(charvalues)};\n"
-    buffer += (
-        f'\tFORMAT DATATYPE=STANDARD MISSING=? GAP=- SYMBOLS="{" ".join(symbols)}";\n'
+    buffer = "\n\n".join(
+        ["#NEXUS", build_taxa_block(phyd), build_character_block(phyd)]
     )
-    buffer += "\tCHARSTATELABELS\n"
-    # TODO: keeping the final comma should be an option
-    # TODO: note the `sorted`
-    char_list = [
-        f"\t\t{charstate_idx+1} {character} /{' '.join(sorted(value_set))}"
-        for charstate_idx, (character, value_set) in enumerate(charvalues.items())
-    ]
-    buffer += ",\n".join(char_list)
-    buffer += ",\n"
-    buffer += ";"
-
-    buffer += "\n\n"
-
-    # MATRIX command
-    # TODO: compute matrix_list/charvalues/symbols independently
-    buffer += build_matrix_command(phyd, charvalues, symbols)
-
-    buffer += "END;\n\n"
+    buffer += "\n"
 
     # Write to the stream
     with smart_open(args["output"], "w", encoding="utf-8") as handler:
