@@ -6,6 +6,7 @@ string manipulation strategy.
 """
 
 # TODO: allow to output taxa and character names between quotes, if necessary
+# TODO: sort using assumptions (charset) if provided
 
 # Import Python libraries
 import re
@@ -273,15 +274,78 @@ MATRIX
     return buffer.strip()
 
 
+def build_assumption_block(phyd):
+    if not phyd.charset:
+        return ""
+
+    # Get the individual indexes first, and then build the string representation
+    character_list = list(phyd.charvalues.keys())
+    indexes = {
+        charset: sorted([character_list.index(char) + 1 for char in characters])
+        for charset, characters in phyd.charset.items()
+    }
+    # TODO: make an independent function in `common`
+    ranges = defaultdict(list)
+    for charset, idxs in indexes.items():
+        start, end = None, None
+        for i in idxs:
+            if not start:
+                start = i
+            elif not end:
+                if i > start + 1:
+                    ranges[charset].append([start, start])
+                    start = i
+                else:
+                    end = i
+            else:
+                if i == end + 1:
+                    end = i
+                else:
+                    ranges[charset].append([start, end])
+                    start, end = i, None
+
+        ranges[charset].append([start, end])
+
+    # Build list of string representations from ranges
+    # TODO: cases when START == END
+    for charset, char_ranges in ranges.items():
+        print("---", char_ranges)
+        v = ["%i-%i" % (start, end) for start, end in char_ranges]
+        print(v)
+
+    ##############
+    buffer = """
+BEGIN ASSUMPTIONS;
+%s
+END;
+    """ % (
+        
+        [(charset, r) for charset,r in ranges.items() ]
+        
+        
+        )
+
+    print(buffer)
+
+    return buffer
+
+
 def write_data_nexus(phyd, args):
     # TODO: this only implements multistate
     # TODO: not rendering polymorphy
 
-    buffer = "\n\n".join(
-        ["#NEXUS", build_taxa_block(phyd), build_character_block(phyd)]
-    )
+    components = [
+        "#NEXUS",
+        build_taxa_block(phyd),
+        build_character_block(phyd),
+        build_assumption_block(phyd),
+    ]
+
+    buffer = "\n\n".join([comp for comp in components if comp])
     buffer += "\n"
 
     # Write to the stream
-    with smart_open(args["output"], "w", encoding="utf-8") as handler:
-        handler.write(buffer)
+
+
+#    with smart_open(args["output"], "w", encoding="utf-8") as handler:
+#        handler.write(buffer)

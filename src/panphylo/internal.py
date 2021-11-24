@@ -36,6 +36,7 @@ class PhyloData:
         self.values = defaultdict(set)
         self.taxa = set()
         self.characters = set()
+        self.charset = defaultdict(set)
 
     @property
     def charvalues(self):
@@ -154,13 +155,16 @@ class PhyloData:
                 # TODO: confirm if it is right to skip over gaps and all
                 if obs != BinaryObs.GAP:
                     bin_phyd.add_value(
-                        taxon, f"{character}_{value_name}", BINARY_OPS_MAP[obs]
+                        taxon,
+                        f"{character}_{value_name}",
+                        BINARY_OPS_MAP[obs],
+                        charset=character,
                     )
 
         return bin_phyd
 
     # TODO: move to __setitem__? it is actually an "add"
-    def add_value(self, taxon, character, value):
+    def add_value(self, taxon, character, value, charset=None):
         """
         Add a value to a taxon, character pair.
 
@@ -171,6 +175,9 @@ class PhyloData:
         self.values[taxon, character].add(value)
         self.taxa.add(taxon)
         self.characters.add(character)
+
+        if charset:
+            self.charset[charset].add(character)
 
     def __getitem__(self, key):
         return self.values[key]
