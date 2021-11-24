@@ -272,6 +272,7 @@ MATRIX
 
 def write_data_nexus(phyd, args):
     # TODO: this only implements multistate
+    # TODO: not rendering polymorphy
 
     buffer = "\n\n".join(
         ["#NEXUS", build_taxa_block(phyd), build_character_block(phyd)]

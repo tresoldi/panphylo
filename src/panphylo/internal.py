@@ -6,6 +6,8 @@ Module with the class for the internal representation of data.
 from collections import defaultdict, Counter
 import string
 
+from .common import unique_ids
+
 
 class PhyloData:
     def __init__(self):
@@ -60,6 +62,41 @@ class PhyloData:
         return [char for char in string.digits + string.ascii_uppercase][
             : self.char_cardinality
         ]
+
+    def slug_taxa(self):
+        """
+        Slug taxa labels, making sure uniqueness of IDs is preserved.
+        """
+
+        # Build map with unique ids, update self.taxa, and update self.values
+        slug_map = {
+            source: target for source, target in zip(self.taxa, unique_ids(self.taxa))
+        }
+
+        self.taxa = set(slug_map.values())
+
+        self.values = {
+            (slug_map[taxon], character): values
+            for (taxon, character), values in self.values.items()
+        }
+
+    def slug_characters(self):
+        """
+        Slug character labels, making sure uniqueness of IDs is preserved.
+        """
+
+        # Build map with unique ids, update self.characters, and update self.values
+        slug_map = {
+            source: target
+            for source, target in zip(self.characters, unique_ids(self.characters))
+        }
+
+        self.characters = set(slug_map.values())
+
+        self.values = {
+            (taxon, slug_map[character]): values
+            for (taxon, character), values in self.values.items()
+        }
 
     # TODO: move to __setitem__? it is actually an "add"
     def add_value(self, taxon, character, value):

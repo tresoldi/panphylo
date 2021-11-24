@@ -71,6 +71,10 @@ def read_input(args):
     elif args["from"] == "nexus":
         phyd = read_data_nexus(source, args)
 
+    # Perform data operations if requested
+    phyd.slug_taxa()
+    phyd.slug_characters()
+
     # Write converted data in the requested format; note that the command-line
     # handling should have taken care of replacing the "auto" value for
     # autodetecting the output
