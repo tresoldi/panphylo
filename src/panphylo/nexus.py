@@ -5,6 +5,8 @@ Parsing and writing of NEXUS files is currently done with a very simple,
 string manipulation strategy.
 """
 
+# TODO: allow to output taxa and character names between quotes, if necessary
+
 # Import Python libraries
 import re
 from enum import Enum, auto

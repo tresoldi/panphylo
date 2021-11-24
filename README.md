@@ -2,6 +2,8 @@
 
 `panphylo` is a free and open-source tool for converting and manipulating phylogenetic data, especially for non-biological datasets.
 
+![Panfilo, from Boccaccio's *Decameron*, as pictured in Bodleian Library MS. Holkham 49, fol. 148r](panfilo.png)
+
 Many similar tools are available, both for local and remote execution, but
 `panphylo` distinguishes itself for considering the usage in
 non-biological research. For example, it includes tabular text as one
@@ -13,8 +15,7 @@ of input and output filters.
 
 The name is a homage to the well know [pandoc](https://pandoc.org) tool
 for converting documents, as well as a reminder of its origins as a
-tool for doing phylogenetic research in stemmatology (Panfilo is one
-of the protagonists of Boccaccio's [Decameron](https://en.wikipedia.org/wiki/The_Decameron)).
+tool for doing phylogenetic research in stemmatology (Panfilo, "the lover of all",  is one of the protagonists of Boccaccio's [Decameron](https://en.wikipedia.org/wiki/The_Decameron)).
 
 ## Installation
 
