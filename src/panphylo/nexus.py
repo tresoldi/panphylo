@@ -199,6 +199,7 @@ END;""" % (
     return buffer.strip()
 
 
+# TODO: don't output charstatelabels values if all are binary
 def build_character_block(phyd):
     # TODO: keeping the final comma in charstatelabels should be an option
     buffer = """

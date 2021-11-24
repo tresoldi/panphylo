@@ -5,8 +5,30 @@ Module with the class for the internal representation of data.
 # Import Python libraries
 from collections import defaultdict, Counter
 import string
+import enum
 
 from .common import unique_ids
+
+# TODO: should have one for non-binary as well?
+class BinaryObs(enum.Enum):
+    """
+    Auxiliary class for binary observations.
+
+    The class allows to easily deal with missing data and gaps.
+    """
+
+    FALSE = enum.auto()
+    TRUE = enum.auto()
+    MISSING = enum.auto()
+    GAP = enum.auto()
+
+
+BINARY_OPS_MAP = {
+    BinaryObs.FALSE: "0",
+    BinaryObs.TRUE: "1",
+    BinaryObs.MISSING: "?",
+    BinaryObs.GAP: "-",
+}
 
 
 class PhyloData:
@@ -97,6 +119,45 @@ class PhyloData:
             (taxon, slug_map[character]): values
             for (taxon, character), values in self.values.items()
         }
+
+    def binarize(self):
+        # TODO: missing ascertainment!
+        # TODO: collect assumptions
+
+        # For each taxon, collect a map of which charvalues are observed; this does not modify the
+        # internal properties
+        charvalues = self.charvalues  # cache
+        binary_values = {}
+        for taxon in self.taxa:
+            for character, values in self.charvalues.items():
+                obs = self.values.get((taxon, character), None)
+
+                if not obs:
+                    binary_values[taxon, character] = [
+                        BinaryObs.GAP for val in charvalues[character]
+                    ]
+                else:
+                    if tuple(obs) == "?":
+                        binary_values[taxon, character] = [
+                            BinaryObs.MISSING for val in charvalues[character]
+                        ]
+                    else:
+                        binary_values[taxon, character] = [
+                            BinaryObs.TRUE if val in obs else BinaryObs.FALSE
+                            for val in charvalues[character]
+                        ]
+
+        # Build a new phylogenetic data structure, adding the new characters one by one
+        bin_phyd = PhyloData()
+        for (taxon, character), value in binary_values.items():
+            for obs, value_name in zip(value, charvalues[character]):
+                # TODO: confirm if it is right to skip over gaps and all
+                if obs != BinaryObs.GAP:
+                    bin_phyd.add_value(
+                        taxon, f"{character}_{value_name}", BINARY_OPS_MAP[obs]
+                    )
+
+        return bin_phyd
 
     # TODO: move to __setitem__? it is actually an "add"
     def add_value(self, taxon, character, value):

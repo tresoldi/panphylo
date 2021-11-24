@@ -75,6 +75,8 @@ def read_input(args):
     phyd.slug_taxa()
     phyd.slug_characters()
 
+    phyd = phyd.binarize()
+
     # Write converted data in the requested format; note that the command-line
     # handling should have taken care of replacing the "auto" value for
     # autodetecting the output
