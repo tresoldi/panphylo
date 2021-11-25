@@ -86,14 +86,17 @@ class PhyloData:
             : self.char_cardinality
         ]
 
-    def slug_taxa(self):
+    def slug_taxa(self, level="simple"):
         """
         Slug taxa labels, making sure uniqueness of IDs is preserved.
         """
 
+        # If level is "none", we only make sure the IDs are now unique
+
         # Build map with unique ids, update self.taxa, and update self.values
         slug_map = {
-            source: target for source, target in zip(self.taxa, unique_ids(self.taxa))
+            source: target
+            for source, target in zip(self.taxa, unique_ids(self.taxa, level))
         }
 
         self.taxa = set(slug_map.values())
@@ -103,7 +106,7 @@ class PhyloData:
             for (taxon, character), values in self.values.items()
         }
 
-    def slug_characters(self):
+    def slug_characters(self, level="simple"):
         """
         Slug character labels, making sure uniqueness of IDs is preserved.
         """
@@ -111,7 +114,9 @@ class PhyloData:
         # Build map with unique ids, update self.characters, and update self.values
         slug_map = {
             source: target
-            for source, target in zip(self.characters, unique_ids(self.characters))
+            for source, target in zip(
+                self.characters, unique_ids(self.characters, level)
+            )
         }
 
         self.characters = set(slug_map.values())

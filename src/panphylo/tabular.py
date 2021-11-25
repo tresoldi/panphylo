@@ -59,19 +59,19 @@ def _get_input_column_names(args, data):
             "witness",
         ]:
             for column in columns:
-                if not col_taxa and cand in slug(column):
+                if not col_taxa and cand in slug(column, "full"):
                     col_taxa = column
 
         # Obtain the char column among potential candidates, picking the first one
         for cand in ["character", "feature", "property", "position"]:
             for column in columns:
-                if not col_char and cand in slug(column):
+                if not col_char and cand in slug(column, "full"):
                     col_char = column
 
         # Obtain the value column among potential candidates, picking the first one
         for cand in ["value", "observation", "cognate", "lesson", "reading"]:
             for column in columns:
-                if not col_vals and cand in slug(column):
+                if not col_vals and cand in slug(column, "full"):
                     col_vals = column
 
     column_names = [col_taxa, col_char, col_vals]

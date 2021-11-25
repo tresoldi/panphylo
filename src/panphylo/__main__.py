@@ -13,8 +13,6 @@ import logging
 # Import our library
 import panphylo
 
-# TODO: allow reading from stdin
-
 
 def parse_args():
     """
@@ -94,6 +92,21 @@ def parse_args():
     )
 
     parser.add_argument(
+        "--slug_taxa",
+        type=str,
+        default="simple",
+        choices=["none", "simple", "full"],
+        help="Level of slugging for taxa names.",
+    )
+    parser.add_argument(
+        "--slug_chars",
+        type=str,
+        default="simple",
+        choices=["none", "simple", "full"],
+        help="Level of slugging for character names.",
+    )
+
+    parser.add_argument(
         "-v",
         "--verbosity",
         type=str,
@@ -145,7 +158,7 @@ def main():
     logging.basicConfig(level=level_map[args["verbosity"]])
 
     # Read input
-    panphylo.read_input(args)
+    panphylo.convert(args)
 
 
 if __name__ == "__main__":

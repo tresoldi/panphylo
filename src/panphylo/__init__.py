@@ -49,7 +49,7 @@ def fetch_stream_data(args):
 
 
 # Dispatch the different reading methods
-def read_input(args):
+def convert(args):
     # Read source data
     source = fetch_stream_data(args)
 
@@ -72,8 +72,8 @@ def read_input(args):
         phyd = read_data_nexus(source, args)
 
     # Perform data operations if requested
-    phyd.slug_taxa()
-    phyd.slug_characters()
+    phyd.slug_taxa(args["slug_taxa"])
+    phyd.slug_characters(args["slug_chars"])
 
     phyd = phyd.binarize()
 
@@ -89,4 +89,4 @@ def read_input(args):
 
 
 # Build namespace
-__all__ = ["read_input", "indexes2ranges"]
+__all__ = ["convert", "indexes2ranges"]

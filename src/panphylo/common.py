@@ -46,22 +46,35 @@ def smart_open(filename: str, mode: str = "r", *args, **kwargs):
 
 
 # TODO: allow more configurations
-def slug(label):
+# TODO: document levels
+def slug(label, level):
     """
     Return a slugged version of a label.
     """
 
-    label = unidecode.unidecode(label)
-    label = re.sub("\s+", " ", label.strip())
-    label = label.lower()
-
-    label = "".join([char for char in label if char in string.ascii_letters])
+    if level == "none":
+        pass
+    elif level == "simple":
+        label = unidecode.unidecode(label)
+        label = re.sub("\s+", "_", label.strip())
+        label = "".join(
+            [
+                char
+                for char in label
+                if char in string.ascii_letters + string.digits + "-_"
+            ]
+        )
+    elif level == "full":
+        label = unidecode.unidecode(label)
+        label = re.sub("\s+", " ", label.strip())
+        label = label.lower()
+        label = "".join([char for char in label if char in string.ascii_letters])
 
     return label
 
 
 # TODO: add different methods of slug, mapping to slug()
-def unique_ids(labels):
+def unique_ids(labels, level):
     def _label_iter():
         """
         Custom internal label iterator.
@@ -73,7 +86,7 @@ def unique_ids(labels):
                 yield "-" + "".join(chars)
 
     # Slugify all labels
-    slugged = [slug(label) for label in labels]
+    slugged = [slug(label, level) for label in labels]
 
     # Build a corresponding list with the count of previous occurrences
     # of the same value
