@@ -15,7 +15,7 @@ from collections import defaultdict
 
 # Import from local modules
 from .internal import PhyloData
-from .common import smart_open
+from .common import smart_open, indexes2ranges
 
 
 def parse_nexus(source):
@@ -281,51 +281,24 @@ def build_assumption_block(phyd):
     # Get the individual indexes first, and then build the string representation
     character_list = list(phyd.charvalues.keys())
     indexes = {
-        charset: sorted([character_list.index(char) + 1 for char in characters])
+        charset: [character_list.index(char) + 1 for char in characters]
         for charset, characters in phyd.charset.items()
     }
-    # TODO: make an independent function in `common`
-    ranges = defaultdict(list)
-    for charset, idxs in indexes.items():
-        start, end = None, None
-        for i in idxs:
-            if not start:
-                start = i
-            elif not end:
-                if i > start + 1:
-                    ranges[charset].append([start, start])
-                    start = i
-                else:
-                    end = i
-            else:
-                if i == end + 1:
-                    end = i
-                else:
-                    ranges[charset].append([start, end])
-                    start, end = i, None
-
-        ranges[charset].append([start, end])
-
-    # Build list of string representations from ranges
-    # TODO: cases when START == END
-    for charset, char_ranges in ranges.items():
-        print("---", char_ranges)
-        v = ["%i-%i" % (start, end) for start, end in char_ranges]
-        print(v)
 
     ##############
+    # TODO; make sure it is sorted
     buffer = """
 BEGIN ASSUMPTIONS;
 %s
 END;
     """ % (
-        
-        [(charset, r) for charset,r in ranges.items() ]
-        
-        
+        "\n".join(
+            [
+                "    CHARSET %s = %s;" % (charset, indexes2ranges(char_ranges))
+                for charset, char_ranges in indexes.items()
+            ]
         )
-
-    print(buffer)
+    )
 
     return buffer
 
@@ -345,7 +318,5 @@ def write_data_nexus(phyd, args):
     buffer += "\n"
 
     # Write to the stream
-
-
-#    with smart_open(args["output"], "w", encoding="utf-8") as handler:
-#        handler.write(buffer)
+    with smart_open(args["output"], "w", encoding="utf-8") as handler:
+        handler.write(buffer)

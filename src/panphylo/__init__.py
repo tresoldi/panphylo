@@ -12,7 +12,7 @@ import chardet
 import logging
 
 # Import from local modules
-from .common import smart_open
+from .common import smart_open, indexes2ranges
 from .tabular import detect_delimiter, read_data_tabular, write_data_tabular
 from .nexus import read_data_nexus, write_data_nexus
 
@@ -89,4 +89,4 @@ def read_input(args):
 
 
 # Build namespace
-__all__ = ["read_input"]
+__all__ = ["read_input", "indexes2ranges"]

@@ -7,6 +7,7 @@ import re
 import string
 import unidecode
 import itertools
+from collections import defaultdict
 
 import sys
 import contextlib
@@ -93,3 +94,50 @@ def unique_ids(labels):
     ]
 
     return unique_slug_labels
+
+
+def indexes2ranges(indexes, string=True):
+    """
+    Transforms a list of indexes into a range representation.
+
+    This function is used for building NEXUS-like assumption blocks,
+    especially for binarized data. Given a list such as `[1, 2, 3, 5, 8, 9]`
+    it will return either a structural or a string representation of
+    the ranges involved, such as `"1-3, 5, 8-9"`.
+    """
+
+    # Collect ranges as a list of tuples
+    ranges = []
+    start, end = None, None
+    for idx in sorted(indexes):
+        if not start:
+            start = idx
+        elif not end:
+            if idx > start + 1:
+                ranges.append((start, start))
+                start = idx
+            else:
+                end = idx
+        else:
+            if idx == end + 1:
+                end = idx
+            else:
+                ranges.append((start, end))
+                start, end = idx, None
+
+    # We finish with whatever is in the pile; note that we add `indexes[-1]`
+    # and not `end`, dealing with single sites
+    ranges.append((start, indexes[-1]))
+
+    # Build output
+    if not string:
+        ret = tuple(ranges)
+    else:
+        ret = ", ".join(
+            [
+                "%i-%i" % (start, end) if start != end else str(start)
+                for (start, end) in ranges
+            ]
+        )
+
+    return ret
