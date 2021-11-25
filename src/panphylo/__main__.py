@@ -36,6 +36,13 @@ def parse_args():
     )
 
     parser.add_argument(
+        "-b",
+        "--binarize",
+        action="store_true",
+        help="Binarizes the output."
+    )
+
+    parser.add_argument(
         "-f",
         "--from",
         type=str,

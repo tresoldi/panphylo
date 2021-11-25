@@ -75,7 +75,9 @@ def convert(args):
     phyd.slug_taxa(args["slug_taxa"])
     phyd.slug_characters(args["slug_chars"])
 
-    phyd = phyd.binarize()
+    # Binarize if necessary
+    if args["binarize"]:
+        phyd = phyd.binarize()
 
     # Write converted data in the requested format; note that the command-line
     # handling should have taken care of replacing the "auto" value for
