@@ -7,6 +7,7 @@ string manipulation strategy.
 
 # TODO: allow to output taxa and character names between quotes, if necessary
 # TODO: sort using assumptions (charset) if provided
+# TODO: support comments (will need changes to the parser)
 
 # Import Python libraries
 import re

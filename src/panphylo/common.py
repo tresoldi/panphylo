@@ -12,6 +12,8 @@ from collections import defaultdict
 import sys
 import contextlib
 
+# TODO: for slug, consider that The following symbols/caracters are not allowed in taxa names to ensure Newick
+#       compatibility: (space), (semicolon), (colon), (comma), (parentheses), (single quote) 
 
 @contextlib.contextmanager
 def smart_open(filename: str, mode: str = "r", *args, **kwargs):

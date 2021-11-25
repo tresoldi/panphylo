@@ -15,6 +15,7 @@ import logging
 from .common import smart_open, indexes2ranges
 from .tabular import detect_delimiter, read_data_tabular, write_data_tabular
 from .nexus import read_data_nexus, write_data_nexus
+from .phylip import read_data_phylip, write_data_phylip
 
 
 def fetch_stream_data(args):
@@ -70,6 +71,8 @@ def convert(args):
         phyd = read_data_tabular(source, "\t", args)
     elif args["from"] == "nexus":
         phyd = read_data_nexus(source, args)
+    elif args["from"] == "phylip":
+        phyd = read_data_phylip(source, args)
 
     # Perform data operations if requested
     phyd.slug_taxa(args["slug_taxa"])
