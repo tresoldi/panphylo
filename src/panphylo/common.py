@@ -119,10 +119,12 @@ def indexes2ranges(indexes, string=True):
     the ranges involved, such as `"1-3, 5, 8-9"`.
     """
 
+    indexes = sorted(indexes)
+
     # Collect ranges as a list of tuples
     ranges = []
     start, end = None, None
-    for idx in sorted(indexes):
+    for idx in indexes:
         if not start:
             start = idx
         elif not end:

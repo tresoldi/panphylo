@@ -12,6 +12,7 @@ string manipulation strategy.
 import re
 from enum import Enum, auto
 from collections import defaultdict
+from itertools import chain
 
 # Import from local modules
 from .internal import PhyloData
@@ -204,6 +205,22 @@ END;""" % (
 
 # TODO: don't output charstatelabels values if all are binary
 def build_character_block(phyd):
+    # Express the actual labels only we have any state which is not a binary "0" or "1"
+    # TODO: what about mixed data?
+    states = sorted(set(chain.from_iterable(phyd.charvalues.values())))
+    if tuple(states) == ("0", "1"):
+        charstatelabels = [
+            "        %i %s," % (charstate_idx + 1, character)
+            for charstate_idx, (character, _) in enumerate(phyd.charvalues.items())
+        ]
+    else:
+        charstatelabels = [
+            "        %i %s /%s," % (charstate_idx + 1, character, " ".join(value_set))
+            for charstate_idx, (character, value_set) in enumerate(
+                phyd.charvalues.items()
+            )
+        ]
+
     # TODO: keeping the final comma in charstatelabels should be an option
     buffer = """
 BEGIN CHARACTERS;
@@ -218,15 +235,7 @@ BEGIN CHARACTERS;
 END;""" % (
         len(phyd.charvalues),
         " ".join(phyd.symbols),
-        ",\n".join(
-            [
-                "        %i %s /%s"
-                % (charstate_idx + 1, character, " ".join(value_set))
-                for charstate_idx, (character, value_set) in enumerate(
-                    phyd.charvalues.items()
-                )
-            ]
-        ),
+        "\n".join(charstatelabels),
         build_matrix_command(phyd),
     )
 
@@ -279,7 +288,7 @@ def build_assumption_block(phyd):
         return ""
 
     # Get the individual indexes first, and then build the string representation
-    character_list = list(phyd.charvalues.keys())
+    character_list = sorted(phyd.charvalues.keys())
     indexes = {
         charset: [character_list.index(char) + 1 for char in characters]
         for charset, characters in phyd.charset.items()
@@ -294,11 +303,14 @@ END;
     """ % (
         "\n".join(
             [
-                "    CHARSET %s = %s;" % (charset, indexes2ranges(char_ranges))
-                for charset, char_ranges in indexes.items()
+                "    CHARSET %s = %s;" % (charset, indexes2ranges(indexes[charset]))
+                for charset in sorted(indexes)
             ]
         )
     )
+
+    for charset, char_ranges in indexes.items():
+        print(charset, char_ranges, indexes2ranges(char_ranges))
 
     return buffer
 

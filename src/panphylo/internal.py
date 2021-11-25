@@ -127,7 +127,6 @@ class PhyloData:
         }
 
     def binarize(self):
-        # TODO: missing ascertainment!
         # TODO: collect assumptions
 
         # For each taxon, collect a map of which charvalues are observed; this does not modify the
@@ -157,6 +156,13 @@ class PhyloData:
         bin_phyd = PhyloData()
         for (taxon, character), value in binary_values.items():
             for obs, value_name in zip(value, charvalues[character]):
+                # Add ascertainment
+                # TODO: allow something different from "0"?
+                # TODO: should check for the name of the character?
+                bin_phyd.add_value(
+                    taxon, f"{character}_ASCERTAINMENT", "0", charset=character
+                )
+
                 # TODO: confirm if it is right to skip over gaps and all
                 if obs != BinaryObs.GAP:
                     bin_phyd.add_value(
