@@ -9,6 +9,9 @@ import enum
 
 from .common import unique_ids
 
+# TODO; should have a general method for iterating over
+#       characters in a sorter order
+
 # TODO: should have one for non-binary as well?
 class BinaryObs(enum.Enum):
     """

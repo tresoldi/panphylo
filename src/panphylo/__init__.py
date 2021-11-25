@@ -91,6 +91,8 @@ def convert(args):
         write_data_tabular(phyd, "\t", args)
     elif args["to"] == "nexus":
         write_data_nexus(phyd, args)
+    elif args["to"] == "phylip":
+        write_data_phylip(phyd, args)
 
 
 # Build namespace
