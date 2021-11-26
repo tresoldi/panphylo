@@ -125,7 +125,11 @@ def build_tabular(phyd, delimiter, args):
     )
     writer.writeheader()
     writer.writerows(output)
-    contents = handler.getvalue()
+    buffer = handler.getvalue()
     handler.close()
 
-    return contents
+    # Fix issue with newlines as `\r\n`; as we were writing to a
+    # StringIO(), this is the easiest way to do it
+    buffer = buffer.replace("\r\n", "\n")
+
+    return buffer

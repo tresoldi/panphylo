@@ -9,7 +9,6 @@ Module for command-line execution of `panphylo`.
 # Import Python standard libraries
 import argparse
 import logging
-import chardet
 
 # Import our library
 import panphylo
@@ -155,45 +154,6 @@ def parse_args():
     return args
 
 
-def fetch_stream_data(args: dict) -> str:
-    """
-    Read the input data as a string.
-
-    The function takes care of handling input from both stdin and
-    files, decoding the stream of bytes according to the user-specified
-    character encoding (including automatic detection if necessary).
-
-    :param args: The arguments carrying all options, either converted
-        from command-line arguments, built from an interface, or
-        as a dictionary.
-    :return: A string with the full source for the data, encoded
-        according to the specified charset encoding.
-    """
-
-    # Fetch all input as a sequence of bytes, so that we don't consume stdout
-    # and can still run autodetection on format and encoding
-    with panphylo.smart_open(args["input"], "rb") as handler:
-        logging.debug("Reading contents from `%s`.", args["input"])
-        raw_source = handler.read()
-
-        # Detect encoding if necessary, building a string
-        if args["encoding"] != "auto":
-            encoding = args["encoding"]
-            logging.debug("Using `%s` character encoding.", encoding)
-        else:
-            detect = chardet.detect(raw_source)
-            encoding = detect["encoding"]
-            logging.debug(
-                "Encoding detected as `%s` (confidence: %.2f)",
-                detect["encoding"],
-                detect["confidence"],
-            )
-
-        source = raw_source.decode(encoding)
-
-    return source
-
-
 def main():
     """
     Script entry point.
@@ -211,10 +171,8 @@ def main():
     }
     logging.basicConfig(level=level_map[args["verbosity"]])
 
-    # Read input
-
     # Read source data and detect the format if necessary
-    source = fetch_stream_data(args)
+    source = panphylo.fetch_stream_data(args["input"], args["encoding"])
     if args["from"] == "auto":
         if source.strip().startswith("#NEXUS"):
             args["from"] = "nexus"
@@ -228,7 +186,8 @@ def main():
 
     # Write to the stream
     with panphylo.smart_open(args["output"], "w", encoding="utf-8") as handler:
-        handler.write(converted)
+        handler.write(converted.strip())
+        handler.write("\n")
 
 
 if __name__ == "__main__":

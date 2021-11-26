@@ -8,7 +8,7 @@ __author__ = "Tiago Tresoldi"
 __email__ = "tiago.tresoldi@lingfil.uu.se"
 
 # Import from local modules
-from .common import indexes2ranges, smart_open
+from .common import indexes2ranges, smart_open, fetch_stream_data
 from .nexus import read_data_nexus, build_nexus
 from .phylip import read_data_phylip, build_phylip
 from .tabular import detect_delimiter, read_data_tabular, build_tabular
@@ -30,9 +30,9 @@ def convert(source, args):
         phyd = read_data_phylip(source, args)
 
     # Perform all requested data manipulations
-    phyd.slug_taxa(args["slug_taxa"])
-    phyd.slug_characters(args["slug_chars"])
-    if args["binarize"]:
+    phyd.slug_taxa(args.get("slug_taxa", "none"))
+    phyd.slug_characters(args.get("slug_chars", "none"))
+    if args.get("binarize", False):
         phyd = phyd.binarize()
 
     # Write converted data in the requested format; note that the command-line
@@ -52,4 +52,4 @@ def convert(source, args):
 
 
 # Build namespace
-__all__ = ["convert", "indexes2ranges", "smart_open"]
+__all__ = ["convert", "indexes2ranges", "smart_open", "fetch_stream_data"]

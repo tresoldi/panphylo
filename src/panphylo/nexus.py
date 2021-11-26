@@ -312,6 +312,5 @@ def build_nexus(phyd, args):
     ]
 
     buffer = "\n\n".join([comp for comp in components if comp])
-    buffer += "\n"
 
     return buffer
