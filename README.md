@@ -1,5 +1,7 @@
 # panphylo
 
+[![PyPI](https://img.shields.io/pypi/v/panphylo.svg)](https://pypi.org/project/panphylo)
+
 `panphylo` is a free and open-source tool for converting and manipulating phylogenetic data, especially for non-biological datasets.
 
 ![Panfilo, from Boccaccio's *Decameron*, as pictured in Bodleian Library MS. Holkham 49, fol. 148r](panfilo_small.png)
