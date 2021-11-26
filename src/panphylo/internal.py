@@ -11,6 +11,7 @@ from .common import unique_ids
 
 # TODO; should have a general method for iterating over
 #       characters in a sorter order
+# TODO: have maximum taxon length here as well
 
 # TODO: should have one for non-binary as well?
 class BinaryObs(enum.Enum):
@@ -76,6 +77,40 @@ class PhyloData:
         """
 
         return max([len(value_set) for value_set in self.charvalues.values()])
+
+    # TODO: move to dictionary
+    @property
+    def matrix(self):
+        """
+        Build a sorted matrix from the internal representation.
+
+        The matrix is returned as a list and is suitable for formats
+        such as NEXUS and PHYLIP.
+        """
+
+        # Build a sorted list with the matrix
+        matrix_dict = defaultdict(str)
+        symbols = self.symbols  # cache
+        for character, value_set in self.charvalues.items():
+            for taxon in self.taxa:
+                # TODO: assuming there is only one value per site!!! (value[0]), [None]
+                value = self.values.get((taxon, character), [None])
+                value = list(value)[0]
+                if not value:
+                    matrix_dict[taxon] += "-"
+                elif value == "?":
+                    matrix_dict[taxon] += "?"
+                else:
+                    # TODO: note the sorted
+                    symbol_idx = value_set.index(value)
+                    matrix_dict[taxon] += symbols[symbol_idx]
+
+        ret = [
+            {"taxon": taxon, "vector": vector} for taxon, vector in matrix_dict.items()
+        ]
+        ret = sorted(ret, key=lambda e: e["taxon"])
+
+        return ret
 
     @property
     def symbols(self):

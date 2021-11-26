@@ -248,35 +248,19 @@ def build_matrix_command(phyd):
     Build a NEXUS MATRIX command.
     """
 
-    # Build a sorted list with the matrix
-    matrix_dict = defaultdict(str)
-    symbols = phyd.symbols
-    for character, value_set in phyd.charvalues.items():
-        for taxon in phyd.taxa:
-            # TODO: assuming there is only one value per site!!! (value[0]), [None]
-            value = phyd.values.get((taxon, character), [None])
-            value = list(value)[0]
-            if not value:
-                matrix_dict[taxon] += "-"
-            elif value == "?":
-                matrix_dict[taxon] += "?"
-            else:
-                # TODO: note the sorted
-                symbol_idx = value_set.index(value)
-                matrix_dict[taxon] += symbols[symbol_idx]
+    # Obtain the matrix and the maximum taxon length for formatting
+    matrix = phyd.matrix
+    taxon_length = max([len(entry["taxon"]) for entry in matrix])
 
-    taxon_length = max([len(taxon) for taxon in matrix_dict])
-
-    matrix_list = sorted([(taxon, vector) for taxon, vector in matrix_dict.items()])
-
+    # Build buffer
     buffer = """
 MATRIX
 %s
 ;""" % (
         "\n".join(
             [
-                "%s    %s" % (taxon.ljust(taxon_length), vector)
-                for taxon, vector in matrix_list
+                "%s    %s" % (entry["taxon"].ljust(taxon_length), entry["vector"])
+                for entry in matrix
             ]
         )
     )
