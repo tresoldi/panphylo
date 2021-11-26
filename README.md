@@ -53,7 +53,23 @@ can be used.
 
 ### Options
 
-(lorem ipsum)
+| Option                      | Help          |
+| --------------------------- | ------------- |
+| `--input` FILE              | Read input from *FILE*. If *FILE* is `-`, input will come from *stdin*.  |
+| `-o`, `--output` FILE       | Write output to *FILE* instead of *stdout*. If *FILE* is `-`, output will go to *stdout*.   |
+| `-b`, `--binarize`          | Binarizes the output. The specification on whether and how to add ascertainment correction is specified by the `--ascertainment` option. |
+| `-f`, `--from` FORMAT       | Specify the input format. Valid FORMAT choices are `auto`, `tabular`, `csv`, `tsv`, `nexus`, and `phylip`; `auto` will attempt to autodetect the format from the contents of the file, while `tabular` will attempt to detected the delimiter (comma or tabulation) in tabular textual files. Defaults to `auto`. |
+| `-t`, `--to` FORMAT         | Specify the output format. Valid FORMAT choices are `auto`, `csv`, `tsv`, `nexus`, and `phylip`; `auto` will decide on the format based ont he file extension. Defaults to `csv`. |
+| `-e`, `--encoding` ENCODING | Specify the character encoding for the input, using the [standard character encoding names](https://docs.python.org/3/library/codecs.html#standard-encodings) in Python. Defaults to autodetection with the `chardet` library. |
+| `--i-taxa` LABEL            | Input label, column, or name for taxa. If not provided, the library will attempt to autodetect it. Does not apply to all formats. |
+| `--i-char` LABEL            | Input label, column, or name for characters. If not provided, the library will attempt to autodetect it. Does not apply to all formats. |
+| `--i-state` LABEL           | Input label, column, or name for states. If not provided, the library will attempt to autodetect it. Does not apply to all formats. |
+| `--o-taxa` LABEL            | Output label, column, or name for taxa. If not provided, defaults to `"Taxon"`. Does not apply to all formats. |
+| `--o-char` LABEL            | Output label, column, or name for characters. If not provided, defaults to `"Character"`. Does not apply to all formats. |
+| `--o-state` LABEL           | Output label, column, or name for states. If not provided, defaults to `"State"`. Does not apply to all formats. |
+| `--slug_taxa` LEVEL         | Level of "slugging" (simplification) of taxa names. Valid LEVEL options are `none`, `simple`, and `full`. |
+| `--slug_chars` LEVEL        | Level of "slugging" (simplification) of character names. Valid LEVEL options are `none`, `simple`, and `full`. |
+| `-v`, `--verbosity` LEVEL   | Set the logging level. Valid LEVEL options, following the Python `logging` library, are `"debug"`, `"info"`, `"warning"`, `"error"`, `"critical"`. |
 
 ## Alternatives
 

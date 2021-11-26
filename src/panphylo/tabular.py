@@ -40,13 +40,13 @@ def _get_input_column_names(args, data):
     # try to infer it; at the end, we make sure to check that they are all unique
     col_taxa = args.get("i-taxa", None)
     col_char = args.get("i-char", None)
-    col_vals = args.get("i-vals", None)
-    if not all([col_taxa, col_char, col_vals]):
+    col_state = args.get("i-state", None)
+    if not all([col_taxa, col_char, col_state]):
         logging.debug("Inferring column names.")
 
         # Get the keys we have and remove and column name already used
         columns = [
-            col for col in data[0].keys() if col not in [col_taxa, col_char, col_vals]
+            col for col in data[0].keys() if col not in [col_taxa, col_char, col_state]
         ]
 
         # Obtain the taxa column among potential candidates, picking the first one
@@ -69,12 +69,12 @@ def _get_input_column_names(args, data):
                     col_char = column
 
         # Obtain the value column among potential candidates, picking the first one
-        for cand in ["value", "observation", "cognate", "lesson", "reading"]:
+        for cand in ["state", "value", "observation", "cognate", "lesson", "reading"]:
             for column in columns:
-                if not col_vals and cand in slug(column, "full"):
-                    col_vals = column
+                if not col_state and cand in slug(column, "full"):
+                    col_state = column
 
-    column_names = [col_taxa, col_char, col_vals]
+    column_names = [col_taxa, col_char, col_state]
     if len(set(column_names)) < 3:
         raise AssertionError("Non-unique column names in %s", str(column_names))
 
@@ -104,23 +104,23 @@ def read_data_tabular(source_str, delimiter, args):
 
 
 def write_data_tabular(phyd, delimiter, args):
-    # If the column names for taxa, characters, and values was not provided,
+    # If the column names for taxa, characters, and states was not provided,
     # try to infer it; at the end, we make sure to check that they are all unique
     col_taxa = args.get("o-taxa", "Taxon")
     col_char = args.get("o-char", "Character")
-    col_vals = args.get("o-vals", "Value")
+    col_state = args.get("o-state", "State")
 
     # Build output data
     output = []
     for character in sorted(phyd.characters):
         for taxon in sorted(phyd.taxa):
             for value in sorted(phyd[taxon, character]):  # TODO: deal with missing
-                output.append({col_taxa: taxon, col_char: character, col_vals: value})
+                output.append({col_taxa: taxon, col_char: character, col_state: value})
 
     # Write to the stream
     with smart_open(args["output"], "w", encoding="utf-8") as handler:
         writer = csv.DictWriter(
-            handler, delimiter=delimiter, fieldnames=[col_taxa, col_char, col_vals]
+            handler, delimiter=delimiter, fieldnames=[col_taxa, col_char, col_state]
         )
         writer.writeheader()
         writer.writerows(output)

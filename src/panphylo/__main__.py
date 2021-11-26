@@ -14,7 +14,9 @@ import logging
 import panphylo
 
 # TODO: default output format to CSV, when stdout?
+# TODO: add the ascertainment option
 
+# TODO: remember to sync with README
 def parse_args():
     """
     Parse command-line arguments and return them as a dictionary.
@@ -39,7 +41,7 @@ def parse_args():
         "-b",
         "--binarize",
         action="store_true",
-        help="Binarizes the output."
+        help="Binarizes the output. The specification on whether and how to add ascertainment correction is specified by the `--ascertainment` option."
     )
 
     parser.add_argument(
@@ -77,25 +79,28 @@ def parse_args():
         help="Input label, column, or name for characters. Does not apply to all formats.",
     )
     parser.add_argument(
-        "--i-vals",
+        "--i-state",
         type=str,
-        help="Input label, column, or name for values. Does not apply to all formats.",
+        help="Input label, column, or name for states. Does not apply to all formats.",
     )
 
     parser.add_argument(
         "--o-taxa",
         type=str,
+        default="Taxon",
         help="Output label, column, or name for taxa. Does not apply to all formats.",
     )
     parser.add_argument(
         "--o-char",
         type=str,
+        default="Character",
         help="Output label, column, or name for characters. Does not apply to all formats.",
     )
     parser.add_argument(
-        "--o-vals",
+        "--o-state",
         type=str,
-        help="Output label, column, or name for values. Does not apply to all formats.",
+        default="State",
+        help="Output label, column, or name for states. Does not apply to all formats.",
     )
 
     parser.add_argument(

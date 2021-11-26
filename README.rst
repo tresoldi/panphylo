@@ -5,7 +5,7 @@ panphylo
 manipulating phylogenetic data, especially for non-biological datasets.
 
 .. image:: panfilo_small.png
-   :alt: Panfilo, from Boccaccio's *Decameron*, as pictured in Bodleian
+   :alt: Panfilo, from Boccaccio's Decameron, as pictured in Bodleian
    Library MS. Holkham 49, fol. 148r
 
 There are a wide variety of similar tools for both local and remote
