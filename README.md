@@ -1,6 +1,7 @@
 # panphylo
 
 [![PyPI](https://img.shields.io/pypi/v/panphylo.svg)](https://pypi.org/project/panphylo)
+[![CI](https://github.com/tresoldi/panphylo/actions/workflows/CI.yml/badge.svg)](https://github.com/tresoldi/panphylo/actions/workflows/CI.yml)
 
 `panphylo` is a free and open-source tool for converting and manipulating phylogenetic data, especially for non-biological datasets.
 
