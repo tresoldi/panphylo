@@ -2,67 +2,22 @@
 panphylo __init__.py
 """
 
-# Version of the ngesh package
+# Version of the panphylo package
 __version__ = "0.1"  # remember to sync in setup.py
 __author__ = "Tiago Tresoldi"
 __email__ = "tiago.tresoldi@lingfil.uu.se"
 
-# Import Python libraries
-import chardet
-import logging
-
 # Import from local modules
-from .common import smart_open, indexes2ranges
-from .tabular import detect_delimiter, read_data_tabular, write_data_tabular
-from .nexus import read_data_nexus, write_data_nexus
-from .phylip import read_data_phylip, write_data_phylip
-
-
-def fetch_stream_data(args):
-    """
-    Read the input data as a string.
-
-    The function takes care of handling input from both stdin and
-    files, decoding the stream of bytes according to the user-specified
-    character encoding (including automatic detection if necessary).
-    """
-
-    # Fetch all input as a sequence of bytes, so that we don't consume stdout
-    # and can still run autodetection on format and encoding
-    with smart_open(args["input"], "rb") as handler:
-        raw_source = handler.read()
-
-        # Detect encoding if necessary, building a string
-        if args["encoding"] != "auto":
-            encoding = args["encoding"]
-        else:
-            detect = chardet.detect(raw_source)
-            encoding = detect["encoding"]
-            logging.debug(
-                "Encoding detected as `%s` (confidence: %.2f)",
-                detect["encoding"],
-                detect["confidence"],
-            )
-
-        source = raw_source.decode("utf-8")
-
-    return source
+from .common import indexes2ranges, smart_open
+from .nexus import read_data_nexus, build_nexus
+from .phylip import read_data_phylip, build_phylip
+from .tabular import detect_delimiter, read_data_tabular, build_tabular
 
 
 # Dispatch the different reading methods
-def convert(args):
-    # Read source data
-    source = fetch_stream_data(args)
+def convert(source, args):
 
-    # Decide on the right input function based on the input format, which might
-    # involve auto-detection
-    # TODO: improve autodetection, without defaulting to tabular
-    if args["from"] == "auto":
-        if source.strip().startswith("#NEXUS"):
-            args["from"] = "nexus"
-        else:
-            args["from"] = "tabular"
-
+    # Dispatch to the right reading method
     if args["from"] == "tabular":
         phyd = read_data_tabular(source, detect_delimiter(source), args)
     elif args["from"] == "csv":
@@ -74,26 +29,27 @@ def convert(args):
     elif args["from"] == "phylip":
         phyd = read_data_phylip(source, args)
 
-    # Perform data operations if requested
+    # Perform all requested data manipulations
     phyd.slug_taxa(args["slug_taxa"])
     phyd.slug_characters(args["slug_chars"])
-
-    # Binarize if necessary
     if args["binarize"]:
         phyd = phyd.binarize()
 
     # Write converted data in the requested format; note that the command-line
     # handling should have taken care of replacing the "auto" value for
     # autodetecting the output
+    # TODO: adapt to have them returning strings, and writing with a separate function
     if args["to"] == "csv":
-        write_data_tabular(phyd, ",", args)
+        converted = build_tabular(phyd, ",", args)
     elif args["to"] == "tsv":
-        write_data_tabular(phyd, "\t", args)
+        converted = build_tabular(phyd, "\t", args)
     elif args["to"] == "nexus":
-        write_data_nexus(phyd, args)
+        converted = build_nexus(phyd, args)
     elif args["to"] == "phylip":
-        write_data_phylip(phyd, args)
+        converted = build_phylip(phyd, args)
+
+    return converted
 
 
 # Build namespace
-__all__ = ["convert", "indexes2ranges"]
+__all__ = ["convert", "indexes2ranges", "smart_open"]

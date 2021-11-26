@@ -1,5 +1,8 @@
-# Dummy placeholder test
+"""
+Test methods in the `common` module.
+"""
 
+# Import the library for testing
 import panphylo
 
 # TODO: add empty, add single, add out of order

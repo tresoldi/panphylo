@@ -50,7 +50,7 @@ def read_data_phylip(source, args):
 
 
 # TODO: sharing matrix code in common with NEXUS, should move to PhyloData
-def write_data_phylip(phyd, args):
+def build_phylip(phyd, args):
 
     # Obtain the matrix and the maximum taxon length for formatting
     matrix = phyd.matrix
@@ -72,6 +72,4 @@ def write_data_phylip(phyd, args):
         ),
     )
 
-    # Write to the stream
-    with smart_open(args["output"], "w", encoding="utf-8") as handler:
-        handler.write(buffer)
+    return buffer

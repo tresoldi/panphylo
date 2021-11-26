@@ -4,9 +4,10 @@ Module with the class for the internal representation of data.
 
 # Import Python libraries
 from collections import defaultdict, Counter
-import string
 import enum
+import string
 
+# Import from local modules
 from .common import unique_ids
 
 # TODO; should have a general method for iterating over
@@ -36,78 +37,88 @@ BINARY_OPS_MAP = {
 
 
 class PhyloData:
+    """
+    Class for the internal representation of phylogenetic data.
+    """
+
     def __init__(self):
-        self.values = defaultdict(set)
-        self.taxa = set()
+        """
+        Initialize the class.
+        """
+
         self.characters = set()
         self.charset = defaultdict(set)
+        self.taxa = set()
+        self.values = defaultdict(set)
 
     @property
-    def charvalues(self):
+    def charstates(self):
         """
-        Return a sorted character values structure.
+        Return a sorted character states structure.
 
-        Note that this method is not caching results; while it might involve more and unnecessary computations in
-        some contexts, it does not affect our intended usage and makes the code easier to follow.
+        Note that this method is not caching results; while it might involve
+        more and unnecessary computations in some contexts, it does not affect
+        our intended usage and makes the code easier to follow.
+
+        :return: A dictionary with the character states.
         """
 
         # Collect with a counter first
         counter = defaultdict(Counter)
-        for (_, character), values in self.values.items():
-            counter[character].update({value for value in values if value != "?"})
+        for (_, character), states in self.values.items():
+            counter[character].update({state for state in states if state != "?"})
 
         # Sort by frequency
         # TODO; add option to sort alphabetically
         # TODO: what if there are equal frequencies? Is it reproducible?
-        charvalues = {
-            character: [val for val, _ in values.most_common()]
-            for character, values in counter.items()
+        charstates = {
+            character: [state for state, _ in states.most_common()]
+            for character, states in counter.items()
         }
 
-        return charvalues
+        return charstates
 
-    # TODO: cache? along with charvalues?
     @property
-    def char_cardinality(self):
+    def char_cardinality(self) -> int:
         """
         Return the character cardinality.
 
-        Character cardinality is defined as the number of values in the character(s) with the largest
-        number of values.
+        Character cardinality is defined as the number of states in the
+        character(s) with the largest number of states.
+
+        :return: An integer with the cardinality of the largest character.
         """
 
-        return max([len(value_set) for value_set in self.charvalues.values()])
+        return max([len(state_set) for state_set in self.charstates.values()])
 
-    # TODO: move to dictionary
     @property
-    def matrix(self):
+    def matrix(self) -> list:
         """
         Build a sorted matrix from the internal representation.
 
         The matrix is returned as a list and is suitable for formats
         such as NEXUS and PHYLIP.
+
+        :return: A sorted list with dictionaries carrying taxon and
+            vector information.
         """
 
         # Build a sorted list with the matrix
-        matrix_dict = defaultdict(str)
+        _matrix = defaultdict(str)
         symbols = self.symbols  # cache
-        for character, value_set in self.charvalues.items():
+        for character, state_set in self.charstates.items():
             for taxon in self.taxa:
                 # TODO: assuming there is only one value per site!!! (value[0]), [None]
-                value = self.values.get((taxon, character), [None])
-                value = list(value)[0]
-                if not value:
-                    matrix_dict[taxon] += "-"
-                elif value == "?":
-                    matrix_dict[taxon] += "?"
+                state = self.values.get((taxon, character), [None])
+                state = list(state)[0]
+                if not state:
+                    _matrix[taxon] += "-"
+                elif state == "?":
+                    _matrix[taxon] += "?"
                 else:
-                    # TODO: note the sorted
-                    symbol_idx = value_set.index(value)
-                    matrix_dict[taxon] += symbols[symbol_idx]
+                    _matrix[taxon] += symbols[state_set.index(state)]
 
-        ret = [
-            {"taxon": taxon, "vector": vector} for taxon, vector in matrix_dict.items()
-        ]
+        ret = [{"taxon": taxon, "vector": vector} for taxon, vector in _matrix.items()]
         ret = sorted(ret, key=lambda e: e["taxon"])
 
         return ret
@@ -115,12 +126,15 @@ class PhyloData:
     @property
     def symbols(self):
         """
-        Return a set of unique symbols for representing states.
+        Return a colloction of unique symbols for representing states.
 
-        The length of the vector will follow the cardinality of the data (i.e., `self.char_cardinality`).
+        The length of the vector will follow the cardinality of the data
+        (i.e., `self.char_cardinality`).
+
+        :return: A list with the characters for representing the states.
         """
 
-        return [char for char in string.digits + string.ascii_uppercase][
+        return [ch for ch in string.digits + string.ascii_uppercase][
             : self.char_cardinality
         ]
 
@@ -169,10 +183,10 @@ class PhyloData:
 
         # For each taxon, collect a map of which charvalues are observed; this does not modify the
         # internal properties
-        charvalues = self.charvalues  # cache
+        charvalues = self.charstates  # cache
         binary_values = {}
         for taxon in self.taxa:
-            for character, values in self.charvalues.items():
+            for character, values in self.charstates.items():
                 obs = self.values.get((taxon, character), None)
 
                 if not obs:

@@ -103,7 +103,7 @@ def read_data_tabular(source_str, delimiter, args):
     return phyd
 
 
-def write_data_tabular(phyd, delimiter, args):
+def build_tabular(phyd, delimiter, args):
     # If the column names for taxa, characters, and states was not provided,
     # try to infer it; at the end, we make sure to check that they are all unique
     col_taxa = args.get("o-taxa", "Taxon")
@@ -117,10 +117,15 @@ def write_data_tabular(phyd, delimiter, args):
             for value in sorted(phyd[taxon, character]):  # TODO: deal with missing
                 output.append({col_taxa: taxon, col_char: character, col_state: value})
 
-    # Write to the stream
-    with smart_open(args["output"], "w", encoding="utf-8") as handler:
-        writer = csv.DictWriter(
-            handler, delimiter=delimiter, fieldnames=[col_taxa, col_char, col_state]
-        )
-        writer.writeheader()
-        writer.writerows(output)
+    # Write to an IO stream using the `csv` library, which
+    # takes care of escapes etc.
+    handler = StringIO()
+    writer = csv.DictWriter(
+        handler, delimiter=delimiter, fieldnames=[col_taxa, col_char, col_state]
+    )
+    writer.writeheader()
+    writer.writerows(output)
+    contents = handler.getvalue()
+    handler.close()
+
+    return contents

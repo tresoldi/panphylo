@@ -300,7 +300,7 @@ END;
     return buffer
 
 
-def write_data_nexus(phyd, args):
+def build_nexus(phyd, args):
     # TODO: this only implements multistate
     # TODO: not rendering polymorphy
 
@@ -314,6 +314,4 @@ def write_data_nexus(phyd, args):
     buffer = "\n\n".join([comp for comp in components if comp])
     buffer += "\n"
 
-    # Write to the stream
-    with smart_open(args["output"], "w", encoding="utf-8") as handler:
-        handler.write(buffer)
+    return buffer
