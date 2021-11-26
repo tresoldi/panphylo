@@ -13,6 +13,7 @@ import logging
 # Import our library
 import panphylo
 
+# TODO: default output format to CSV, when stdout?
 
 def parse_args():
     """
@@ -21,7 +22,6 @@ def parse_args():
 
     parser = argparse.ArgumentParser(description="Convert and manipulate phylodata.")
     parser.add_argument(
-        "-i",
         "--input",
         type=str,
         default="-",
