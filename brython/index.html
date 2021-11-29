@@ -24,7 +24,8 @@ import nexus
 def action(event):
     source_elm = document["source"]
     target_elm = document["target"]
-    args = {"from": "csv", "to": "nexus", "input":"-"}
+    args = {"from": "csv", "to": "nexus", "input":"-",
+"i_taxa":None, "i_char":None, "i_state":None}
 
     source = source_elm.value
     phyd = tabular.read_data_tabular(source, ",", args)

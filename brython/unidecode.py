@@ -47963,4 +47963,4 @@ def unidecode(text):
             if row and len(row) > b:
                 buffer += row[b]
 
-        return buffer
+    return buffer

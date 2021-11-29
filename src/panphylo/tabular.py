@@ -36,9 +36,10 @@ def _get_input_column_names(args, data):
 
     # If the column names for taxa, characters, and values was not provided,
     # try to infer it; at the end, we make sure to check that they are all unique
-    col_taxa = args.get("i-taxa", None)
-    col_char = args.get("i-char", None)
-    col_state = args.get("i-state", None)
+    col_taxa = args.get("i_taxa", None)
+    col_char = args.get("i_char", None)
+    col_state = args.get("i_state", None)
+
     if not all([col_taxa, col_char, col_state]):
         logging.debug("Inferring column names.")
 

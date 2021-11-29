@@ -3,12 +3,10 @@ Module with functions and methods for tabular files.
 """
 
 # Import Python libraries
-import csv
 import logging
-from io import StringIO
 
 # Import from local modules
-from common import smart_open, slug
+from common import slug
 from internal import PhyloData
 
 
@@ -38,9 +36,10 @@ def _get_input_column_names(args, data):
 
     # If the column names for taxa, characters, and values was not provided,
     # try to infer it; at the end, we make sure to check that they are all unique
-    col_taxa = args.get("i-taxa", None)
-    col_char = args.get("i-char", None)
-    col_state = args.get("i-state", None)
+    col_taxa = args.get("i_taxa", None)
+    col_char = args.get("i_char", None)
+    col_state = args.get("i_state", None)
+
     if not all([col_taxa, col_char, col_state]):
         logging.debug("Inferring column names.")
 
@@ -88,9 +87,14 @@ def read_data_tabular(source_str, delimiter, args):
     """
 
     # Read all data
-    with StringIO(source_str) as handler:
-        source = list(csv.DictReader(handler, delimiter=delimiter))
-        logging.debug("Read %i entries from `%s`.", len(source), args["input"])
+    rows = source_str.split("\n")
+    rows = [row for row in rows if row.strip()]
+    header = rows[0].split(delimiter)
+    source = [
+        {key: value for key, value in zip(header, row.split(delimiter))}
+        for row in rows[1:]
+    ]
+    logging.debug("Read %i entries from `%s`.", len(source), args["input"])
 
     # Infer column names
     col_taxa, col_char, col_vals = _get_input_column_names(args, source)
@@ -117,19 +121,11 @@ def build_tabular(phyd, delimiter, args):
             for value in sorted(phyd[taxon, character]):  # TODO: deal with missing
                 output.append({col_taxa: taxon, col_char: character, col_state: value})
 
-    # Write to an IO stream using the `csv` library, which
-    # takes care of escapes etc.
-    handler = StringIO()
-    writer = csv.DictWriter(
-        handler, delimiter=delimiter, fieldnames=[col_taxa, col_char, col_state]
-    )
-    writer.writeheader()
-    writer.writerows(output)
-    buffer = handler.getvalue()
-    handler.close()
-
-    # Fix issue with newlines as `\r\n`; as we were writing to a
-    # StringIO(), this is the easiest way to do it
-    buffer = buffer.replace("\r\n", "\n")
+    # Build buffer
+    # TODO: deal with escapes, etc. (csv library is missing in JS)
+    fieldnames = [col_taxa, col_char, col_state]
+    buffer = [delimiter.join([row[field] for field in fieldnames]) for row in output]
+    buffer = [delimiter.join(fieldnames)] + buffer
+    buffer = "\n".join(buffer)
 
     return buffer

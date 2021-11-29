@@ -64,17 +64,17 @@ class PhyloData:
         """
 
         # Collect with a counter first
-        counter = defaultdict(Counter)
+        char_counter = defaultdict(Counter)
         for (_, character), states in self.values.items():
-            counter[character].update({state for state in states if state != "?"})
+            char_counter[character].update({state for state in states if state != "?"})
 
         # Sort by frequency
         # TODO; add option to sort alphabetically
         # TODO: what if there are equal frequencies? Is it reproducible?
-        charstates = {
-            character: [state for state, _ in states.most_common()]
-            for character, states in counter.items()
-        }
+        # NOTE: for some reason the list comprehension is failing in brython
+        charstates = {}
+        for character, states in char_counter.items():
+            charstates[character] = [state for state, _ in states.most_common()]
 
         return charstates
 

@@ -64,17 +64,17 @@ class PhyloData:
         """
 
         # Collect with a counter first
-        counter = defaultdict(Counter)
+        char_counter = defaultdict(Counter)
         for (_, character), states in self.values.items():
-            counter[character].update({state for state in states if state != "?"})
+            char_counter[character].update({state for state in states if state != "?"})
 
         # Sort by frequency
         # TODO; add option to sort alphabetically
         # TODO: what if there are equal frequencies? Is it reproducible?
-        charstates = {
-            character: [state for state, _ in states.most_common()]
-            for character, states in counter.items()
-        }
+        # NOTE: for some reason the list comprehension is failing in brython
+        charstates = {}
+        for character, states in char_counter.items():
+            charstates[character] = [state for state, _ in states.most_common()]
 
         return charstates
 
@@ -153,10 +153,10 @@ class PhyloData:
 
         self.taxa = set(slug_map.values())
 
-        self.values = {
-            (slug_map[taxon], character): values
-            for (taxon, character), values in self.values.items()
-        }
+        new_values = defaultdict(set)
+        for (taxon, character), values in self.values.items():
+            new_values[taxon, character].update(values)
+        self.values = new_values
 
     def slug_characters(self, level="simple"):
         """
@@ -173,10 +173,10 @@ class PhyloData:
 
         self.characters = set(slug_map.values())
 
-        self.values = {
-            (taxon, slug_map[character]): values
-            for (taxon, character), values in self.values.items()
-        }
+        new_values = defaultdict(set)
+        for (taxon, character), values in self.values.items():
+            new_values[taxon, character].update(values)
+        self.values = new_values
 
     def binarize(self):
         # TODO: collect assumptions
