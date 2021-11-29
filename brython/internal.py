@@ -8,7 +8,7 @@ import enum
 import string
 
 # Import from local modules
-from common import unique_ids
+from .common import unique_ids
 
 # TODO; should have a general method for iterating over
 #       characters in a sorter order

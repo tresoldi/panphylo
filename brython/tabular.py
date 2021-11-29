@@ -6,8 +6,8 @@ Module with functions and methods for tabular files.
 import logging
 
 # Import from local modules
-from common import slug
-from internal import PhyloData
+from .common import slug
+from .internal import PhyloData
 
 
 def detect_delimiter(source):

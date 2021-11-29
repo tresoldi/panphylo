@@ -16,8 +16,8 @@ from collections import defaultdict
 from itertools import chain
 
 # Import from local modules
-from internal import PhyloData
-from common import indexes2ranges
+from .internal import PhyloData
+from .common import indexes2ranges
 
 
 def parse_nexus(source):
