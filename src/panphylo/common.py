@@ -5,9 +5,10 @@ Module with common and reusable functions.
 # Import Python libraries
 import re
 import string
-import unidecode
 import itertools
 import logging
+
+from .myunidecode import unidecode
 
 # TODO: for slug, consider that The following symbols/caracters are not allowed in taxa names to ensure Newick
 #       compatibility: (space), (semicolon), (colon), (comma), (parentheses), (single quote)
@@ -22,7 +23,7 @@ def slug(label, level):
     if level == "none":
         pass
     elif level == "simple":
-        label = unidecode.unidecode(label)
+        label = unidecode(label)
         label = re.sub("\s+", "_", label.strip())
         label = "".join(
             [
@@ -32,7 +33,7 @@ def slug(label, level):
             ]
         )
     elif level == "full":
-        label = unidecode.unidecode(label)
+        label = unidecode(label)
         label = re.sub("\s+", " ", label.strip())
         label = label.lower()
         label = "".join([char for char in label if char in string.ascii_letters])

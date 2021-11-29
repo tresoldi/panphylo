@@ -1,25 +1,23 @@
 <!DOCTYPE html>
 <html>
 
-    <head>
-        <title>JS TEST</title>
-        <meta charset="utf-8">
-        <script type="text/javascript"
-            src="https://cdn.jsdelivr.net/npm/brython/brython.min.js">
-        </script>
-        <script type="text/javascript"
-            src="https://cdn.jsdelivr.net/npm/brython/brython_stdlib.js">
-        </script>
-    </head>
-    
-    <body onload="brython()">
-    
+<head>
+    <title>JS TEST</title>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython/brython.min.js">
+    </script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython/brython_stdlib.js">
+    </script>
+</head>
+
+<body onload="brython()">
+
     <script type="text/python">
-    
+
 from browser import document
 
-import tabular
-import nexus
+import panphylo.tabular as tabular
+import panphylo.nexus as nexus
     
 def action(event):
     source_elm = document["source"]
@@ -38,12 +36,12 @@ convert_button.bind("click", action)
 for button in document.select("td"):
     button.bind("click", action)
     </script>
-    
+
     <textarea style="white-space: pre-wrap;" rows="5" cols="60" id="source" placeholder="(enter text)"></textarea>
     <button id="convert">Click here</button>
     <textarea style="white-space: pre-wrap;" rows="5" cols="60" id="target" placeholder="(results)"></textarea>
 
-    
-    </body>
-    
-    </html>
+
+</body>
+
+</html>
