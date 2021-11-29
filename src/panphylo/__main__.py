@@ -9,6 +9,7 @@ Module for command-line execution of `panphylo`.
 # Import Python standard libraries
 import argparse
 import logging
+import re
 
 # Import our library
 import panphylo

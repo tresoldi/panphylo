@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>JS TEST</title>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython/brython.min.js">
+    </script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython/brython_stdlib.js">
+    </script>
+</head>
+
+<body onload="brython()">
+
+    <script type="text/python">
+
+from browser import document
+
+import panphylo.tabular as tabular
+import panphylo.nexus as nexus
+    
+def action(event):
+    source_elm = document["source"]
+    target_elm = document["target"]
+    args = {"from": "csv", "to": "nexus", "input":"-",
+"i_taxa":None, "i_char":None, "i_state":None}
+
+    source = source_elm.value
+    phyd = tabular.read_data_tabular(source, ",", args)
+    target = nexus.build_nexus(phyd, args)
+    target_elm.innerHTML = target
+
+# Associate function action() to the event "click" on all buttons
+convert_button = document["convert"]
+convert_button.bind("click", action)
+for button in document.select("td"):
+    button.bind("click", action)
+    </script>
+
+    <textarea style="white-space: pre-wrap;" rows="5" cols="60" id="source" placeholder="(enter text)"></textarea>
+    <button id="convert">Click here</button>
+    <textarea style="white-space: pre-wrap;" rows="5" cols="60" id="target" placeholder="(results)"></textarea>
+
+
+</body>
+
+</html>
