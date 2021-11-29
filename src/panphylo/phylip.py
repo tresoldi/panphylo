@@ -12,11 +12,12 @@ from .internal import PhyloData
 # TODO: currently only supporting non interleaved
 
 
-def read_data_phylip(source: str) -> PhyloData:
+def read_data_phylip(source: str, args) -> PhyloData:
     """
     Parse a PHYLIP source into an internal representation.
 
     :param source: A string with the source data representation.
+    :param args:
     :return: An object with the internal representation of the data.
     """
 

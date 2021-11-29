@@ -156,11 +156,12 @@ def parse_nexus(source: str) -> dict:
     return nexus_data
 
 
-def read_data_nexus(source: str) -> PhyloData:
+def read_data_nexus(source: str, args) -> PhyloData:
     """
     Parse a NEXUS source into an internal representation.
 
     :param source: A string with the source data representation.
+    :param args:
     :return: An object with the internal representation of the data.
     """
 
