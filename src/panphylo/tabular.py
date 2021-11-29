@@ -2,7 +2,7 @@
 Module with functions and methods for tabular files.
 """
 
-# Import Python libraries
+# Import Python standard libraries
 import logging
 
 # Import from local modules
@@ -10,11 +10,15 @@ from .common import slug
 from .internal import PhyloData
 
 
-def detect_delimiter(source):
+def detect_delimiter(source: str) -> str:
     """
     Detect the tabular dialect (e.g. CSV and TSV of a file).
 
-    The detection is extremely simplified, based on frequency
+    The detection is extremely simplified, based on frequency in the
+    first line.
+
+    :param str: The tabular source for the data.
+    :return: The character detected as field separator.
     """
 
     lines = source.split("\n")
@@ -29,7 +33,8 @@ def detect_delimiter(source):
     return delimiter
 
 
-def _get_input_column_names(args, data):
+# TODO: return `column_names` as a dictionary
+def _get_input_column_names(args: dict, data):
     """
     Obtain column names, either provided or inferred.
     """
@@ -81,9 +86,14 @@ def _get_input_column_names(args, data):
 
 
 # TODO: allow to prohibit column inference (should even be default?)
-def read_data_tabular(source_str, delimiter, args):
+def read_data_tabular(source_str: str, delimiter: str, args: dict) -> PhyloData:
     """
-    Read data in tabular format.
+    Parse a TABULAR source into an internal representation.
+
+    :param source_str: A string with the source data representation.
+    :param delimiter: A string with the character to be used as field delimiter.
+    :param args:
+    :return: An object with the internal representation of the data.
     """
 
     # Read all data
@@ -102,12 +112,21 @@ def read_data_tabular(source_str, delimiter, args):
     # Build internal representation
     phyd = PhyloData()
     for entry in source:
-        phyd.add_value(entry[col_taxa], entry[col_char], entry[col_vals])
+        phyd.add_state(entry[col_taxa], entry[col_char], entry[col_vals])
 
     return phyd
 
 
-def build_tabular(phyd, delimiter, args):
+def build_tabular(phyd: PhyloData, delimiter: str, args: dict) -> str:
+    """
+    Build a TABULAR data representation.
+
+    :param phyd: The PhyloData object used as source of the data representation.
+    :param delimiter: The character to be used as field delimiter.
+    :param args:
+    :return: A textual representation of the NEXUS data representation.
+    """
+
     # If the column names for taxa, characters, and states was not provided,
     # try to infer it; at the end, we make sure to check that they are all unique
     col_taxa = args.get("o-taxa", "Taxon")
@@ -118,11 +137,10 @@ def build_tabular(phyd, delimiter, args):
     output = []
     for character in sorted(phyd.characters):
         for taxon in sorted(phyd.taxa):
-            for value in sorted(phyd[taxon, character]):  # TODO: deal with missing
-                output.append({col_taxa: taxon, col_char: character, col_state: value})
+            for state in sorted(phyd[taxon, character]):  # TODO: deal with missing
+                output.append({col_taxa: taxon, col_char: character, col_state: state})
 
     # Build buffer
-    # TODO: deal with escapes, etc. (csv library is missing in JS)
     fieldnames = [col_taxa, col_char, col_state]
     buffer = [delimiter.join([row[field] for field in fieldnames]) for row in output]
     buffer = [delimiter.join(fieldnames)] + buffer

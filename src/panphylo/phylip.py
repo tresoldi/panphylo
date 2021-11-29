@@ -2,6 +2,7 @@
 Module with functions and methods for PHYLIP files.
 """
 
+# Import Python standard libraries
 import re
 
 # Import from local modules
@@ -11,7 +12,13 @@ from .internal import PhyloData
 # TODO: currently only supporting non interleaved
 
 
-def read_data_phylip(source, args):
+def read_data_phylip(source: str) -> PhyloData:
+    """
+    Parse a PHYLIP source into an internal representation.
+
+    :param source: A string with the source data representation.
+    :return: An object with the internal representation of the data.
+    """
 
     # Read raw data
     data = {}
@@ -42,13 +49,19 @@ def read_data_phylip(source, args):
     for taxon, vector in data.items():
         for char_idx, char_state in enumerate(vector):
             if char_state != "-":
-                phyd.add_value(taxon, f"CHAR_{char_idx}", char_state)
+                phyd.add_state(taxon, f"CHAR_{char_idx}", char_state)
 
     return phyd
 
 
 # TODO: sharing matrix code in common with NEXUS, should move to PhyloData
-def build_phylip(phyd, args):
+def build_phylip(phyd: PhyloData) -> str:
+    """
+    Build a PHYLIP data representation.
+
+    :param phyd: The PhyloData object used as source of the data representation.
+    :return: A textual representation of the PHYLIP data representation.
+    """
 
     # Obtain the matrix and the maximum taxon length for formatting
     matrix = phyd.matrix

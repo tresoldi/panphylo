@@ -3,20 +3,28 @@ panphylo __init__.py
 """
 
 # Version of the panphylo package
-__version__ = "0.1"  # remember to sync in setup.py
+__version__ = "0.2"  # remember to sync in setup.py
 __author__ = "Tiago Tresoldi"
 __email__ = "tiago.tresoldi@lingfil.uu.se"
 
 # Import from local modules
 from .common import indexes2ranges
-from .common2 import smart_open, fetch_stream_data
+from .common_io import smart_open, fetch_stream_data
 from .nexus import read_data_nexus, build_nexus
 from .phylip import read_data_phylip, build_phylip
 from .tabular import detect_delimiter, read_data_tabular, build_tabular
 
 
 # Dispatch the different reading methods
-def convert(source, args):
+def convert(source: str, args: dict) -> str:
+    """
+    Main function for conversion.
+
+    :param source: The entire source of the file to be converted.
+    :param args: A dictionary with all configuration, as
+        build from command-line arguments.
+    :return: The converted data.
+    """
 
     # Dispatch to the right reading method
     if args["from"] == "tabular":
@@ -39,7 +47,6 @@ def convert(source, args):
     # Write converted data in the requested format; note that the command-line
     # handling should have taken care of replacing the "auto" value for
     # autodetecting the output
-    # TODO: adapt to have them returning strings, and writing with a separate function
     if args["to"] == "csv":
         converted = build_tabular(phyd, ",", args)
     elif args["to"] == "tsv":
@@ -53,4 +60,5 @@ def convert(source, args):
 
 
 # Build namespace
+# TODO; check which are needed, once tests are done
 __all__ = ["convert", "indexes2ranges", "smart_open", "fetch_stream_data"]

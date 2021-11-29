@@ -17,7 +17,7 @@ import panphylo
 # TODO: default output format to CSV, when stdout?
 # TODO: add the ascertainment option
 
-# TODO: remember to sync with README
+# NOTE: remember to sync all changes with README
 def parse_args():
     """
     Parse command-line arguments and return them as a dictionary.
@@ -25,6 +25,7 @@ def parse_args():
 
     parser = argparse.ArgumentParser(description="Convert and manipulate phylodata.")
     parser.add_argument(
+        "-i",
         "--input",
         type=str,
         default="-",
@@ -42,7 +43,7 @@ def parse_args():
         "-b",
         "--binarize",
         action="store_true",
-        help="Binarizes the output. The specification on whether and how to add ascertainment correction is specified by the `--ascertainment` option.",
+        help="Binarizes the output. Whether and how to add ascertainment correction is specified by the `--ascertainment` option.",
     )
 
     parser.add_argument(
@@ -128,6 +129,7 @@ def parse_args():
         help="Set the logging level.",
     )
 
+    # Get the namespace dictionary, also for web interface compatibility
     args = parser.parse_args().__dict__
 
     # Decide on the right output function based on the output format or, if not
@@ -175,6 +177,7 @@ def main():
     # Read source data and detect the format if necessary
     source = panphylo.fetch_stream_data(args["input"], args["encoding"])
     if args["from"] == "auto":
+        logging.debug("Autodetecting input format.")
         if source.strip().startswith("#NEXUS"):
             args["from"] = "nexus"
         elif re.search("$\s*\d+\s*\d+", source):

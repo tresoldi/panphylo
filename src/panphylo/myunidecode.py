@@ -9,10 +9,10 @@ found here.
 # TODO: perhaps use a global BRYTHON or JS flag, so not rely on the ugly try...except
 
 try:
-    import unidecode
+    import unidecode as unidecode_lib
 
     def unidecode(text):
-        return unidecode.unidecode(text)
+        return unidecode_lib.unidecode(text)
 
 
 except ImportError:

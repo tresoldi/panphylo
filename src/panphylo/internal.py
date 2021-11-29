@@ -49,10 +49,10 @@ class PhyloData:
         self.characters = set()
         self.charset = defaultdict(set)
         self.taxa = set()
-        self.values = defaultdict(set)
+        self.states = defaultdict(set)
 
     @property
-    def charstates(self):
+    def charstates(self) -> dict:
         """
         Return a sorted character states structure.
 
@@ -65,13 +65,13 @@ class PhyloData:
 
         # Collect with a counter first
         char_counter = defaultdict(Counter)
-        for (_, character), states in self.values.items():
+        for (_, character), states in self.states.items():
             char_counter[character].update({state for state in states if state != "?"})
 
         # Sort by frequency
         # TODO; add option to sort alphabetically
         # TODO: what if there are equal frequencies? Is it reproducible?
-        # NOTE: for some reason the list comprehension is failing in brython
+        # NOTE: for some reason the list comprehension is failing in Brython
         charstates = {}
         for character, states in char_counter.items():
             charstates[character] = [state for state, _ in states.most_common()]
@@ -109,7 +109,7 @@ class PhyloData:
         for character, state_set in self.charstates.items():
             for taxon in self.taxa:
                 # TODO: assuming there is only one value per site!!! (value[0]), [None]
-                state = self.values.get((taxon, character), [None])
+                state = self.states.get((taxon, character), [None])
                 state = list(state)[0]
                 if not state:
                     _matrix[taxon] += "-"
@@ -138,12 +138,12 @@ class PhyloData:
             : self.char_cardinality
         ]
 
+    # TODO: put the common logic of `slug_taxa` and `slug_characters` in a single
+    #           `.common` function.
     def slug_taxa(self, level="simple"):
         """
         Slug taxa labels, making sure uniqueness of IDs is preserved.
         """
-
-        # If level is "none", we only make sure the IDs are now unique
 
         # Build map with unique ids, update self.taxa, and update self.values
         slug_map = {
@@ -154,9 +154,9 @@ class PhyloData:
         self.taxa = set(slug_map.values())
 
         new_values = defaultdict(set)
-        for (taxon, character), values in self.values.items():
+        for (taxon, character), values in self.states.items():
             new_values[taxon, character].update(values)
-        self.values = new_values
+        self.states = new_values
 
     def slug_characters(self, level="simple"):
         """
@@ -174,52 +174,57 @@ class PhyloData:
         self.characters = set(slug_map.values())
 
         new_values = defaultdict(set)
-        for (taxon, character), values in self.values.items():
+        for (taxon, character), values in self.states.items():
             new_values[taxon, character].update(values)
-        self.values = new_values
+        self.states = new_values
 
+    # TODO: collect assumptions?
+    # TODO: make sure it is correctly deling with ascertainment
+    # TODO: move out of the object, as a function
     def binarize(self):
-        # TODO: collect assumptions
+        """
+        Build a binarized version of the current phylogenetic data.
 
-        # For each taxon, collect a map of which charvalues are observed; this does not modify the
+        :return: A binarized version of the current data.
+        """
+
+        # For each taxon, collect a map of which charstates are observed; this does not modify the
         # internal properties
-        charvalues = self.charstates  # cache
-        binary_values = {}
+        charstates = self.charstates  # cache
+        binary_states = {}
         for taxon in self.taxa:
-            for character, values in self.charstates.items():
-                obs = self.values.get((taxon, character), None)
+            for character, states in charstates.items():
+                obs = self.states.get((taxon, character), None)
 
                 if not obs:
-                    binary_values[taxon, character] = [
-                        BinaryObs.GAP for val in charvalues[character]
-                    ]
+                    binary_states[taxon, character] = [BinaryObs.GAP for _ in states]
                 else:
                     if tuple(obs) == "?":
-                        binary_values[taxon, character] = [
-                            BinaryObs.MISSING for val in charvalues[character]
+                        binary_states[taxon, character] = [
+                            BinaryObs.MISSING for _ in states
                         ]
                     else:
-                        binary_values[taxon, character] = [
-                            BinaryObs.TRUE if val in obs else BinaryObs.FALSE
-                            for val in charvalues[character]
+                        binary_states[taxon, character] = [
+                            BinaryObs.TRUE if state in obs else BinaryObs.FALSE
+                            for state in states
                         ]
 
         # Build a new phylogenetic data structure, adding the new characters one by one
         bin_phyd = PhyloData()
-        for (taxon, character), value in binary_values.items():
-            for obs, value_name in zip(value, charvalues[character]):
+        for (taxon, character), states in binary_states.items():
+            for obs, state_label in zip(states, charstates[character]):
                 # Add ascertainment
                 # TODO: allow something different from "0"?
                 # TODO: should check for the name of the character?
-                bin_phyd.add_value(
+                bin_phyd.add_state(
                     taxon, f"{character}_ASCERTAINMENT", "0", charset=character
                 )
 
                 # TODO: confirm if it is right to skip over gaps and all
                 if obs != BinaryObs.GAP:
-                    bin_phyd.add_value(
+                    bin_phyd.add_state(
                         taxon,
-                        f"{character}_{value_name}",
+                        f"{character}_{state_label}",
                         BINARY_OPS_MAP[obs],
                         charset=character,
                     )
@@ -227,15 +232,15 @@ class PhyloData:
         return bin_phyd
 
     # TODO: move to __setitem__? it is actually an "add"
-    def add_value(self, taxon, character, value, charset=None):
+    def add_state(self, taxon, character, state, charset=None):
         """
-        Add a value to a taxon, character pair.
+        Add a state to a taxon, character pair.
 
         Nota the (taxon, character) pairs can carry more than
-        one value, so that values are actually stored in sets
+        one state, so that states are actually stored in sets
         """
 
-        self.values[taxon, character].add(value)
+        self.states[taxon, character].add(state)
         self.taxa.add(taxon)
         self.characters.add(character)
 
@@ -243,7 +248,7 @@ class PhyloData:
             self.charset[charset].add(character)
 
     def __getitem__(self, key):
-        return self.values[key]
+        return self.states[key]
 
     # TODO: add total number of values
     def __repr__(self):

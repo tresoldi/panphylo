@@ -8,6 +8,7 @@ import string
 import itertools
 import logging
 
+# Import local modules
 from .myunidecode import unidecode
 
 # TODO: for slug, consider that The following symbols/caracters are not allowed in taxa names to ensure Newick
@@ -15,9 +16,14 @@ from .myunidecode import unidecode
 
 # TODO: allow more configurations
 # TODO: document levels
-def slug(label, level):
+def slug(label: str, level) -> str:
     """
     Return a slugged version of a label.
+
+    :param label: The text to be slugged. Note that, as this operates on
+        a single string, there is no guarantee of non-collision.
+    :param level:
+    :return: The slugged version of the label.
     """
 
     if level == "none":
@@ -37,6 +43,8 @@ def slug(label, level):
         label = re.sub("\s+", " ", label.strip())
         label = label.lower()
         label = "".join([char for char in label if char in string.ascii_letters])
+    else:
+        raise ValueError("Unknown level of slugging `%s`.", level)
 
     return label
 
@@ -68,7 +76,6 @@ def unique_ids(labels, level):
 
     # Build the new list, adding the suffix if there is more than one
     # occurrence overall, and return
-    # TODO: the overall count could be cached with a collections.Counter
     unique_slug_labels = [
         f"{label}{suffix[loc_count]}" if slugged.count(label) > 1 else label
         for label, loc_count in zip(slugged, loc_counts)
@@ -77,6 +84,7 @@ def unique_ids(labels, level):
     return unique_slug_labels
 
 
+# TODO: partial function for string/tuple output
 def indexes2ranges(indexes, string=True):
     """
     Transforms a list of indexes into a range representation.
@@ -87,6 +95,7 @@ def indexes2ranges(indexes, string=True):
     the ranges involved, such as `"1-3, 5, 8-9"`.
     """
 
+    # We need to operate on sorted indexes
     indexes = sorted(indexes)
 
     # Collect ranges as a list of tuples

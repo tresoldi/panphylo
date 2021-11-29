@@ -4,10 +4,13 @@ Module with common and reusable functions.
 This is including methods that cannon be easily converted to JavaScript.
 """
 
-import sys
+# Import Python standard libraries
 import contextlib
-import chardet
 import logging
+import sys
+
+# Import 3rd party libraries
+import chardet
 
 
 @contextlib.contextmanager
@@ -50,9 +53,10 @@ def fetch_stream_data(input, encoding="auto") -> str:
     files, decoding the stream of bytes according to the user-specified
     character encoding (including automatic detection if necessary).
 
-    :param args: The arguments carrying all options, either converted
-        from command-line arguments, built from an interface, or
-        as a dictionary.
+    :param input: The input source file; `-`, as handled by
+        `smart_open()`, indicates stdin/stdout.
+    :param encoding: The encoding for the stream of data, with `auto`
+        for autodetection via `chardet`.
     :return: A string with the full source for the data, encoded
         according to the specified charset encoding.
     """

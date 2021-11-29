@@ -9,18 +9,18 @@ string manipulation strategy.
 # TODO: sort using assumptions (charset) if provided
 # TODO: support comments (will need changes to the parser)
 
-# Import Python libraries
-import re
-from enum import Enum, auto
+# Import Python standard libraries
 from collections import defaultdict
+from enum import Enum, auto
 from itertools import chain
+import re
 
 # Import from local modules
 from .internal import PhyloData
 from .common import indexes2ranges
 
 
-def parse_nexus(source):
+def parse_nexus(source: str) -> dict:
     """
     Parse the information in a NEXUS string.
 
@@ -28,16 +28,20 @@ def parse_nexus(source):
     state and buffers information until it can be used. It is not as advanced as
     some NEXUS parsing libraries, but this solution requires no additional package
     and can be gradually extended to our needs.
+
+    :param source: The full NEXUS source code.
+    :return: A dictionary with all the block information in the source.
     """
 
     # Auxiliary state enumeration for the automaton
-    class State(Enum):
+    class ParserState(Enum):
         NONE = auto()
         OUT_OF_BLOCK = auto()
         IN_BLOCK = auto()
 
     # Data that will be filled during parsing; in the future, this could be expanded
     # to an actual class, with sanity checks etc.
+    # TODO: make an object?
     nexus_data = {
         "ntax": None,
         "nchar": None,
@@ -50,35 +54,36 @@ def parse_nexus(source):
         "charset": [],
     }
 
+    # TODO: keep track of line numbers by counting newline chars, using them in debug
     buffer = ""
     block_name = ""
-    state = State.NONE
+    parser_state = ParserState.NONE
     for idx, char in enumerate(source):
         # Extend buffer first and then process according to automaton state
         buffer += char
 
-        if state == State.NONE:
+        if parser_state == ParserState.NONE:
             # Make sure we have a file that identifies as NEXUS
             if buffer.strip() == "#NEXUS":
                 buffer = ""
-                state = State.OUT_OF_BLOCK
-        elif state == State.OUT_OF_BLOCK:
+                parser_state = ParserState.OUT_OF_BLOCK
+        elif parser_state == ParserState.OUT_OF_BLOCK:
             # Make sure we have a block
             if char == ";":
                 match = re.match(r"BEGIN\s+(.+)\s*;", buffer.upper().strip())
                 if match:
                     block_name = match.group(1)
                     buffer = ""
-                    state = State.IN_BLOCK
+                    parser_state = ParserState.IN_BLOCK
                 else:
                     raise ValueError(f"Unable to parse NEXUS block at char {idx}.")
-        elif state == State.IN_BLOCK:
+        elif parser_state == ParserState.IN_BLOCK:
             # Read all contents until we hit a semicolon, which will be processed individually
             if char == ";":
                 # Check if we are at then of the block, otherwise process
                 if re.sub(r"\s", "", buffer.upper().strip()) == "END;":
                     buffer = ""
-                    state = State.OUT_OF_BLOCK
+                    parser_state = ParserState.OUT_OF_BLOCK
                 else:
                     # Parse the command inside the block, which can be a single, simple
                     # line or a large subblock (like charstatelabels)
@@ -151,7 +156,14 @@ def parse_nexus(source):
     return nexus_data
 
 
-def read_data_nexus(source, args):
+def read_data_nexus(source: str) -> PhyloData:
+    """
+    Parse a NEXUS source into an internal representation.
+
+    :param source: A string with the source data representation.
+    :return: An object with the internal representation of the data.
+    """
+
     # Parse the NEXUS source
     nexus_data = parse_nexus(source)
 
@@ -160,34 +172,37 @@ def read_data_nexus(source, args):
     # TODO: transform all binary in multistate internal representation
     # TODO: this is currently handling only binary and needs charsets
 
-    # Build inverse map from position in the alignment to the charset and
-    # collect values
+    # Build inverse map from position in the alignment to the charset and collect states
     alm2charset = {}
     for charset in nexus_data["charset"]:
         for idx in range(charset["start"], charset["end"] + 1):
             alm2charset[idx] = charset["charset"]
 
-    values = defaultdict(set)
+    states = defaultdict(set)
     for taxon, vector in nexus_data["matrix"].items():
-        for idx, value in enumerate(vector):
-            if value == nexus_data["missing"]:
-                values[taxon, alm2charset[idx + 1]].add("?")
-            elif value != "0":
-                values[taxon, alm2charset[idx + 1]].add(
+        for idx, state in enumerate(vector):
+            if state == nexus_data["missing"]:
+                states[taxon, alm2charset[idx + 1]].add("?")
+            elif state != "0":
+                states[taxon, alm2charset[idx + 1]].add(
                     nexus_data["charstatelabels"][idx + 1]
                 )
 
+    # Build the PhyloData object and return
     phyd = PhyloData()
-    for (taxon, character), value_set in values.items():
-        for v in value_set:
-            phyd.add_value(taxon, character, v)
+    for (taxon, character), state_set in states.items():
+        for state in state_set:
+            phyd.add_state(taxon, character, state)
 
     return phyd
 
 
-def build_taxa_block(phyd):
+def build_taxa_block(phyd: PhyloData) -> str:
     """
     Build a NEXUS TAXA block.
+
+    :param phyd: The PhyloData object used as source of the taxa block.
+    :return: A textual representation of the NEXUS taxa block.
     """
 
     buffer = """
@@ -205,7 +220,14 @@ END;""" % (
 
 
 # TODO: don't output charstatelabels values if all are binary
-def build_character_block(phyd):
+def build_character_block(phyd: PhyloData) -> str:
+    """
+    Build a NEXUS CHARACTER block.
+
+    :param phyd: The PhyloData object used as source of the character block.
+    :return: A textual representation of the NEXUS character block.
+    """
+
     # Express the actual labels only we have any state which is not a binary "0" or "1"
     # TODO: what about mixed data?
     states = sorted(set(chain.from_iterable(phyd.charstates.values())))
@@ -243,9 +265,12 @@ END;""" % (
     return buffer.strip()
 
 
-def build_matrix_command(phyd):
+def build_matrix_command(phyd: PhyloData) -> str:
     """
     Build a NEXUS MATRIX command.
+
+    :param phyd: The PhyloData object used as source of the matrix command.
+    :return: A textual representation of the NEXUS matrix command.
     """
 
     # Obtain the matrix and the maximum taxon length for formatting
@@ -268,12 +293,19 @@ MATRIX
     return buffer.strip()
 
 
-def build_assumption_block(phyd):
+def build_assumption_block(phyd: PhyloData) -> str:
+    """
+    Build a NEXUS ASSUMPTION block.
+
+    :param phyd: The PhyloData object used as source of the assumption block.
+    :return: A textual representation of the NEXUS assumption block.
+    """
+
     if not phyd.charset:
         return ""
 
     # Get the individual indexes first, and then build the string representation
-    character_list = sorted(phyd.charvalues.keys())
+    character_list = sorted(phyd.charstates.keys())
     indexes = {
         charset: [character_list.index(char) + 1 for char in characters]
         for charset, characters in phyd.charset.items()
@@ -300,7 +332,14 @@ END;
     return buffer
 
 
-def build_nexus(phyd, args):
+def build_nexus(phyd: PhyloData) -> str:
+    """
+    Build a NEXUS data representation.
+
+    :param phyd: The PhyloData object used as source of the data representation.
+    :return: A textual representation of the NEXUS data representation.
+    """
+
     # TODO: this only implements multistate
     # TODO: not rendering polymorphy
 
