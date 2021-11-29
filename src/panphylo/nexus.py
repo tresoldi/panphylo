@@ -333,11 +333,12 @@ END;
     return buffer
 
 
-def build_nexus(phyd: PhyloData) -> str:
+def build_nexus(phyd: PhyloData, args) -> str:
     """
     Build a NEXUS data representation.
 
     :param phyd: The PhyloData object used as source of the data representation.
+    :param args:
     :return: A textual representation of the NEXUS data representation.
     """
 
