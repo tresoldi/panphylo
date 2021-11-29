@@ -3,9 +3,11 @@ Module with functions and methods for PHYLIP files.
 """
 
 import re
+from collections import defaultdict
 
 # Import from local modules
-from .internal import PhyloData
+from common import smart_open
+from internal import PhyloData
 
 # TODO: implement https://www.bioinformatics.org/sms/iupac.html
 # TODO: currently only supporting non interleaved
@@ -57,6 +59,7 @@ def build_phylip(phyd, args):
     # Build buffer
     buffer = """
 %i %i
+
 %s
 """ % (
         len(phyd.taxa),

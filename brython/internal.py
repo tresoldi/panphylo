@@ -8,7 +8,7 @@ import enum
 import string
 
 # Import from local modules
-from .common import unique_ids
+from common import unique_ids
 
 # TODO; should have a general method for iterating over
 #       characters in a sorter order
@@ -153,10 +153,10 @@ class PhyloData:
 
         self.taxa = set(slug_map.values())
 
-        new_values = defaultdict(set)
-        for (taxon, character), values in self.values.items():
-            new_values[taxon, character].update(values)
-        self.values = new_values
+        self.values = {
+            (slug_map[taxon], character): values
+            for (taxon, character), values in self.values.items()
+        }
 
     def slug_characters(self, level="simple"):
         """
@@ -173,10 +173,10 @@ class PhyloData:
 
         self.characters = set(slug_map.values())
 
-        new_values = defaultdict(set)
-        for (taxon, character), values in self.values.items():
-            new_values[taxon, character].update(values)
-        self.values = new_values
+        self.values = {
+            (taxon, slug_map[character]): values
+            for (taxon, character), values in self.values.items()
+        }
 
     def binarize(self):
         # TODO: collect assumptions

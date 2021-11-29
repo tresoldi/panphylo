@@ -8,7 +8,8 @@ __author__ = "Tiago Tresoldi"
 __email__ = "tiago.tresoldi@lingfil.uu.se"
 
 # Import from local modules
-from .common import indexes2ranges, smart_open, fetch_stream_data
+from .common import indexes2ranges
+from .common2 import smart_open, fetch_stream_data
 from .nexus import read_data_nexus, build_nexus
 from .phylip import read_data_phylip, build_phylip
 from .tabular import detect_delimiter, read_data_tabular, build_tabular

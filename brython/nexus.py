@@ -16,8 +16,8 @@ from collections import defaultdict
 from itertools import chain
 
 # Import from local modules
-from .internal import PhyloData
-from .common import indexes2ranges
+from internal import PhyloData
+from common import smart_open, indexes2ranges
 
 
 def parse_nexus(source):
@@ -208,17 +208,17 @@ END;""" % (
 def build_character_block(phyd):
     # Express the actual labels only we have any state which is not a binary "0" or "1"
     # TODO: what about mixed data?
-    states = sorted(set(chain.from_iterable(phyd.charstates.values())))
+    states = sorted(set(chain.from_iterable(phyd.charvalues.values())))
     if tuple(states) == ("0", "1"):
         charstatelabels = [
             "        %i %s," % (charstate_idx + 1, character)
-            for charstate_idx, (character, _) in enumerate(phyd.charstates.items())
+            for charstate_idx, (character, _) in enumerate(phyd.charvalues.items())
         ]
     else:
         charstatelabels = [
             "        %i %s /%s," % (charstate_idx + 1, character, " ".join(value_set))
             for charstate_idx, (character, value_set) in enumerate(
-                phyd.charstates.items()
+                phyd.charvalues.items()
             )
         ]
 
@@ -234,7 +234,7 @@ BEGIN CHARACTERS;
 %s
 
 END;""" % (
-        len(phyd.charstates),
+        len(phyd.charvalues),
         " ".join(phyd.symbols),
         "\n".join(charstatelabels),
         build_matrix_command(phyd),
