@@ -106,11 +106,18 @@ class PhyloData:
         # Build a sorted list with the matrix
         _matrix = defaultdict(str)
         symbols = self.symbols  # cache
-        for character, state_set in self.charstates.items():
+        for character in sorted(self.charstates):
+            # TODO: sort state_set by frequency?
+            state_set = sorted(self.charstates[character])
             for taxon in self.taxa:
-                # TODO: assuming there is only one value per site!!! (value[0]), [None]
                 state = self.states.get((taxon, character), [None])
-                state = list(state)[0]
+
+                # TODO: assuming there is only one value per site!!! (value[0]), [None]
+                if len(state) > 1:
+                    state = sorted(state)[0]
+                else:
+                    state = list(state)[0]
+
                 if not state:
                     _matrix[taxon] += "-"
                 elif state == "?":

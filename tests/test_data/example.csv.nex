@@ -29,35 +29,35 @@ BEGIN CHARACTERS;
     DIMENSIONS NCHAR=7;
     FORMAT DATATYPE=STANDARD MISSING=? GAP=- SYMBOLS="0 1 2 3 4";
     CHARSTATELABELS
-        1 bird /51 48 52,
-        2 bone /73 76 75 77 74,
-        3 all /5 3 7 6 2,
-        4 ashes /8 12 13 10,
-        5 bark /19 15,
+        1 bird /48 51 52,
+        2 bone /73 74 75 76 77,
+        3 all /2 3 5 6 7,
+        4 ashes /10 12 13 8,
+        5 bark /15 19,
         6 black /60 61,
         7 bite (V) /56,
     ;
 
 MATRIX
-Armenian      10-----
-Bulgarian     021----
-Czech         02-0---
-Danish        010----
-Dutch         -10-00-
-English       -10--1-
-French        20-1---
-German        030--0-
-Greek         ??2----
-Hindi         -4-2---
-Icelandic     01-3---
-Italian       -0-1---
-Norwegian     01-?---
-Polish        02-0---
-Portuguese    -0-1--0
-Romanian      103----
-Russian       02-0---
-Spanish       104----
-Swedish       -10-10-
+Armenian      ---0--0
+Bulgarian     1--1--2
+Czech         -3-1--2
+Danish        2--1--3
+Dutch         2-1--03
+English       2----13
+French        -1-2--0
+German        2--1-04
+Greek         4--?--?
+Hindi         -2----1
+Icelandic     -0-1--3
+Italian       -1----0
+Norwegian     -?-1--3
+Polish        -3-1--2
+Portuguese    -1--0-0
+Romanian      3--0--0
+Russian       -3-1--2
+Spanish       0--0--0
+Swedish       2-0--03
 ;
 
 END;

@@ -14,6 +14,7 @@ RESOURCE_PATH = Path(__file__).parent / "test_data"
 # TODO: add binarization tests
 # TODO: add a better (and shorted) nexus source example
 # TODO: build round-trip examples
+# TODO: run each test multiple times, to make sure there are not ordering issues
 @pytest.mark.parametrize(
     "input,reference,arg_from,arg_to",
     [
@@ -24,8 +25,8 @@ RESOURCE_PATH = Path(__file__).parent / "test_data"
         ["example.csv", "example.csv.nex", "csv", "nexus"],
         ["example.csv", "example.csv.csv", "csv", "csv"],
         ["example.nex", "example.nex.csv", "nexus", "csv"],
-        #        ["example.nex", "example.nex.phy", "nexus", "phylip"],
-        #        ["example.nex", "example.nex.nex", "nexus", "nexus"],
+        ["example.nex", "example.nex.phy", "nexus", "phylip"],
+        ["example.nex", "example.nex.nex", "nexus", "nexus"],
     ],
 )
 def test_convert(input: str, reference: str, arg_from: str, arg_to: str):

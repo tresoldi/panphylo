@@ -238,9 +238,11 @@ def build_character_block(phyd: PhyloData) -> str:
             for charstate_idx, (character, _) in enumerate(phyd.charstates.items())
         ]
     else:
+        # TODO: make sure this sorted order matches the one from phyd.matrix
         charstatelabels = [
-            "        %i %s /%s," % (charstate_idx + 1, character, " ".join(value_set))
-            for charstate_idx, (character, value_set) in enumerate(
+            "        %i %s /%s,"
+            % (charstate_idx + 1, character, " ".join(sorted(state_set)))
+            for charstate_idx, (character, state_set) in enumerate(
                 phyd.charstates.items()
             )
         ]
