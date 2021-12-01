@@ -1,0 +1,63 @@
+#NEXUS
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=19;
+    TAXLABELS
+        Armenian
+        Bulgarian
+        Czech
+        Danish
+        Dutch
+        English
+        French
+        German
+        Greek
+        Hindi
+        Icelandic
+        Italian
+        Norwegian
+        Polish
+        Portuguese
+        Romanian
+        Russian
+        Spanish
+        Swedish
+    ;
+END;
+
+BEGIN CHARACTERS;
+    DIMENSIONS NCHAR=7;
+    FORMAT DATATYPE=STANDARD MISSING=? GAP=- SYMBOLS="0 1 2 3 4";
+    CHARSTATELABELS
+        1 bird /51 48 52,
+        2 bone /73 76 75 77 74,
+        3 all /5 3 7 6 2,
+        4 ashes /8 12 13 10,
+        5 bark /19 15,
+        6 black /60 61,
+        7 bite (V) /56,
+    ;
+
+MATRIX
+Armenian      10-----
+Bulgarian     021----
+Czech         02-0---
+Danish        010----
+Dutch         -10-00-
+English       -10--1-
+French        20-1---
+German        030--0-
+Greek         ??2----
+Hindi         -4-2---
+Icelandic     01-3---
+Italian       -0-1---
+Norwegian     01-?---
+Polish        02-0---
+Portuguese    -0-1--0
+Romanian      103----
+Russian       02-0---
+Spanish       104----
+Swedish       -10-10-
+;
+
+END;

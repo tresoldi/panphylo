@@ -1,0 +1,260 @@
+#NEXUS
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=20;
+    TAXLABELS
+        EastFutuna
+        EastUvea
+        FijianBau
+        Hawaiian
+        Kapingamarangi
+        Luangiua
+        Mangareva
+        Maori
+        Marquesan
+        Nukuoro
+        RapanuiEasterIsland
+        Rarotongan
+        Rennellese
+        Rotuman
+        Samoan
+        SouthIslandMaori
+        Tahitian
+        Tikopia
+        Tongan
+        Tuamotu
+    ;
+END;
+
+BEGIN CHARACTERS;
+    DIMENSIONS NCHAR=202;
+    FORMAT DATATYPE=STANDARD MISSING=? GAP=- SYMBOLS="0 1 2 3 4 5 6 7 8 9 A B C D";
+    CHARSTATELABELS
+        1 above /above_9 above_25 above_u_496 above_u_320,
+        2 and /and_2 and_9 and_8 and_1 and_46,
+        3 ash /ash_67 ash_60 ash_1,
+        4 at /at_1 at_5,
+        5 back /back_11 back_12 back_100,
+        6 badevil /badevil_9 badevil_1 badevil_u_493 badevil_32 badevil_42 badevil_u_413 badevil_10,
+        7 belly /belly_9 belly_8 belly_2 belly_7 belly_19 belly_34 belly_10 belly_u_223 belly_u_613 belly_1,
+        8 below /below_8 below_u_321,
+        9 big /big_11 big_12 big_31 big_13 big_10 big_u_491 big_u_510 big_41 big_u_306,
+        10 bird /bird_1,
+        11 black /black_7 black_5 black_6 black_40 black_u_236 black_u_638,
+        12 blood /blood_4 blood_1,
+        13 bone /bone_52 bone_5,
+        14 branch /branch_1 branch_4 branch_33 branch_35 branch_2 branch_13 branch_u_575,
+        15 breast /breast_1 breast_u_526 breast_3 breast_6 breast_7,
+        16 child /child_6 child_63 child_64 child_27 child_u_158 child_u_546 child_u_13 child_u_265 child_u_620,
+        17 cloud /cloud_12 cloud_14 cloud_67 cloud_u_489 cloud_47 cloud_3 cloud_u_393 cloud_13,
+        18 cold /cold_1 cold_52 cold_8 cold_9 cold_10 cold_42 cold_74,
+        19 correcttrue /correcttrue_8 correcttrue_9 correcttrue_10 correcttrue_40 correcttrue_u_174 correcttrue_41 correcttrue_u_513 correcttrue_u_312 correcttrue_39,
+        20 day /day_1 day_54 day_7 day_6 day_27 day_23,
+        21 dirty /dirty_7 dirty_10 dirty_8 dirty_9 dirty_17 dirty_u_476 dirty_u_518 dirty_u_612 dirty_u_418,
+        22 dog /dog_7 dog_u_486 dog_u_464 dog_u_507 dog_u_285,
+        23 dry /dry_13 dry_11 dry_1 dry_12 dry_38 dry_u_432,
+        24 dullblunt /dullblunt_10 dullblunt_39 dullblunt_18 dullblunt_49 dullblunt_11 dullblunt_u_94 dullblunt_u_483 dullblunt_u_559 dullblunt_50 dullblunt_u_277 dullblunt_u_427,
+        25 dust /dust_1 dust_74 dust_67 dust_24 dust_u_477 dust_u_112 dust_u_503 dust_68,
+        26 ear /ear_1 ear_u_157 ear_19,
+        27 earth_soil /earth_soil_10 earth_soil_11 earth_soil_35 earth_soil_u_363,
+        28 egg /egg_5 egg_6 egg_36 egg_7 egg_30 egg_u_286 egg_94,
+        29 eight /eight_3,
+        30 eye /eye_1 eye_4 eye_18 eye_5,
+        31 far /far_13 far_1 far_4 far_u_498 far_u_242 far_u_47 far_u_324 far_u_644 far_14,
+        32 fat_grease /fat_grease_12 fat_grease_14 fat_grease_1 fat_grease_65 fat_grease_44 fat_grease_u_290 fat_grease_13,
+        33 father /father_1 father_9 father_31 father_u_268,
+        34 feather /feather_1 feather_5 feather_u_98 feather_u_287 feather_50,
+        35 fire /fire_1 fire_17,
+        36 fish /fish_1 fish_32 fish_u_467 fish_u_447,
+        37 five /five_1 five_9,
+        38 flower /flower_1 flower_9 flower_8 flower_14 flower_18 flower_37 flower_38 flower_u_296 flower_7 flower_u_431,
+        39 fog /fog_1 fog_47 fog_10 fog_22 fog_54 fog_36 fog_88,
+        40 four /four_66 four_1,
+        41 fruit /fruit_1 fruit_u_31 fruit_u_391,
+        42 good /good_14 good_16 good_15 good_17 good_76 good_21 good_125 good_62 good_58,
+        43 grass /grass_13 grass_58 grass_u_101 grass_30,
+        44 green /green_1 green_10 green_11 green_61 green_12 green_13 green_52 green_u_173 green_u_470 green_u_239 green_u_144 green_u_305 green_u_640 green_9,
+        45 hair /hair_31 hair_40 hair_72 hair_3 hair_29 hair_u_225 hair_22,
+        46 hand /hand_1 hand_73 hand_u_609 hand_66,
+        47 he_she /he_she_1 he_she_5,
+        48 head /head_10 head_1 head_62 head_u_530 head_u_252,
+        49 heavy /heavy_46 heavy_66 heavy_37 heavy_38 heavy_u_36 heavy_u_448,
+        50 house /house_14 house_u_269,
+        51 how /how_11 how_35 how_52 how_u_329 how_51,
+        52 husband /husband_14 husband_13 husband_u_85 husband_u_14 husband_36 husband_u_621 husband_u_423,
+        53 i /i_1 i_21 i_u_377 i_18,
+        54 if /if_1 if_5 if_18 if_6 if_28 if_u_180 if_46 if_u_399,
+        55 ininside /ininside_5 ininside_1 ininside_u_319 ininside_u_78,
+        56 intestines /intestines_12 intestines_11 intestines_1 intestines_31 intestines_u_524 intestines_35 intestines_u_614,
+        57 lake /lake_6 lake_1 lake_7 lake_u_636,
+        58 leaf /leaf_1,
+        59 left /left_11 left_1 left_59 left_42 left_u_454 left_21 left_74 left_31,
+        60 leg_foot /leg_foot_100 leg_foot_1 leg_foot_40 leg_foot_25 leg_foot_30,
+        61 lightning /lightning_2 lightning_9 lightning_35 lightning_u_300,
+        62 liver /liver_1 liver_6,
+        63 long /long_12 long_16 long_63,
+        64 louse /louse_1 louse_3 louse_6,
+        65 man_male /man_male_1 man_male_11 man_male_14 man_male_12 man_male_10 man_male_u_263,
+        66 meat_flesh /meat_flesh_10 meat_flesh_14 meat_flesh_u_632 meat_flesh_u_76,
+        67 moon /moon_37 moon_5 moon_7 moon_1 moon_6,
+        68 mosquito /mosquito_1 mosquito_74 mosquito_54 mosquito_u_572,
+        69 mother /mother_1 mother_4 mother_6 mother_15 mother_u_267 mother_83 mother_7,
+        70 mouth /mouth_2 mouth_1 mouth_8 mouth_u_457 mouth_u_115,
+        71 name /name_6 name_1 name_18,
+        72 narrow /narrow_84 narrow_10 narrow_12 narrow_27 narrow_1 narrow_u_492 narrow_u_511 narrow_26 narrow_u_341 narrow_u_308 narrow_u_369 narrow_u_433 narrow_u_77,
+        73 near /near_9 near_31 near_45 near_38 near_u_177 near_u_497 near_u_46 near_43 near_u_323 near_30,
+        74 neck /neck_18 neck_20 neck_46 neck_u_10,
+        75 needle /needle_9 needle_1 needle_66 needle_21 needle_30,
+        76 new /new_1 new_7,
+        77 night /night_1 night_10,
+        78 nine /nine_5 nine_66,
+        79 nonot /nonot_10 nonot_83 nonot_84 nonot_13 nonot_11 nonot_12 nonot_42 nonot_u_332 nonot_u_400,
+        80 nose /nose_1 nose_10 nose_2,
+        81 old /old_1 old_10 old_48 old_9 old_53 old_u_241 old_44 old_11,
+        82 one /one_14 one_48 one_41 one_18 one_15,
+        83 painfulsick /painfulsick_10 painfulsick_1 painfulsick_12 painfulsick_u_104 painfulsick_13 painfulsick_u_310 painfulsick_u_642,
+        84 person_humanbeing /person_humanbeing_1 person_humanbeing_66 person_humanbeing_11 person_humanbeing_7 person_humanbeing_4 person_humanbeing_u_619,
+        85 rain /rain_1 rain_12,
+        86 rat /rat_12 rat_13 rat_14 rat_1 rat_u_288,
+        87 red /red_13 red_1 red_16 red_36 red_u_103 red_43 red_14,
+        88 right /right_5 right_13 right_40 right_7 right_u_455 right_u_516 right_33 right_32 right_u_610,
+        89 road_path /road_path_1 road_path_22 road_path_u_502 road_path_52 road_path_3,
+        90 root /root_2 root_u_633,
+        91 rope /rope_9 rope_10 rope_1 rope_u_270,
+        92 rotten /rotten_13 rotten_14 rotten_15 rotten_9 rotten_16,
+        93 salt /salt_20 salt_7 salt_47 salt_19 salt_u_634,
+        94 sand /sand_1 sand_41 sand_30 sand_74 sand_u_297,
+        95 sea /sea_1 sea_10 sea_12,
+        96 seven /seven_1,
+        97 sharp /sharp_14 sharp_66 sharp_15 sharp_2 sharp_17 sharp_67 sharp_16 sharp_36,
+        98 short /short_9 short_8 short_3 short_10 short_42,
+        99 shoulder /shoulder_8 shoulder_10 shoulder_22 shoulder_u_82 shoulder_78 shoulder_u_349 shoulder_9,
+        100 shyashamed /shyashamed_1 shyashamed_3 shyashamed_4 shyashamed_31 shyashamed_u_147 shyashamed_u_512 shyashamed_u_643,
+        101 six /six_1 six_25,
+        102 skin /skin_1 skin_27,
+        103 sky /sky_1,
+        104 small /small_121 small_66 small_10 small_12 small_32 small_u_592 small_37 small_13 small_35 small_u_396 small_81 small_83,
+        105 smoke /smoke_2 smoke_13 smoke_57,
+        106 snake /snake_12 snake_u_137 snake_u_292 snake_u_409,
+        107 spider /spider_1 spider_57 spider_5 spider_39 spider_u_171 spider_u_295 spider_u_430,
+        108 star /star_1 star_28,
+        109 stick_wood /stick_wood_1 stick_wood_u_21,
+        110 stone /stone_1 stone_4 stone_19 stone_39 stone_38 stone_3,
+        111 tail /tail_13 tail_10 tail_38 tail_u_487 tail_u_465 tail_u_233 tail_u_291,
+        112 ten /ten_5 ten_32,
+        113 that /that_1 that_u_107 that_u_219 that_u_451 that_u_79,
+        114 thatch_roof /thatch_roof_1 thatch_roof_11 thatch_roof_u_86 thatch_roof_u_551 thatch_roof_u_228 thatch_roof_50 thatch_roof_10 thatch_roof_23,
+        115 they /they_1 they_72 they_70 they_u_500 they_u_49 they_19 they_u_327,
+        116 thick /thick_3 thick_10 thick_36 thick_39,
+        117 thin /thin_5 thin_1 thin_18 thin_13 thin_u_594 thin_6,
+        118 this /this_1 this_7 this_45 this_17 this_u_345 this_u_322,
+        119 thou /thou_1 thou_5 thou_u_325,
+        120 three /three_1,
+        121 thunder /thunder_14 thunder_37 thunder_2 thunder_63 thunder_u_210,
+        122 tobite /tobite_1 tobite_55 tobite_7 tobite_8 tobite_9 tobite_14,
+        123 toblow /toblow_6 toblow_8 toblow_11 toblow_9 toblow_5 toblow_7 toblow_12 toblow_57 toblow_36 toblow_4,
+        124 tobreathe /tobreathe_1 tobreathe_11 tobreathe_10 tobreathe_9 tobreathe_40 tobreathe_u_531 tobreathe_u_226 tobreathe_u_253,
+        125 toburn /toburn_1 toburn_6 toburn_7 toburn_8 toburn_62 toburn_u_102 toburn_3 toburn_63,
+        126 tobuy /tobuy_7 tobuy_9 tobuy_8 tobuy_1 tobuy_u_167 tobuy_u_28 tobuy_10,
+        127 tochew /tochew_1 tochew_8 tochew_7 tochew_9 tochew_u_458 tochew_u_227,
+        128 tochoose /tochoose_1 tochoose_10 tochoose_41 tochoose_6 tochoose_u_444,
+        129 toclimb /toclimb_32 toclimb_6 toclimb_2 toclimb_u_317 toclimb_44,
+        130 tocome /tocome_1 tocome_42 tocome_44 tocome_85 tocome_u_475 tocome_u_2 tocome_u_186 tocome_u_247,
+        131 tocook /tocook_10 tocook_9 tocook_2 tocook_u_156,
+        132 tocount /tocount_8 tocount_62 tocount_u_110 tocount_u_181 tocount_63 tocount_43 tocount_u_333 tocount_9,
+        133 tocry /tocry_1 tocry_38 tocry_u_534 tocry_u_255,
+        134 tocuthack /tocuthack_9 tocuthack_16 tocuthack_1 tocuthack_13 tocuthack_54 tocuthack_14 tocuthack_17 tocuthack_10 tocuthack_15 tocuthack_u_557 tocuthack_12 tocuthack_u_426,
+        135 todiebedead /todiebedead_1 todiebedead_3 todiebedead_u_275 todiebedead_u_625,
+        136 todig /todig_1 todig_6 todig_u_281 todig_u_388,
+        137 todream /todream_7 todream_36 todream_27 todream_16 todream_u_261 todream_46,
+        138 todrink /todrink_1 todrink_34 todrink_u_256,
+        139 toeat /toeat_1 toeat_44,
+        140 tofall /tofall_44 tofall_124 tofall_12 tofall_14 tofall_10 tofall_11 tofall_58 tofall_u_170 tofall_u_284 tofall_59,
+        141 tofear /tofear_1 tofear_29 tofear_9 tofear_u_251 tofear_8 tofear_u_420,
+        142 toflow /toflow_10 toflow_24 toflow_32 toflow_u_298 toflow_u_411,
+        143 tofly /tofly_11 tofly_45 tofly_68 tofly_u_135 tofly_12 tofly_u_429,
+        144 togrow /togrow_1 togrow_7 togrow_43,
+        145 tohear /tohear_1 tohear_u_258,
+        146 tohide /tohide_1 tohide_67 tohide_16 tohide_u_43 tohide_u_314 tohide_17 tohide_u_434,
+        147 tohit /tohit_10 tohit_8 tohit_6 tohit_7 tohit_12 tohit_13 tohit_u_91 tohit_63 tohit_u_273 tohit_9,
+        148 tohold /tohold_12 tohold_15 tohold_14 tohold_13 tohold_17 tohold_54 tohold_35 tohold_u_166 tohold_u_231 tohold_56 tohold_u_628 tohold_11,
+        149 tohunt /tohunt_7 tohunt_28 tohunt_6 tohunt_u_89 tohunt_53 tohunt_u_461 tohunt_u_123 tohunt_u_17 tohunt_u_196 tohunt_14 tohunt_u_272 tohunt_88,
+        150 tokill /tokill_2 tokill_8 tokill_9 tokill_82 tokill_10 tokill_u_482 tokill_28 tokill_u_274,
+        151 toknowbeknowledgeable /toknowbeknowledgeable_13 toknowbeknowledgeable_12 toknowbeknowledgeable_15 toknowbeknowledgeable_1 toknowbeknowledgeable_17 toknowbeknowledgeable_14 toknowbeknowledgeable_52 toknowbeknowledgeable_18 toknowbeknowledgeable_u_114 toknowbeknowledgeable_u_9 toknowbeknowledgeable_u_249,
+        152 tolaugh /tolaugh_7 tolaugh_50,
+        153 toliedown /toliedown_7 toliedown_6 toliedown_40 toliedown_82 toliedown_u_504 toliedown_21 toliedown_u_260,
+        154 tolivebealive /tolivebealive_6 tolivebealive_76 tolivebealive_1 tolivebealive_28 tolivebealive_36 tolivebealive_u_626,
+        155 tongue /tongue_15 tongue_7,
+        156 toopenuncover /toopenuncover_9 toopenuncover_1 toopenuncover_8 toopenuncover_36 toopenuncover_35 toopenuncover_u_564 toopenuncover_u_506 toopenuncover_u_205 toopenuncover_u_282 toopenuncover_u_408,
+        157 tooth /tooth_1 tooth_6 tooth_u_254,
+        158 toplant /toplant_4 toplant_2 toplant_u_96 toplant_u_22 toplant_u_279,
+        159 topoundbeat /topoundbeat_20 topoundbeat_2 topoundbeat_u_63 topoundbeat_u_389,
+        160 tosay /tosay_11 tosay_43 tosay_12 tosay_60 tosay_u_87 tosay_u_57 tosay_u_481 tosay_48 tosay_88 tosay_u_404 tosay_59,
+        161 toscratch /toscratch_9 toscratch_10 toscratch_44 toscratch_31 toscratch_u_161 toscratch_33 toscratch_29 toscratch_u_276 toscratch_u_406,
+        162 tosee /tosee_1 tosee_8 tosee_47 tosee_37 tosee_103 tosee_u_259,
+        163 tosew /tosew_13 tosew_31 tosew_u_159 tosew_17 tosew_48 tosew_15 tosew_14,
+        164 toshoot /toshoot_1 toshoot_17 toshoot_u_59 toshoot_u_505 toshoot_3,
+        165 tosit /tosit_16 tosit_62 tosit_u_262 tosit_17,
+        166 tosleep /tosleep_10 tosleep_u_480 tosleep_u_383,
+        167 tosniffsmell /tosniffsmell_9 tosniffsmell_45 tosniffsmell_u_83 tosniffsmell_u_334 tosniffsmell_10 tosniffsmell_41,
+        168 tospit /tospit_14 tospit_84 tospit_19 tospit_15 tospit_18 tospit_16 tospit_55 tospit_56 tospit_34 tospit_17,
+        169 tosplit /tosplit_4 tosplit_72 tosplit_5 tosplit_7 tosplit_u_93 tosplit_u_558 tosplit_u_129 tosplit_6 tosplit_u_337,
+        170 tosqueeze /tosqueeze_10 tosqueeze_14 tosqueeze_13 tosqueeze_5 tosqueeze_8 tosqueeze_42 tosqueeze_u_164 tosqueeze_u_485 tosqueeze_u_230 tosqueeze_9 tosqueeze_u_24 tosqueeze_u_280 tosqueeze_u_445,
+        171 tostabpierce /tostabpierce_1 tostabpierce_8 tostabpierce_67 tostabpierce_10 tostabpierce_100 tostabpierce_15 tostabpierce_9 tostabpierce_54 tostabpierce_u_160 tostabpierce_u_354,
+        172 tostand /tostand_2 tostand_u_385,
+        173 tosteal /tosteal_7 tosteal_5 tosteal_1 tosteal_6 tosteal_u_463 tosteal_u_229 tosteal_u_18 tosteal_58 tosteal_u_357,
+        174 tosuck /tosuck_8 tosuck_7 tosuck_11 tosuck_25 tosuck_9 tosuck_12 tosuck_50 tosuck_51 tosuck_u_257,
+        175 toswell /toswell_7 toswell_10 toswell_5 toswell_30 toswell_6 toswell_u_97 toswell_u_484 toswell_u_561 toswell_24,
+        176 toswim /toswim_5 toswim_11 toswim_u_248,
+        177 tothink /tothink_9 tothink_8 tothink_7 tothink_28 tothink_u_478 tothink_u_456 tothink_u_528 tothink_u_224 tothink_u_250 tothink_u_419,
+        178 tothrow /tothrow_9 tothrow_11 tothrow_12 tothrow_13 tothrow_10 tothrow_30 tothrow_u_169 tothrow_u_232 tothrow_38 tothrow_66 tothrow_u_283 tothrow_u_361 tothrow_u_630 tothrow_79,
+        179 totieupfasten /totieupfasten_11 totieupfasten_14 totieupfasten_15 totieupfasten_12 totieupfasten_13 totieupfasten_43 totieupfasten_41 totieupfasten_17 totieupfasten_u_271 totieupfasten_93,
+        180 tovomit /tovomit_8 tovomit_31 tovomit_1 tovomit_32 tovomit_30,
+        181 towalk /towalk_6 towalk_7 towalk_1 towalk_4 towalk_2 towalk_34,
+        182 towork /towork_10 towork_11 towork_26 towork_54 towork_33 towork_u_278 towork_u_387,
+        183 toyawn /toyawn_19 toyawn_28 toyawn_22,
+        184 two /two_1 two_u_401,
+        185 warm /warm_1 warm_72 warm_8 warm_36 warm_u_302,
+        186 water /water_2 water_1 water_47,
+        187 wet /wet_11 wet_9 wet_10 wet_48 wet_37 wet_80 wet_u_303 wet_38,
+        188 what /what_1 what_u_328 what_u_380,
+        189 when /when_5 when_43 when_1 when_27 when_u_313,
+        190 where /where_3 where_35,
+        191 white /white_8 white_9 white_10 white_66 white_3 white_u_468 white_u_237 white_47 white_u_304 white_u_639 white_u_394,
+        192 who /who_1 who_19,
+        193 wide /wide_21 wide_9 wide_48 wide_7 wide_51 wide_u_240 wide_71 wide_u_309,
+        194 wife /wife_5 wife_68 wife_9 wife_8 wife_30 wife_u_548 wife_u_15 wife_u_266 wife_u_622 wife_66 wife_u_424 wife_u_440,
+        195 wind /wind_1 wind_66 wind_10 wind_11,
+        196 wing /wing_59 wing_1 wing_9 wing_35 wing_u_30,
+        197 woman_female /woman_female_1 woman_female_106 woman_female_116 woman_female_41 woman_female_55 woman_female_98 woman_female_u_264,
+        198 woods_forest /woods_forest_14 woods_forest_15 woods_forest_110 woods_forest_16 woods_forest_13,
+        199 wormearthworm /wormearthworm_7 wormearthworm_9 wormearthworm_16 wormearthworm_u_488 wormearthworm_u_508 wormearthworm_13 wormearthworm_8 wormearthworm_1 wormearthworm_45,
+        200 year /year_1 year_7 year_27 year_28,
+        201 yellow /yellow_10 yellow_11 yellow_12 yellow_46 yellow_u_490 yellow_u_238 yellow_u_142 yellow_u_509 yellow_u_37 yellow_59,
+        202 you /you_16 you_u_108 you_u_499 you_u_473 you_u_48 you_u_326 you_1 you_u_435,
+    ;
+
+MATRIX
+EastFutuna             0120004010000100000000130000001100000100010110010021040120000001211000041000100000100203000030105110000100000000?01010001420111002200301000200010040404012000025020200070020020000204100003000001000101010
+EastUvea               ?1000?6010000??00000001?000?001??100?21001011?01000?0?301000?001031020?C00100?3000100101000000?032100003??00010?40?0100003421?0002210300100200000042?0200000000??20000051020?200031001?0007000001000101000
+FijianBau              1300113040310503053540153004002402100340052510012012001110232010003000133210006043300341002321207133000420010020122233002074530223220200300612100066307123141204231010224570265135002400300010404403442231
+Hawaiian               000000200010020402423?000110000210000010021720000000050000000000001?1200412000401010000200023010100100000?400010001000000251440111331400200700000247201010010100402000020680111026300010004000000000120100
+Kapingamarangi         2000021050000100300351264002023?000005?001??0000000?0?0200300000011000055000003020000?1?0001?01020?1?0020?0000300?30000001101210140006001000012?0?14?50010??0106010?01132700036041001??00000?0202300103042
+Luangiua               0000010010000200400022410?0000000102001000381000000?0201?04200000120030?10000031004000140010?21020??00011000?040?010100001200240010403001000000000145100000?0?030001000400304000520002?0000000502?0030?013
+Mangareva              02200020001006150010600700110000000000100001100300010?04100000002013010101?000401000000500001010100000050?000001?31040000205400?12102900200200000005031030050101040?00005340317060400010001000000502100000
+Maori                  000000700040030020120002000000411000001004?9500000000100002000000022220000?00040501000310002?010100000000?000050041000000206305011000200200400000238226000020000000000020820548077500310002000605022130050
+Marquesan              0000032000200200005000005211000010000010020A200130010103005000024010340001?000003000005310003010100400060100000100100000020010?1111017002004003000156080140301025001000260001120204000100050000?0000100060
+Nukuoro                0000011060000020?06313??600202000?0000?001?300?10000010?0060100001100006?01000?020000?1120100010202500070?0000?00?10?00001601?1001000400100?0101001??1004?06000?0003001??10000??010012?000000000?000104?7?
+RapanuiEasterIsland    0000002010100306531220310013005120000010101020004003030310200000?0101100630000103020003100001010000?00000?2011000040000002011501251003000000000003707390100003?1000?00003A2061002800?0100010000066045?5084
+Rarotongan             00002020202002000310200400000001100000100200100000000100003210020020?202011000401020000200001010100000000?2000002010010041323010060503002002000000128030100701000000000200500430111000100010000030001200?0
+Rennellese             00000400300001000000000800000001?1000610080100010004020510001000211000087010000000100007000000105010000010?00000000014000302111002000400100300000049914012010?0761000039802000000900020000003000?000106020
+Rotuman                30000131801?000700730419?0?50065330007?00?1B6104013100221?0430?0503040198?0?007002530413003?0400?1100008025000600060152010471?003716322242?833001481A7A0620824?8753?2000?B4078028A82250041614080770?60?0?5
+Samoan                 00000000100002000002104100300001000000500104100100002300107000200010000A001000000010100100102010305000000000000000111000046011001000040010030000051010000001000301500000319083000B200100200200300300101090
+SouthIslandMaori       ??0?008?0?500?0820207002002001702?000?10041C020000?50??63020?0002222320?012?000010650?3811014000100600000??0000005100000020130???100003050000?00021A?23005020??100010002?2501??01C5003100020?090?82?13?0?0
+Tahitian               02000020101003306300300400160086100008602200101000400700003001000040120201?100807010006230041010106000090?200500061300000533001341170A1320?14000009B041000020132006432420361044024940611021000A03002120100
+Tikopia                01000560?00001000000101?00000000000001300010100000??0000000000000120500190100000000000110010?0106220000313?000000710100002101?1002010300100004000240110010?9000981000000212000000?00100000000020?00010?026
+Tongan                 01000630300001000400805A00000001000009000310100100060000100000012110200B2120000002100101001020003410000A00600100000010001340110000110B0010035050060010000200000A02000050022003009D205120003000301A00101007
+Tuamotu                0?000090002001407010200000130000100300100210100150?00?001000100000001001011000503020000200001010100?10000?20000030?1010001503014010?0710200200000212043000030102000000020C200240110000100010?0002B02120000
+;
+
+END;

@@ -56,7 +56,7 @@ def read_data_phylip(source: str, args) -> PhyloData:
 
 
 # TODO: sharing matrix code in common with NEXUS, should move to PhyloData
-def build_phylip(phyd: PhyloData) -> str:
+def build_phylip(phyd: PhyloData, args) -> str:
     """
     Build a PHYLIP data representation.
 
