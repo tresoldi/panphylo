@@ -94,6 +94,16 @@ or label conversion. Among the most used tools are:
   - The `phyDat` methods in the `phangorn` R library, at
     [https://rdrr.io/cran/phangorn/man/phyDat.html]
 
+## Changelog
+
+Version 0.2:
+  - Add Brython support for running locally in a browser and in the web interface
+  - Corrections to output generation, mostly related to multistate data (note that
+    it is not recommended to run on multistate data yet)
+
+Version 0.1:
+  - First public release
+
 ## Community guidelines
 
 While the author can be contacted directly for support, it is recommended that
