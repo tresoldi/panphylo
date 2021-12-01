@@ -11,10 +11,9 @@ import panphylo
 
 RESOURCE_PATH = Path(__file__).parent / "test_data"
 
-# TODO: add binarization tests
 # TODO: add a better (and shorted) nexus source example
 # TODO: build round-trip examples
-# TODO: run each test multiple times, to make sure there are not ordering issues
+
 @pytest.mark.parametrize(
     "input,reference,arg_from,arg_to",
     [
@@ -38,8 +37,9 @@ def test_convert(input: str, reference: str, arg_from: str, arg_to: str):
     with open(file_reference, encoding="utf-8") as handler:
         reference = handler.read().strip()
 
-    # Convert and check
+    # Convert and check; we run the same test multiple times, to make
+    # sure there is full reproducibility and no issues related to sorting
     args = {"from": arg_from, "to": arg_to, "input": "-"}
-    converted = panphylo.convert(source, args).strip()
-
-    assert converted == reference
+    for i in range(3):
+        converted = panphylo.convert(source, args).strip()
+        assert converted == reference

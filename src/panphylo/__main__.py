@@ -14,9 +14,6 @@ import re
 # Import our library
 import panphylo
 
-# TODO: default output format to CSV, when stdout?
-# TODO: add the ascertainment option
-
 # NOTE: remember to sync all changes with README
 def parse_args():
     """
@@ -133,26 +130,28 @@ def parse_args():
     args = parser.parse_args().__dict__
 
     # Decide on the right output function based on the output format or, if not
-    # provided, on the extension
+    # provided, on the extension; note that output to stdout will default to
+    # nexus
     if args["to"] == "auto":
-        if not "." in args["to"]:
-            raise ValueError(
-                "Unable to detect output format; please specify it with `--to`."
-            )
-
-        extension = args["to"].split(".")[-1]
-        if extension == "csv":
-            args["to"] = "csv"
-        elif extension == "tsv":
-            args["to"] = "tsv"
-        elif extension in ["nex", "nexus"]:
+        logging.debug("Detecting output format.")
+        if args["output"] == "-":
             args["to"] = "nexus"
-        elif extension in ["phy", "phylip"]:
-            args["to"] = "phylip"
         else:
-            raise ValueError(
-                "Unable to detect output format; please specify it with `--to`."
-            )
+            extension = args["to"].split(".")[-1]
+            if extension == "csv":
+                args["to"] = "csv"
+            elif extension == "tsv":
+                args["to"] = "tsv"
+            elif extension in ["nex", "nexus"]:
+                args["to"] = "nexus"
+            elif extension in ["phy", "phylip"]:
+                args["to"] = "phylip"
+
+    # We were unable to detect the output format
+    if args["to"] == "auto":
+        raise ValueError(
+            "Unable to detect output format; please specify it with `--to`."
+        )
 
     return args
 
@@ -188,7 +187,8 @@ def main():
     # Convert to a string
     converted = panphylo.convert(source, args)
 
-    # Write to the stream
+    # Write to the stream; we string and add a final newline to make sure there is
+    # one and only one
     with panphylo.smart_open(args["output"], "w", encoding="utf-8") as handler:
         handler.write(converted.strip())
         handler.write("\n")

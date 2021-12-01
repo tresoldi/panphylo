@@ -49,6 +49,6 @@ setup(
     test_suite="tests",
     tests_require=[],
     url="https://github.com/tresoldi/panphylo",
-    version="0.2",  # remember to sync with __init__.py
+    version="0.3",  # remember to sync with __init__.py
     zip_safe=False,
 )

@@ -129,6 +129,7 @@ def build_tabular(phyd: PhyloData, delimiter: str, args: dict) -> str:
 
     # If the column names for taxa, characters, and states was not provided,
     # try to infer it; at the end, we make sure to check that they are all unique
+    # TODO: default to i-taxa, i-char, and i-state (needs returning)
     col_taxa = args.get("o-taxa", "Taxon")
     col_char = args.get("o-char", "Character")
     col_state = args.get("o-state", "State")

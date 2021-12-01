@@ -12,9 +12,8 @@ from .common import unique_ids
 
 # TODO; should have a general method for iterating over
 #       characters in a sorter order
-# TODO: have maximum taxon length here as well
 
-# TODO: should have one for non-binary as well?
+
 class BinaryObs(enum.Enum):
     """
     Auxiliary class for binary observations.
@@ -48,13 +47,13 @@ class PhyloData:
 
         self.characters = set()
         self.charset = defaultdict(set)
-        self.taxa = set()
         self.states = defaultdict(set)
+        self.taxa = set()
 
     @property
     def charstates(self) -> dict:
         """
-        Return a sorted character states structure.
+        Return a character states structure.
 
         Note that this method is not caching results; while it might involve
         more and unnecessary computations in some contexts, it does not affect
@@ -69,9 +68,8 @@ class PhyloData:
             char_counter[character].update({state for state in states if state != "?"})
 
         # Sort by frequency
-        # TODO; add option to sort alphabetically
-        # TODO: what if there are equal frequencies? Is it reproducible?
-        # NOTE: for some reason the list comprehension is failing in Brython
+        # NOTE: for some reason the list comprehension is failing in Brython; we are
+        #       just performing a standard for loop
         charstates = {}
         for character, states in char_counter.items():
             charstates[character] = [state for state, _ in states.most_common()]
@@ -79,7 +77,7 @@ class PhyloData:
         return charstates
 
     @property
-    def char_cardinality(self) -> int:
+    def cardinality(self) -> int:
         """
         Return the character cardinality.
 
@@ -107,7 +105,7 @@ class PhyloData:
         _matrix = defaultdict(str)
         symbols = self.symbols  # cache
         for character in sorted(self.charstates):
-            # TODO: sort state_set by frequency?
+            # TODO: sort state_set by frequency? not necessary if done by .charstates
             state_set = sorted(self.charstates[character])
             for taxon in self.taxa:
                 state = self.states.get((taxon, character), [None])
@@ -141,12 +139,8 @@ class PhyloData:
         :return: A list with the characters for representing the states.
         """
 
-        return [ch for ch in string.digits + string.ascii_uppercase][
-            : self.char_cardinality
-        ]
+        return [ch for ch in string.digits + string.ascii_uppercase][: self.cardinality]
 
-    # TODO: put the common logic of `slug_taxa` and `slug_characters` in a single
-    #           `.common` function.
     def slug_taxa(self, level="simple"):
         """
         Slug taxa labels, making sure uniqueness of IDs is preserved.
@@ -186,8 +180,6 @@ class PhyloData:
         self.states = new_values
 
     # TODO: collect assumptions?
-    # TODO: make sure it is correctly deling with ascertainment
-    # TODO: move out of the object, as a function
     def binarize(self):
         """
         Build a binarized version of the current phylogenetic data.
@@ -221,13 +213,11 @@ class PhyloData:
         for (taxon, character), states in binary_states.items():
             for obs, state_label in zip(states, charstates[character]):
                 # Add ascertainment
-                # TODO: allow something different from "0"?
-                # TODO: should check for the name of the character?
                 bin_phyd.add_state(
                     taxon, f"{character}_ASCERTAINMENT", "0", charset=character
                 )
 
-                # TODO: confirm if it is right to skip over gaps and all
+                # TODO: confirm if it is right to skip over gaps
                 if obs != BinaryObs.GAP:
                     bin_phyd.add_state(
                         taxon,
@@ -238,12 +228,11 @@ class PhyloData:
 
         return bin_phyd
 
-    # TODO: move to __setitem__? it is actually an "add"
-    def add_state(self, taxon, character, state, charset=None):
+    def add_state(self, taxon: str, character: str, state: str, charset: str = None):
         """
         Add a state to a taxon, character pair.
 
-        Nota the (taxon, character) pairs can carry more than
+        Note that the (taxon, character) pairs can carry more than
         one state, so that states are actually stored in sets
         """
 
@@ -254,7 +243,8 @@ class PhyloData:
         if charset:
             self.charset[charset].add(character)
 
-    def __getitem__(self, key):
+    # TODO: Decide on returing a sorted list
+    def __getitem__(self, key: str) -> set:
         return self.states[key]
 
     # TODO: add total number of values

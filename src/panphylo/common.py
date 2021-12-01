@@ -11,12 +11,8 @@ import logging
 # Import local modules
 from .myunidecode import unidecode
 
-# TODO: for slug, consider that The following symbols/caracters are not allowed in taxa names to ensure Newick
-#       compatibility: (space), (semicolon), (colon), (comma), (parentheses), (single quote)
 
-# TODO: allow more configurations
-# TODO: document levels
-def slug(label: str, level) -> str:
+def slug(label: str, level: str) -> str:
     """
     Return a slugged version of a label.
 
@@ -25,6 +21,8 @@ def slug(label: str, level) -> str:
     :param level:
     :return: The slugged version of the label.
     """
+
+    logging.debug("Slugging label `%s` with level `%s`.", label, level)
 
     if level == "none":
         pass
@@ -46,10 +44,11 @@ def slug(label: str, level) -> str:
     else:
         raise ValueError("Unknown level of slugging `%s`.", level)
 
+    logging.debug("Label slugged to `%s`.", label)
+
     return label
 
 
-# TODO: add different methods of slug, mapping to slug()
 def unique_ids(labels, level):
     def _label_iter():
         """
@@ -60,6 +59,10 @@ def unique_ids(labels, level):
         for length in itertools.count(1):
             for chars in itertools.product(string.ascii_lowercase, repeat=length):
                 yield "-" + "".join(chars)
+
+    # Check level, syncing with `slug()`
+    if level not in ["none", "simple", "full"]:
+        raise ValueError("Unknown slug level `%s`.", level)
 
     # Slugify all labels
     slugged = [slug(label, level) for label in labels]
@@ -84,15 +87,14 @@ def unique_ids(labels, level):
     return unique_slug_labels
 
 
-# TODO: partial function for string/tuple output
-def indexes2ranges(indexes, string=True):
+def indexes2ranges(indexes) -> str:
     """
     Transforms a list of indexes into a range representation.
 
     This function is used for building NEXUS-like assumption blocks,
     especially for binarized data. Given a list such as `[1, 2, 3, 5, 8, 9]`
-    it will return either a structural or a string representation of
-    the ranges involved, such as `"1-3, 5, 8-9"`.
+    it will return a string representation of the ranges involved, such as
+    `"1-3, 5, 8-9"`.
     """
 
     # We need to operate on sorted indexes
@@ -122,14 +124,11 @@ def indexes2ranges(indexes, string=True):
     ranges.append((start, indexes[-1]))
 
     # Build output
-    if not string:
-        ret = tuple(ranges)
-    else:
-        ret = ", ".join(
-            [
-                "%i-%i" % (start, end) if start != end else str(start)
-                for (start, end) in ranges
-            ]
-        )
+    ret = ", ".join(
+        [
+            "%i-%i" % (start, end) if start != end else str(start)
+            for (start, end) in ranges
+        ]
+    )
 
     return ret

@@ -3,7 +3,7 @@ panphylo __init__.py
 """
 
 # Version of the panphylo package
-__version__ = "0.2"  # remember to sync in setup.py
+__version__ = "0.3"  # remember to sync in setup.py and biblioref
 __author__ = "Tiago Tresoldi"
 __email__ = "tiago.tresoldi@lingfil.uu.se"
 
@@ -14,15 +14,14 @@ from .nexus import read_data_nexus, build_nexus
 from .phylip import read_data_phylip, build_phylip
 from .tabular import detect_delimiter, read_data_tabular, build_tabular
 
-
 # Dispatch the different reading methods
 def convert(source: str, args: dict) -> str:
     """
     Main function for conversion.
 
     :param source: The entire source of the file to be converted.
-    :param args: A dictionary with all configuration, as
-        build from command-line arguments.
+    :param args: A dictionary with all configuration, as built from
+        command-line arguments.
     :return: The converted data.
     """
 
@@ -60,5 +59,4 @@ def convert(source: str, args: dict) -> str:
 
 
 # Build namespace
-# TODO; check which are needed, once tests are done
-__all__ = ["convert", "indexes2ranges", "smart_open", "fetch_stream_data"]
+__all__ = ["convert", "indexes2ranges"]
