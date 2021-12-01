@@ -31,13 +31,21 @@ import panphylo.nexus as nexus
 def action(event):
     source_elm = document["source"]
     target_elm = document["target"]
-    args = {"from": "csv", "to": "nexus", "input":"-",
-"i_taxa":None, "i_char":None, "i_state":None}
+    args = {
+		"from": document["from-field"].value,
+		"to": document["to-field"].value,
+		"input":"-",
+        "binarize": document["binarize"].checked,
+		"i_taxa":None,
+		"i_char":None,
+		"i_state":None
+	}
 
     source = source_elm.value
-    phyd = tabular.read_data_tabular(source, ",", args)
-    target = nexus.build_nexus(phyd, args)
-    target_elm.innerHTML = target
+    if source:
+        phyd = tabular.read_data_tabular(source, ",", args)
+        target = nexus.build_nexus(phyd, args)
+        target_elm.innerHTML = target
 
 # Associate function action() to the event "click" on all buttons
 convert_button = document["convert"]
