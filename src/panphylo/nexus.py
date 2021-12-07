@@ -87,7 +87,7 @@ def parse_nexus(source: str) -> dict:
                 else:
                     # Parse the command inside the block, which can be a single, simple
                     # line or a large subblock (like charstatelabels)
-                    command = re.sub("\s+", " ", buffer.strip()).split()[0].upper()
+                    command = re.sub(r"\s+", " ", buffer.strip()).split()[0].upper()
                     if command == "DIMENSIONS":
                         ntax_match = re.search(r"NTAX\s*=\s*(\d+)", buffer.upper())
                         nchar_match = re.search(r"NCHAR\s*=\s*(\d+)", buffer.upper())
@@ -116,12 +116,12 @@ def parse_nexus(source: str) -> dict:
                     elif command == "CHARSTATELABELS":
                         # Get each individual charstatelabel and parse it
                         # TODO: use a single parser for binary and multistate?
-                        charstate_buffer = re.sub("\s+", " ", buffer.strip())
+                        charstate_buffer = re.sub(r"\s+", " ", buffer.strip())
                         start_idx = charstate_buffer.find(
                             " ", charstate_buffer.find("CHARSTATELABELS")
                         )
                         for charstatelabel in charstate_buffer[start_idx:-1].split(","):
-                            charstatelabel = re.sub("\s+", " ", charstatelabel.strip())
+                            charstatelabel = re.sub(r"\s+", " ", charstatelabel.strip())
                             if "/" in charstatelabel:
                                 # TODO: implement
                                 raise ValueError("Not implemented")
@@ -131,7 +131,7 @@ def parse_nexus(source: str) -> dict:
                     elif command == "MATRIX":
                         start_idx = buffer.find("MATRIX") + len("MATRIX")
                         for entry in buffer[start_idx + 1 : -1].strip().split("\n"):
-                            entry = re.sub("\s+", " ", entry.strip())
+                            entry = re.sub(r"\s+", " ", entry.strip())
                             taxon, vector = entry.split()
                             nexus_data["matrix"][taxon] = vector
                     elif command == "CHARSET":

@@ -28,7 +28,7 @@ def slug(label: str, level: str) -> str:
         pass
     elif level == "simple":
         label = unidecode(label)
-        label = re.sub("\s+", "_", label.strip())
+        label = re.sub(r"\s+", "_", label.strip())
         label = "".join(
             [
                 char
@@ -38,7 +38,7 @@ def slug(label: str, level: str) -> str:
         )
     elif level == "full":
         label = unidecode(label)
-        label = re.sub("\s+", " ", label.strip())
+        label = re.sub(r"\s+", " ", label.strip())
         label = label.lower()
         label = "".join([char for char in label if char in string.ascii_letters])
     else:
