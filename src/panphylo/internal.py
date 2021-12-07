@@ -223,7 +223,7 @@ def binarize(phyd):
             if not obs:
                 binary_states[taxon, character] = [BinaryObs.GAP for _ in states]
             else:
-                if tuple(obs) == "?":
+                if tuple(obs) == ("?",):
                     binary_states[taxon, character] = [
                         BinaryObs.MISSING for _ in states
                     ]
