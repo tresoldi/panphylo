@@ -49,6 +49,7 @@ class PhyloData:
         self.charset = defaultdict(set)
         self.states = defaultdict(set)
         self.taxa = set()
+        self._charstates = None
 
     @property
     def charstates(self) -> dict:
@@ -62,19 +63,18 @@ class PhyloData:
         :return: A dictionary with the character states.
         """
 
-        # Collect with a counter first
-        char_counter = defaultdict(Counter)
-        for (_, character), states in self.states.items():
-            char_counter[character].update({state for state in states if state != "?"})
+        if self._charstates is None:
+            # Collect with a counter first
+            char_counter = defaultdict(Counter)
+            for (_, character), states in self.states.items():
+                char_counter[character].update({state for state in states if state != "?"})
 
-        # Sort by frequency
-        # NOTE: for some reason the list comprehension is failing in Brython; we are
-        #       just performing a standard for loop
-        charstates = {}
-        for character, states in char_counter.items():
-            charstates[character] = [state for state, _ in states.most_common()]
+            # Sort by frequency
+            self._charstates = {}
+            for character, states in char_counter.items():
+                self._charstates[character] = [state for state, _ in states.most_common()]
 
-        return charstates
+        return self._charstates
 
     @property
     def cardinality(self) -> int:

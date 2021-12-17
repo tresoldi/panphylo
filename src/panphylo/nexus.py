@@ -49,7 +49,8 @@ def parse_nexus(source: str) -> dict:
         "missing": None,
         "gap": None,
         "symbols": None,
-        "charstatelabels": {},
+        "charstate_labels": {},
+        "charstate_states":{},
         "matrix": {},
         "charset": [],
     }
@@ -122,12 +123,19 @@ def parse_nexus(source: str) -> dict:
                         )
                         for charstatelabel in charstate_buffer[start_idx:-1].split(","):
                             charstatelabel = re.sub(r"\s+", " ", charstatelabel.strip())
+                            if not charstatelabel:
+                                continue
                             if "/" in charstatelabel:
-                                # TODO: implement
-                                raise ValueError("Not implemented")
+                                match = re.search(r"(\d+)\s+(\S+)\s*/(.+)", charstatelabel)
+                                idx = match.group(1)
+                                charlabel = match.group(2)
+                                states = match.group(3).split()
+
+                                nexus_data["charstate_labels"][int(idx)] = charlabel
+                                nexus_data["charstate_states"][charlabel] = states
                             else:
                                 idx, charlabel = charstatelabel.split()
-                                nexus_data["charstatelabels"][int(idx)] = charlabel
+                                nexus_data["charstate_labels"][int(idx)] = charlabel
                     elif command == "MATRIX":
                         start_idx = buffer.find("MATRIX") + len("MATRIX")
                         for entry in buffer[start_idx + 1 : -1].strip().split("\n"):
@@ -186,7 +194,7 @@ def read_data_nexus(source: str, args) -> PhyloData:
                 states[taxon, alm2charset[idx + 1]].add("?")
             elif state != "0":
                 states[taxon, alm2charset[idx + 1]].add(
-                    nexus_data["charstatelabels"][idx + 1]
+                    nexus_data["charstate_labels"][idx + 1]
                 )
 
     # Build the PhyloData object and return
@@ -194,6 +202,9 @@ def read_data_nexus(source: str, args) -> PhyloData:
     for (taxon, character), state_set in states.items():
         for state in state_set:
             phyd.add_state(taxon, character, state)
+
+    if nexus_data["charstate_states"]:
+        phyd._charstates = nexus_data["charstate_states"]
 
     return phyd
 
