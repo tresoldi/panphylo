@@ -7,7 +7,7 @@ import logging
 
 # Import from local modules
 from .common import slug
-from .internal import PhyloData
+from .phylodata import PhyloData
 
 
 def detect_delimiter(source: str) -> str:

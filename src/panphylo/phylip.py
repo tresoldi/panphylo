@@ -6,7 +6,7 @@ Module with functions and methods for PHYLIP files.
 import re
 
 # Import from local modules
-from .internal import PhyloData
+from .phylodata import PhyloData
 
 # TODO: implement https://www.bioinformatics.org/sms/iupac.html
 # TODO: currently only supporting non interleaved

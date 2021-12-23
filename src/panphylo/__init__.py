@@ -13,7 +13,7 @@ from .common_io import smart_open, fetch_stream_data
 from .nexus import read_data_nexus, build_nexus
 from .phylip import read_data_phylip, build_phylip
 from .tabular import detect_delimiter, read_data_tabular, build_tabular
-from .internal import binarize
+from .phylodata import binarize
 
 # Dispatch the different reading methods
 def convert(source: str, args: dict) -> str:

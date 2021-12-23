@@ -1,8 +1,9 @@
 """
 Module with functions and methods for NEXUS files.
 
-Parsing and writing of NEXUS files is currently done with a very simple,
-string manipulation strategy.
+Parsing and writing of NEXUS files is currently done with a simple
+string manipulation strategy. The usage of actual parsers, or libraries
+with that purpose, would make transpilation too hard.
 """
 
 # TODO: allow to output taxa and character names between quotes, if necessary
@@ -16,7 +17,7 @@ from itertools import chain
 import re
 
 # Import from local modules
-from .internal import PhyloData
+from .phylodata import PhyloData
 from .common import indexes2ranges
 
 
@@ -181,26 +182,37 @@ def read_data_nexus(source: str, args) -> PhyloData:
     # TODO: transform all binary in multistate internal representation
     # TODO: this is currently handling only binary and needs charsets
 
-    # Build inverse map from position in the alignment to the charset and collect states
-    alm2charset = {}
-    for charset in nexus_data["charset"]:
-        for idx in range(charset["start"], charset["end"] + 1):
-            alm2charset[idx] = charset["charset"]
-
+    # Build inverse map from position in the alignment to the charset,
+    # collecting states; if no charset is provided, each character
+    # will be its own charset
     states = defaultdict(set)
-    for taxon, vector in nexus_data["matrix"].items():
-        for idx, state in enumerate(vector):
-            if state == nexus_data["missing"]:
-                states[taxon, alm2charset[idx + 1]].add("?")
-            elif state != "0":
-                states[taxon, alm2charset[idx + 1]].add(
-                    nexus_data["charstate_labels"][idx + 1]
-                )
+    if nexus_data["charset"]:
+        alm2charset = {}
+        for charset in nexus_data["charset"]:
+            for idx in range(charset["start"], charset["end"] + 1):
+                alm2charset[idx] = charset["charset"]
+
+        for taxon, vector in nexus_data["matrix"].items():
+            for idx, state in enumerate(vector):
+                if state == nexus_data["missing"]:
+                    states[taxon, alm2charset[idx + 1]].add("?")
+                elif state != "0":
+                    states[taxon, alm2charset[idx + 1]].add(
+                        nexus_data["charstate_labels"][idx + 1]
+                    )
+    else:
+        for taxon, vector in nexus_data["matrix"].items():
+            for idx, state in enumerate(vector):
+                if state == nexus_data["missing"]:
+                    states[taxon, idx].add("?")
+                elif state != "0":
+                    states[taxon, idx].add(state)
 
     # Build the PhyloData object and return
     phyd = PhyloData()
     for (taxon, character), state_set in states.items():
         for state in state_set:
+            print(state, state_set)
             phyd.add_state(taxon, character, state)
 
     if nexus_data["charstate_states"]:
