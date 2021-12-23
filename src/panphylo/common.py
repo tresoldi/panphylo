@@ -3,10 +3,11 @@ Module with common and reusable functions.
 """
 
 # Import Python libraries
-import re
-import string
 import itertools
 import logging
+import re
+import string
+from typing import *
 
 # Import local modules
 from .myunidecode import unidecode
@@ -16,19 +17,27 @@ def slug(label: str, level: str) -> str:
     """
     Return a slugged version of a label.
 
-    :param label: The text to be slugged. Note that, as this operates on
+    @param label: The text to be slugged. Note that, as this operates on
         a single string, there is no guarantee of non-collision.
-    :param level:
-    :return: The slugged version of the label.
+    @param level: Define the level of slugging to be applied. Currently
+        accepted levels are "none", "simple", and "full".
+    @return: The slugged version of the label.
     """
+
+    if level not in ["none", "simple", "full"]:
+        raise ValueError(f"Unknown level of slugging `{level}`.")
 
     logging.debug("Slugging label `%s` with level `%s`.", label, level)
 
-    if level == "none":
-        pass
-    elif level == "simple":
+    # This implementation of the different levels of slugging seems a
+    # bit cumbersome at first, but makes it easy for us to explore alternatives
+    if level in ["simple", "full"]:
         label = unidecode(label)
+    if level in ["simple", "full"]:
         label = re.sub(r"\s+", "_", label.strip())
+    if level in ["full"]:
+        label = label.lower()
+    if level in ["simple"]:
         label = "".join(
             [
                 char
@@ -36,20 +45,27 @@ def slug(label: str, level: str) -> str:
                 if char in string.ascii_letters + string.digits + "-_"
             ]
         )
-    elif level == "full":
-        label = unidecode(label)
-        label = re.sub(r"\s+", " ", label.strip())
-        label = label.lower()
+    if level in ["full"]:
         label = "".join([char for char in label if char in string.ascii_letters])
-    else:
-        raise ValueError("Unknown level of slugging `%s`.", level)
 
     logging.debug("Label slugged to `%s`.", label)
 
     return label
 
+# TODO: verify if it is indeed working with non-unique labels
+def unique_ids(labels: Sequence[str], level: str) -> Sequence[str]:
+    """
+    Map a sequence of identifiers to a slugged version with unique identifiers.
 
-def unique_ids(labels, level):
+    @param labels: The sequence of labels to be slugged. Note that, by design,
+        we accept non-unique labels as input, but they will be unique
+        in the output.
+    @param level:  Define the level of slugging to be applied. The levels are
+        defined by the `slug()` function.
+    @return: The list of unique, slugged identifiers. The order follows
+        the one in `labels`.
+    """
+
     def _label_iter():
         """
         Custom internal label iterator.
@@ -60,15 +76,10 @@ def unique_ids(labels, level):
             for chars in itertools.product(string.ascii_lowercase, repeat=length):
                 yield "-" + "".join(chars)
 
-    # Check level, syncing with `slug()`
-    if level not in ["none", "simple", "full"]:
-        raise ValueError("Unknown slug level `%s`.", level)
-
     # Slugify all labels
     slugged = [slug(label, level) for label in labels]
 
-    # Build a corresponding list with the count of previous occurrences
-    # of the same value
+    # Build a corresponding list with the count of previous occurrences of the same value
     loc_counts = [slugged[:idx].count(value) for idx, value in enumerate(slugged)]
 
     # Build a dictionary of suffixes using the maximum count
@@ -87,14 +98,17 @@ def unique_ids(labels, level):
     return unique_slug_labels
 
 
-def indexes2ranges(indexes) -> str:
+def indexes2ranges(indexes:Sequence[int]) -> str:
     """
-    Transforms a list of indexes into a range representation.
+    Transforms a sequence of indexes into a textual range representation.
 
     This function is used for building NEXUS-like assumption blocks,
     especially for binarized data. Given a list such as `[1, 2, 3, 5, 8, 9]`
     it will return a string representation of the ranges involved, such as
     `"1-3, 5, 8-9"`.
+
+    @param indexes: The sequence of indexes related to a character.
+    @return: A textual representation of the range.
     """
 
     # We need to operate on sorted indexes
