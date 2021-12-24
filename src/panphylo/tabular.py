@@ -6,7 +6,7 @@ Module with functions and methods for tabular files.
 import logging
 
 # Import from local modules
-from .common import slug
+from .common import slug, unique_ids
 from .phylodata import PhyloData
 
 
@@ -133,15 +133,25 @@ def build_tabular(phyd: PhyloData, delimiter: str, args: dict) -> str:
     col_char = args.get("o-char", "Character")
     col_state = args.get("o-state", "State")
 
-    # Build output data
+    # Build output data, slugging identifiers as needed
+    taxa_map = {
+        source: target
+        for source, target in zip(phyd.taxa, unique_ids(phyd.taxa, args.get("slug_taxa", "none")))
+    }
+    char_map = {
+        source: target
+        for source, target in
+        zip(phyd.characters, unique_ids([c[1] for c in phyd.characters], args.get("slug_chars", "none")))
+    }
+
     output = []
     for charset, character in phyd.characters:
         for taxon in phyd.taxa:
-            print(taxon, charset, character)
             for state in phyd[taxon, charset, character]:  # TODO: deal with missing; sort
-                output.append({col_taxa: taxon, col_char: character, col_state: state})
+                output.append({col_taxa: taxa_map[taxon], col_char: char_map[charset, character], col_state: state})
 
     # Build buffer
+    # TODO: sort
     fieldnames = [col_taxa, col_char, col_state]
     buffer = [delimiter.join([row[field] for field in fieldnames]) for row in output]
     buffer = [delimiter.join(fieldnames)] + buffer

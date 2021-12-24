@@ -44,8 +44,6 @@ def convert(source: str, args: dict[str, str]) -> str:
         raise ValueError("Invalid reading format `%s`.", args["from"])
 
     # Perform all requested data manipulations
-    #    phyd.slug_taxa(args.get("slug_taxa", "none"))
-    #    phyd.slug_characters(args.get("slug_chars", "none"))
     #    if args.get("binarize", False):
     #        phyd = binarize(phyd)
 
