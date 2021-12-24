@@ -14,11 +14,10 @@ def detect_delimiter(source: str) -> str:
     """
     Detect the tabular dialect (e.g. CSV and TSV of a file).
 
-    The detection is extremely simplified, based on frequency in the
-    first line.
+    The detection is extremely simplified, based on frequency in the first line.
 
-    :param str: The tabular source for the data.
-    :return: The character detected as field separator.
+    @param source: The tabular source for the data.
+    @return: The character detected as field separator.
     """
 
     lines = source.split("\n")
@@ -112,7 +111,7 @@ def read_data_tabular(source_str: str, delimiter: str, args: dict) -> PhyloData:
     # Build internal representation
     phyd = PhyloData()
     for entry in source:
-        phyd.add_state(entry[col_taxa], entry[col_char], entry[col_vals])
+        phyd.extend((entry[col_taxa], None, entry[col_char]), entry[col_vals])
 
     return phyd
 
@@ -136,9 +135,10 @@ def build_tabular(phyd: PhyloData, delimiter: str, args: dict) -> str:
 
     # Build output data
     output = []
-    for character in sorted(phyd.characters):
-        for taxon in sorted(phyd.taxa):
-            for state in sorted(phyd[taxon, character]):  # TODO: deal with missing
+    for charset, character in phyd.characters:
+        for taxon in phyd.taxa:
+            print(taxon, charset, character)
+            for state in phyd[taxon, charset, character]:  # TODO: deal with missing; sort
                 output.append({col_taxa: taxon, col_char: character, col_state: state})
 
     # Build buffer

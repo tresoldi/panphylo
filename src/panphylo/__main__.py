@@ -14,10 +14,13 @@ import re
 # Import our library
 import panphylo
 
+
 # NOTE: remember to sync all changes with README
-def parse_args():
+def parse_args() -> dict:
     """
     Parse command-line arguments and return them as a dictionary.
+
+    @return: The command-line arguments in a dictionary format.
     """
 
     parser = argparse.ArgumentParser(description="Convert and manipulate phylodata.")
@@ -33,14 +36,16 @@ def parse_args():
         "--output",
         type=str,
         default="-",
-        help="Write output to *FILE* instead of *stdout*. If *FILE* is `-`, output will go to *stdout* even if a non-textual format is specified.",
+        help="Write output to *FILE* instead of *stdout*. If *FILE* is `-`, output will go to *stdout* even if a "
+             "non-textual format is specified.",
     )
 
     parser.add_argument(
         "-b",
         "--binarize",
         action="store_true",
-        help="Binarizes the output. Whether and how to add ascertainment correction is specified by the `--ascertainment` option.",
+        help="Binarizes the output. Whether and how to add ascertainment correction is specified by the "
+             "`--ascertainment` option.",
     )
 
     parser.add_argument(
@@ -179,7 +184,7 @@ def main():
         logging.debug("Autodetecting input format.")
         if source.strip().startswith("#NEXUS"):
             args["from"] = "nexus"
-        elif re.search("$\s*\d+\s*\d+", source):
+        elif re.search(r"$\s*\d+\s*\d+", source):
             args["from"] = "phylip"
         else:
             args["from"] = "tabular"
@@ -187,8 +192,7 @@ def main():
     # Convert to a string
     converted = panphylo.convert(source, args)
 
-    # Write to the stream; we string and add a final newline to make sure there is
-    # one and only one
+    # Write to the stream; we string and add a final newline to make sure there is one and only one
     with panphylo.smart_open(args["output"], "w", encoding="utf-8") as handler:
         handler.write(converted.strip())
         handler.write("\n")
