@@ -111,7 +111,7 @@ def read_data_tabular(source_str: str, delimiter: str, args: dict) -> PhyloData:
     # Build internal representation
     phyd = PhyloData()
     for entry in source:
-        phyd.extend((entry[col_taxa], None, entry[col_char]), entry[col_vals])
+        phyd.extend((entry[col_taxa], entry[col_char]), entry[col_vals])
 
     return phyd
 
@@ -147,7 +147,7 @@ def build_tabular(phyd: PhyloData, delimiter: str, args: dict) -> str:
     output = []
     for charset, character in phyd.characters:
         for taxon in phyd.taxa:
-            for state in phyd[taxon, charset, character]:  # TODO: deal with missing; sort
+            for state in phyd[taxon, character]:  # TODO: deal with missing; sort
                 output.append({col_taxa: taxa_map[taxon], col_char: char_map[charset, character], col_state: state})
 
     # Build buffer

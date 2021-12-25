@@ -213,8 +213,7 @@ def read_data_nexus(source: str, args) -> PhyloData:
     phyd = PhyloData()
     for (taxon, character), state_set in states.items():
         for state in state_set:
-            print(state, state_set)
-            phyd.extend((taxon, None, character), state)
+            phyd.extend((taxon, character), state)
 
     # if nexus_data["charstate_states"]:
     #    phyd._charstates = nexus_data["charstate_states"]

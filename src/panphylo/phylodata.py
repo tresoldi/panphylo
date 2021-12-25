@@ -82,9 +82,9 @@ class PhyloData:
         self._taxa: set[str] = set()
         self._charset: dict[str, dict[str, Character]] = {}
 
-        # Observations are dictionaries with a tuple of strings as keys (taxon, charset, character)
+        # Observations are dictionaries with a tuple of strings as keys (taxon, character)
         # and a set of strings as the observed value
-        self._obs: dict[tuple[str, str, str], set[str]] = defaultdict(set)
+        self._obs: dict[tuple[str, str], set[str]] = defaultdict(set)
 
     @property
     def taxa(self) -> tuple[str]:
@@ -134,11 +134,11 @@ class PhyloData:
 
         return tuple([ch for ch in string.digits + string.ascii_uppercase][: self.cardinality])
 
-    def __getitem__(self, item: tuple[str, str, str]) -> set[str]:
+    def __getitem__(self, item: tuple[str, str]) -> set[str]:
         """
         Return the observation for a taxon/charset/character tuple.
 
-        @param item: A tuple with taxon, charset_id, and char_id, as stored when
+        @param item: A tuple with taxon and charachter_id, as stored when
             extending the phylogenetic data.
         @return: The set of values associated with the key, with an empty set if nothing was
             stored.
@@ -146,17 +146,19 @@ class PhyloData:
 
         return self._obs.get(item, set())
 
-    def extend(self, key: tuple[str, Optional[str], str], value: str):
-        # Decompose the key
-        taxon, charset, character = key
+    # TODO: have a call (key, character, [charset])
+    def extend(self, key: Union[tuple[str, str], tuple[str, str, str]], value: str):
+        # The key can be either in format (taxon, character) or (taxon, character, charset);
+        # if `charset` is not provided (usually in cases of non-binary data) we create a
+        # "dummy" one with the same name as the character.
+        if len(key) == 2:
+            taxon, character, charset = key[0], key[1], key[1]
+        elif len(key) == 3:
+            # Decompose the key
+            taxon, character, charset = key
 
         # Extend the list of taxa
         self._taxa.add(taxon)
-
-        # If no charset was provided (we are probably dealing with non-binary data),
-        # create a "dummy" charset with the same name as the character
-        if not charset:
-            charset = character
 
         # Update internal information
         if charset in self._charset:
@@ -173,7 +175,7 @@ class PhyloData:
 
         # Store information on the actual observed state; note that, as we allow multistates, this is
         # actually a set of values
-        self._obs[taxon, charset, character].add(value)
+        self._obs[taxon, character].add(value)
 
     def matrix(self) -> tuple[str, str]:
         # Build the matrix representation
@@ -182,7 +184,7 @@ class PhyloData:
         for charset_id, char_id in self.characters:
             states = self._charset[charset_id][char_id].states  # TODO: use frequency or something else?
             for taxon in self.taxa:
-                obs = self[taxon, charset_id, char_id]
+                obs = self[taxon, char_id]
                 if obs:
                     obs_repr = [symbols[states.index(o)] for o in obs]
                     if len(obs_repr) == 1:
@@ -211,8 +213,8 @@ class PhyloData:
 
         self._taxa = set(slug_map.values())
         self._obs = {
-            (slug_map[taxon], charset, character): value_set for
-            (taxon, charset, character), value_set in self._obs.items()
+            (slug_map[taxon], character): value_set for
+            (taxon, character), value_set in self._obs.items()
         }
 
 # TODO: collect assumptions?
