@@ -51,7 +51,7 @@ def parse_nexus(source: str) -> dict:
         "gap": None,
         "symbols": None,
         "charstate_labels": {},
-        "charstate_states":{},
+        "charstate_states": {},
         "matrix": {},
         "charset": [],
     }
@@ -139,7 +139,7 @@ def parse_nexus(source: str) -> dict:
                                 nexus_data["charstate_labels"][int(idx)] = charlabel
                     elif command == "MATRIX":
                         start_idx = buffer.find("MATRIX") + len("MATRIX")
-                        for entry in buffer[start_idx + 1 : -1].strip().split("\n"):
+                        for entry in buffer[start_idx + 1: -1].strip().split("\n"):
                             entry = re.sub(r"\s+", " ", entry.strip())
                             taxon, vector = entry.split()
                             nexus_data["matrix"][taxon] = vector
@@ -209,14 +209,15 @@ def read_data_nexus(source: str, args) -> PhyloData:
                     states[taxon, idx].add(state)
 
     # Build the PhyloData object and return
+    # TODO: deal with charstates when available
     phyd = PhyloData()
     for (taxon, character), state_set in states.items():
         for state in state_set:
             print(state, state_set)
-            phyd.add_state(taxon, character, state)
+            phyd.extend((taxon, None, character), state)
 
-    if nexus_data["charstate_states"]:
-        phyd._charstates = nexus_data["charstate_states"]
+    # if nexus_data["charstate_states"]:
+    #    phyd._charstates = nexus_data["charstate_states"]
 
     return phyd
 

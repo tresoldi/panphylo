@@ -43,7 +43,7 @@ class Character:
 
     def add_state(self, state: str):
         """
-        Add a state to the character, if possible.
+        Add a state to the character, if applicable.
 
         @param state: The identifier for the state.
         """
@@ -175,7 +175,7 @@ class PhyloData:
         # actually a set of values
         self._obs[taxon, charset, character].add(value)
 
-    def matrix(self) -> list[str, str]:
+    def matrix(self) -> tuple[str, str]:
         # Build the matrix representation
         matrix: dict[str, str] = defaultdict(str)
         symbols: tuple[str] = self.symbols  # cache
@@ -192,55 +192,75 @@ class PhyloData:
 
         # Build the representation and return; we don't sort here, as different slug
         # levels might be applied by the output functions
-        return matrix.items()
+        return tuple(matrix.items())
 
+    def slug_taxa(self, level: str):
+        """
+        Slug taxa labels, making sure uniqueness of IDs is preserved.
+
+        The method also takes care of updating all references and observations.
+
+        @param level: The level of slugging, as accepted by the `slug()` function.
+        """
+
+        # Build map with unique ids, update self.taxa, and update self.values
+        slug_map = {
+            source: target
+            for source, target in zip(self._taxa, unique_ids(self._taxa, level))
+        }
+
+        self._taxa = set(slug_map.values())
+        self._obs = {
+            (slug_map[taxon], charset, character): value_set for
+            (taxon, charset, character), value_set in self._obs.items()
+        }
 
 # TODO: collect assumptions?
-def binarize(phyd: PhyloData) -> PhyloData:
-    """
-    Build a binarized version of the provided phylogenetic data.
-
-    @param phyd: The PhyloData to binarize.
-    @return: A binarized version of the provided data.
-    """
-
-    # For each taxon, collect a map of which charstates are observed; this does not modify the
-    # internal properties
-    charstates = phyd.charstates  # cache
-    binary_states = {}
-    for taxon in phyd.taxa:
-        for character, states in charstates.items():
-            obs = phyd.states.get((taxon, character), None)
-
-            if not obs:
-                binary_states[taxon, character] = [BinaryObs.GAP for _ in states]
-            else:
-                if tuple(obs) == ("?",):
-                    binary_states[taxon, character] = [
-                        BinaryObs.MISSING for _ in states
-                    ]
-                else:
-                    binary_states[taxon, character] = [
-                        BinaryObs.TRUE if state in obs else BinaryObs.FALSE
-                        for state in states
-                    ]
-
-    # Build a new phylogenetic data structure, adding the new characters one by one
-    bin_phyd = PhyloData()
-    for (taxon, character), states in binary_states.items():
-        for obs, state_label in zip(states, charstates[character]):
-            # Add ascertainment
-            bin_phyd.add_state(
-                taxon, f"{character}_ASCERTAINMENT", "0", charset=character
-            )
-
-            # TODO: confirm if it is right to skip over gaps
-            if obs != BinaryObs.GAP:
-                bin_phyd.add_state(
-                    taxon,
-                    f"{character}_{state_label}",
-                    BINARY_OPS_MAP[obs],
-                    charset=character,
-                )
-
-    return bin_phyd
+# def binarize(phyd: PhyloData) -> PhyloData:
+#    """
+#    Build a binarized version of the provided phylogenetic data.
+#
+#    @param phyd: The PhyloData to binarize.
+#    @return: A binarized version of the provided data.
+#    """
+#
+#    # For each taxon, collect a map of which charstates are observed; this does not modify the
+#    # internal properties
+#    charstates = phyd.charstates  # cache
+#    binary_states = {}
+#    for taxon in phyd.taxa:
+#        for character, states in charstates.items():
+#            obs = phyd.states.get((taxon, character), None)
+#
+#            if not obs:
+#                binary_states[taxon, character] = [BinaryObs.GAP for _ in states]
+#            else:
+#                if tuple(obs) == ("?",):
+#                    binary_states[taxon, character] = [
+#                        BinaryObs.MISSING for _ in states
+#                    ]
+#                else:
+#                    binary_states[taxon, character] = [
+#                        BinaryObs.TRUE if state in obs else BinaryObs.FALSE
+#                        for state in states
+#                   ]
+#
+#    # Build a new phylogenetic data structure, adding the new characters one by one
+#    bin_phyd = PhyloData()
+#    for (taxon, character), states in binary_states.items():
+#        for obs, state_label in zip(states, charstates[character]):
+#            # Add ascertainment
+#            bin_phyd.add_state(
+#                taxon, f"{character}_ASCERTAINMENT", "0", charset=character
+#            )
+#
+#            # TODO: confirm if it is right to skip over gaps
+#            if obs != BinaryObs.GAP:
+#                bin_phyd.add_state(
+#                    taxon,
+#                    f"{character}_{state_label}",
+#                    BINARY_OPS_MAP[obs],
+#                    charset=character,
+#                )
+#
+#    return bin_phyd
