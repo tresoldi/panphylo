@@ -13,8 +13,8 @@ from typing import *
 from .common import indexes2ranges, unique_ids  # For testing purposes
 from .common_io import smart_open, fetch_stream_data
 from .nexus import read_data_nexus, build_nexus
+from .phylip import read_data_phylip, build_phylip
 from .phylodata import binarize
-# from .phylip import read_data_phylip, build_phylip
 from .tabular import detect_delimiter, read_data_tabular, build_tabular
 
 
@@ -38,8 +38,8 @@ def convert(source: str, args: Dict[str, str]) -> str:
         phyd = read_data_tabular(source, "\t", args)
     elif args["from"] == "nexus":
         phyd = read_data_nexus(source, args)
-    #    elif args["from"] == "phylip":
-    #        phyd = read_data_phylip(source, args)
+    elif args["from"] == "phylip":
+        phyd = read_data_phylip(source, args)
     else:
         raise ValueError("Invalid reading format `%s`.", args["from"])
 
@@ -57,8 +57,8 @@ def convert(source: str, args: Dict[str, str]) -> str:
         converted = build_tabular(phyd, "\t", args)
     #    elif args["to"] == "nexus":
     #        converted = build_nexus(phyd, args)
-    #    elif args["to"] == "phylip":
-    #        converted = build_phylip(phyd, args)
+    elif args["to"] == "phylip":
+        converted = build_phylip(phyd, args)
     else:
         raise ValueError("Invalid output format `%s`.", args["to"])
 

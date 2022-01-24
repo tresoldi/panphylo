@@ -176,6 +176,7 @@ class PhyloData:
         # actually a set of values
         self._obs[taxon, character].add(value)
 
+    @property
     def matrix(self) -> Tuple[str, str]:
         # Build the matrix representation
         matrix: Dict[str, str] = defaultdict(str)

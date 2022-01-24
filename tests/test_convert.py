@@ -20,8 +20,8 @@ RESOURCE_PATH = Path(__file__).parent / "test_data"
 @pytest.mark.parametrize(
     "input,reference,arg_from,arg_to,binarize",
     [
-        # ["example.phy", "example.phy.csv", "phylip", "csv", False],
-        # ["example.phy", "example.phy.bin.csv", "phylip", "csv", True],
+        ["example.phy", "example.phy.csv", "phylip", "csv", False],
+        ["example.phy", "example.phy.bin.csv", "phylip", "csv", True],
         # ["example.phy", "example.phy.nex", "phylip", "nexus", False],
         # ["example.phy", "example.phy.bin.nex", "phylip", "nexus", True],
         # ["example.phy", "example.phy.phy", "phylip", "phylip", False],
