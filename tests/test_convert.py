@@ -4,6 +4,7 @@ Test results of actual conversion.
 
 # Import Python libraries
 from pathlib import Path
+
 import pytest
 
 # Import the library for testing
@@ -30,7 +31,7 @@ RESOURCE_PATH = Path(__file__).parent / "test_data"
         # ["example.csv", "example.csv.nex", "csv", "nexus", False],
         # ["example.csv", "example.csv.bin.nex", "csv", "nexus", True],
         ["example.csv", "example.csv.csv", "csv", "csv", False],
-        # ["example.csv", "example.csv.bin.csv", "csv", "csv", True],
+        ["example.csv", "example.csv.bin.csv", "csv", "csv", True],
         # ["example.nex", "example.nex.csv", "nexus", "csv", False],
         ## The example below fails due to charstatelabel parsing
         # ["example_s.nex", "example_s.nex", "nexus", "csv", True],

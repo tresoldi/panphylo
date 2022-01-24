@@ -7,17 +7,16 @@ __version__ = "0.3"  # remember to sync in setup.py and biblioref
 __author__ = "Tiago Tresoldi"
 __email__ = "tiago.tresoldi@lingfil.uu.se"
 
+from typing import *
+
 # Import from local modules
-from .common import indexes2ranges, unique_ids # For testing purposes
+from .common import indexes2ranges, unique_ids  # For testing purposes
 from .common_io import smart_open, fetch_stream_data
 from .nexus import read_data_nexus, build_nexus
+from .phylodata import binarize
 # from .phylip import read_data_phylip, build_phylip
 from .tabular import detect_delimiter, read_data_tabular, build_tabular
 
-
-# from .phylodata import binarize
-
-from typing import *
 
 # Dispatch the different reading methods
 def convert(source: str, args: Dict[str, str]) -> str:
@@ -46,8 +45,8 @@ def convert(source: str, args: Dict[str, str]) -> str:
 
     # Perform all requested data manipulations
     phyd.slug_taxa(args.get("slug_taxa", "none"))
-    #    if args.get("binarize", False):
-    #        phyd = binarize(phyd)
+    if args.get("binarize", False):
+        phyd = binarize(phyd)
 
     # Write converted data in the requested format; note that the command-line
     # handling should have taken care of replacing the "auto" value for

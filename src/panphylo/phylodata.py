@@ -2,9 +2,9 @@
 Module with the class for the internal representation of data.
 """
 
-# Import Python libraries
-from collections import defaultdict, Counter
 import string
+# Import Python libraries
+from collections import defaultdict
 from typing import *
 
 # Import from local modules
@@ -78,8 +78,8 @@ class PhyloData:
     def __init__(self):
         # The list of taxa is store independently for convenience, as it could be drawn
         # from the list of observations
-        self._taxa: set[str] = set()
-        self._charset: dict[str, dict[str, Character]] = {}
+        self._taxa: Set[str] = set()
+        self._charset: Dict[str, Dict[str, Character]] = {}
 
         # Observations are dictionaries with a tuple of strings as keys (taxon, character)
         # and a set of strings as the observed value
@@ -216,52 +216,50 @@ class PhyloData:
             (taxon, character), value_set in self._obs.items()
         }
 
+
 # TODO: collect assumptions?
-# def binarize(phyd: PhyloData) -> PhyloData:
-#    """
-#    Build a binarized version of the provided phylogenetic data.
-#
-#    @param phyd: The PhyloData to binarize.
-#    @return: A binarized version of the provided data.
-#    """
-#
-#    # For each taxon, collect a map of which charstates are observed; this does not modify the
-#    # internal properties
-#    charstates = phyd.charstates  # cache
-#    binary_states = {}
-#    for taxon in phyd.taxa:
-#        for character, states in charstates.items():
-#            obs = phyd.states.get((taxon, character), None)
-#
-#            if not obs:
-#                binary_states[taxon, character] = [BinaryObs.GAP for _ in states]
-#            else:
-#                if tuple(obs) == ("?",):
-#                    binary_states[taxon, character] = [
-#                        BinaryObs.MISSING for _ in states
-#                    ]
-#                else:
-#                    binary_states[taxon, character] = [
-#                        BinaryObs.TRUE if state in obs else BinaryObs.FALSE
-#                        for state in states
-#                   ]
-#
-#    # Build a new phylogenetic data structure, adding the new characters one by one
-#    bin_phyd = PhyloData()
-#    for (taxon, character), states in binary_states.items():
-#        for obs, state_label in zip(states, charstates[character]):
-#            # Add ascertainment
-#            bin_phyd.add_state(
-#                taxon, f"{character}_ASCERTAINMENT", "0", charset=character
-#            )
-#
-#            # TODO: confirm if it is right to skip over gaps
-#            if obs != BinaryObs.GAP:
-#                bin_phyd.add_state(
-#                    taxon,
-#                    f"{character}_{state_label}",
-#                    BINARY_OPS_MAP[obs],
-#                    charset=character,
-#                )
-#
-#    return bin_phyd
+def binarize(phyd: PhyloData) -> PhyloData:
+    """
+    Build a binarized version of the provided phylogenetic data.
+
+    @param phyd: The PhyloData to binarize.
+    @return: A binarized version of the provided data.
+    """
+
+    # For each taxon/character, collect the list of observed states in binary
+    binary_states = {}
+    for character, label in phyd.characters:
+        states = [state for state in phyd._charset[character][label]._states if state != "?"]  # TODO: check "?"
+        for taxon in phyd.taxa:
+            obs = phyd[taxon, character]
+            if not obs:
+                binary_states[taxon, character] = ["-" for _ in states]
+            elif tuple(obs) == ("?",):
+                binary_states[taxon, character] = [
+                    "?" for _ in states
+                ]
+            else:
+                binary_states[taxon, character] = [
+                    "1" if state in obs else "0"
+                    for state in states
+                ]
+
+    # Build a new phylogenetic data structure, adding the new characters one by one
+    bin_phyd = PhyloData()
+    for (taxon, character), states in binary_states.items():
+        charstates = [state for state in phyd._charset[character][character]._states if state != "?"]  # TODO: cache?
+        for obs, state_label in zip(states, charstates):
+            # Add ascertainment
+            # TODO: review ascertainment
+            bin_phyd.extend(
+                (taxon, f"{character}_ASCERTAINMENT"), "0"
+            )
+
+            # TODO: confirm if it is right to skip over gaps
+            if obs != "-":
+                bin_phyd.extend(
+                    (taxon, f"{character}_{state_label}"),
+                    obs
+                )
+
+    return bin_phyd

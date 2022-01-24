@@ -144,14 +144,17 @@ def build_tabular(phyd: PhyloData, delimiter: str, args: dict) -> str:
         zip(phyd.characters, unique_ids([c[1] for c in phyd.characters], args.get("slug_chars", "none")))
     }
 
+    # Build sorted output
     output = []
     for charset, character in phyd.characters:
         for taxon in phyd.taxa:
             for state in phyd[taxon, character]:  # TODO: deal with missing; sort
                 output.append({col_taxa: taxa_map[taxon], col_char: char_map[charset, character], col_state: state})
 
+    # TODO: list ASCERTAINMENT fields first
+    output = sorted(output, key=lambda e: (e[col_char], e[col_taxa], e[col_state]))
+
     # Build buffer
-    # TODO: sort
     fieldnames = [col_taxa, col_char, col_state]
     buffer = [delimiter.join([row[field] for field in fieldnames]) for row in output]
     buffer = [delimiter.join(fieldnames)] + buffer
