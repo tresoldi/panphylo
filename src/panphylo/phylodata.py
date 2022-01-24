@@ -4,7 +4,6 @@ Module with the class for the internal representation of data.
 
 # Import Python libraries
 from collections import defaultdict, Counter
-import enum
 import string
 from typing import *
 
@@ -18,7 +17,7 @@ class Character:
     Class for a column definition.
     """
 
-    def __init__(self, states: Optional[set[str]] = None):
+    def __init__(self, states: Optional[set] = None):
         """
         Initialize the Character.
 
@@ -32,7 +31,7 @@ class Character:
             self._states = states
 
     @property
-    def states(self) -> tuple[str]:
+    def states(self) -> Tuple[str]:
         """
         Return a comparable version of the states set.
 
@@ -84,10 +83,10 @@ class PhyloData:
 
         # Observations are dictionaries with a tuple of strings as keys (taxon, character)
         # and a set of strings as the observed value
-        self._obs: dict[tuple[str, str], set[str]] = defaultdict(set)
+        self._obs: Dict[Tuple[str, str], Set[str]] = defaultdict(set)
 
     @property
-    def taxa(self) -> tuple[str]:
+    def taxa(self) -> Tuple[str]:
         """
         Return a comparable version of the taxa set.
 
@@ -122,7 +121,7 @@ class PhyloData:
         return max([max([len(char) for char in charset.values()]) for charset in self._charset.values()])
 
     @property
-    def symbols(self) -> tuple[str]:
+    def symbols(self) -> Tuple[str]:
         """
         Return a collection of unique symbols for representing states.
 
@@ -134,7 +133,7 @@ class PhyloData:
 
         return tuple([ch for ch in string.digits + string.ascii_uppercase][: self.cardinality])
 
-    def __getitem__(self, item: tuple[str, str]) -> set[str]:
+    def __getitem__(self, item: Tuple[str, str]) -> Set[str]:
         """
         Return the observation for a taxon/charset/character tuple.
 
@@ -147,7 +146,7 @@ class PhyloData:
         return self._obs.get(item, set())
 
     # TODO: have a call (key, character, [charset])
-    def extend(self, key: Union[tuple[str, str], tuple[str, str, str]], value: str):
+    def extend(self, key: Union[Tuple[str, str], Tuple[str, str, str]], value: str):
         # The key can be either in format (taxon, character) or (taxon, character, charset);
         # if `charset` is not provided (usually in cases of non-binary data) we create a
         # "dummy" one with the same name as the character.
@@ -177,10 +176,10 @@ class PhyloData:
         # actually a set of values
         self._obs[taxon, character].add(value)
 
-    def matrix(self) -> tuple[str, str]:
+    def matrix(self) -> Tuple[str, str]:
         # Build the matrix representation
-        matrix: dict[str, str] = defaultdict(str)
-        symbols: tuple[str] = self.symbols  # cache
+        matrix: Dict[str, str] = defaultdict(str)
+        symbols: Tuple[str] = self.symbols  # cache
         for charset_id, char_id in self.characters:
             states = self._charset[charset_id][char_id].states  # TODO: use frequency or something else?
             for taxon in self.taxa:

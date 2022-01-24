@@ -95,8 +95,8 @@ def read_data_tabular(source_str: str, delimiter: str, args: dict) -> PhyloData:
     :return: An object with the internal representation of the data.
     """
 
-    # Read all data
-    rows = source_str.split("\n")
+    # Read all data, dealing with Windows "\r"
+    rows = source_str.replace("\r", "").split("\n")
     rows = [row for row in rows if row.strip()]
     header = rows[0].split(delimiter)
     source = [

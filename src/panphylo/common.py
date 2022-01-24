@@ -19,7 +19,7 @@ def slug(label: str, level: str) -> str:
 
     @param label: The text to be slugged. Note that, as this operates on
         a single string, there is no guarantee of non-collision.
-    @param level: Define the level of slugging to be applied. Currently
+    @param level: Define the level of slugging to be applied. Currently,
         accepted levels are "none", "simple", and "full".
     @return: The slugged version of the label.
     """
@@ -52,8 +52,8 @@ def slug(label: str, level: str) -> str:
 
     return label
 
-# TODO: verify if it is indeed working with non-unique labels
-def unique_ids(labels: Sequence[str], level: str) -> Sequence[str]:
+
+def unique_ids(labels: Sequence[str], level: str) -> List[str]:
     """
     Map a sequence of identifiers to a slugged version with unique identifiers.
 
@@ -98,7 +98,7 @@ def unique_ids(labels: Sequence[str], level: str) -> Sequence[str]:
     return unique_slug_labels
 
 
-def indexes2ranges(indexes:Sequence[int]) -> str:
+def indexes2ranges(indexes: Sequence[int]) -> str:
     """
     Transforms a sequence of indexes into a textual range representation.
 
