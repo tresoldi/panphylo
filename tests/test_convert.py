@@ -39,7 +39,7 @@ TARGETS_PATH = Path(__file__).parent / "targets"
         ["example.nex", "example.nex.phy", "nexus", "phylip", False],
         ## The example below fails due to charstatelabel parsing
         ##["example_s.nex", "example.nex.bin.phy", "nexus", "phylip", True],
-        # ["example.nex", "example.nex.nex", "nexus", "nexus", False],
+        ["example.nex", "example.nex.nex", "nexus", "nexus", False],
         ## The example below fails due to charstatelabel parsing
         ##["example_s.nex", "example.nex.bin.nex", "nexus", "nexus", True],
     ],
@@ -62,7 +62,7 @@ def test_convert(
         converted = panphylo.convert(source, args).strip()
         assert converted == reference
 
-    converted = panphylo.convert(source, args).strip()
-    # if converted != reference:
-    #   with open("temp.tiago", "w", encoding="utf-8") as handler:
+    #converted = panphylo.convert(source, args).strip()
+    #if converted != reference:
+    #    with open("temp.tiago", "w", encoding="utf-8") as handler:
     #       handler.write(converted)
