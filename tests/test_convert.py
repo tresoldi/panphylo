@@ -23,8 +23,8 @@ TARGETS_PATH = Path(__file__).parent / "targets"
     [
         ["example.phy", "example.phy.csv", "phylip", "csv", False],
         ["example.phy", "example.phy.bin.csv", "phylip", "csv", True],
-        # ["example.phy", "example.phy.nex", "phylip", "nexus", False],
-        # ["example.phy", "example.phy.bin.nex", "phylip", "nexus", True],
+        ["example.phy", "example.phy.nex", "phylip", "nexus", False],
+        ["example.phy", "example.phy.bin.nex", "phylip", "nexus", True],
         # ["example.phy", "example.phy.phy", "phylip", "phylip", False],
         # ["example.phy", "example.phy.bin.phy", "phylip", "phylip", True],
         ["example.csv", "example.csv.phy", "csv", "phylip", False],

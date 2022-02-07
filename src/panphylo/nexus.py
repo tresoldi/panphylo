@@ -327,19 +327,19 @@ def build_assumption_block(phyd: PhyloData) -> str:
     :return: A textual representation of the NEXUS assumption block.
     """
 
+    # TODO: geting the list of characters with a workaround for genetic data...
+    chars = []
+    for char in phyd.characters:
+        if char[0].startswith("CHAR_"):
+            tokens = char[0].split("_")
+            chars.append("%s_%s" % (tokens[0], tokens[1]))
+        else:
+            chars.append(char[0].split("_")[0])
+
     indexes = defaultdict(list)
-    for idx, label in enumerate([char[0].split("_")[0] for char in phyd.characters]):
+    for idx, label in enumerate(chars):
         indexes[label].append(idx + 1)
 
-    # prev_idx = 0
-    # charset = []
-    # for key in sorted(phyd._charset):
-    #     parameter, char = list(phyd._charset[key].items())[0]
-    #     states = char.states
-    #     charset.append([parameter, prev_idx + 1, prev_idx + 1 + len(states)])
-    #     prev_idx += 1 + len(states)
-
-    ##############
     # TODO; make sure it is sorted
     buffer = """
 BEGIN ASSUMPTIONS;

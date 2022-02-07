@@ -67,7 +67,7 @@ BEGIN CHARACTERS;
         47 CHAR_6 /T,
         48 CHAR_7 /T,
         49 CHAR_8 /C,
-        50 CHAR_9 /A,
+        50 CHAR_9 /A
     ;
 
 MATRIX
