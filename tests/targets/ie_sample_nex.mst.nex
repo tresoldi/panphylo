@@ -1,0 +1,63 @@
+#NEXUS
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=19;
+    TAXLABELS
+        Armenian
+        Bulgarian
+        Czech
+        Danish
+        Dutch
+        English
+        French
+        German
+        Greek
+        Hindi
+        Icelandic
+        Italian
+        Norwegian
+        Polish
+        Portuguese
+        Romanian
+        Russian
+        Spanish
+        Swedish
+    ;
+END;
+
+BEGIN CHARACTERS;
+    DIMENSIONS NCHAR=7;
+    FORMAT DATATYPE=STANDARD MISSING=? GAP=- SYMBOLS="0 1 2 3 4";
+    CHARSTATELABELS
+        1 all /all_0 all_1 all_2 all_3 all_4,
+        2 ashes /ashes_0 ashes_1 ashes_2 ashes_3,
+        3 bark /bark_0 bark_1,
+        4 bird /bird_0 bird_1 bird_2,
+        5 bite_v /bite_v_0,
+        6 black /black_0 black_1,
+        7 bone /bone_0 bone_1 bone_2 bone_3 bone_4
+    ;
+
+MATRIX
+Armenian      ---0--0
+Bulgarian     1--1--2
+Czech         -3-1--2
+Danish        2--1--3
+Dutch         2-1--03
+English       2----13
+French        -1-2--0
+German        2--1-04
+Greek         4--?--?
+Hindi         -2----1
+Icelandic     -0-1--3
+Italian       -1----0
+Norwegian     -?-1--3
+Polish        -3-1--2
+Portuguese    -1--0-0
+Romanian      3--0--0
+Russian       -3-1--2
+Spanish       0--0--0
+Swedish       2-0--03
+;
+
+END;
