@@ -206,7 +206,7 @@ class PhyloData:
                         if len(obs_repr) == 1:
                             matrix[taxon] += obs_repr[0]
                         else:
-                            matrix[taxon] += "(%s)" % ",".join(obs_repr)
+                            matrix[taxon] += "(%s)" % ",".join(sorted(obs_repr))
 
         # Build the representation and return; we don't sort here, as different slug
         # levels might be applied by the output functions

@@ -25,8 +25,8 @@ TARGETS_PATH = Path(__file__).parent / "targets"
         ["example.phy", "example.phy.bin.csv", "phylip", "csv", True],
         ["example.phy", "example.phy.nex", "phylip", "nexus", False],
         ["example.phy", "example.phy.bin.nex", "phylip", "nexus", True],
-        # ["example.phy", "example.phy.phy", "phylip", "phylip", False],
-        # ["example.phy", "example.phy.bin.phy", "phylip", "phylip", True],
+        ["example.phy", "example.phy.phy", "phylip", "phylip", False],
+        ["example.phy", "example.phy.bin.phy", "phylip", "phylip", True],
         ["example.csv", "example.csv.phy", "csv", "phylip", False],
         ["example.csv", "example.csv.bin.phy", "csv", "phylip", True],
         ["example.csv", "example.csv.nex", "csv", "nexus", False],
@@ -36,7 +36,7 @@ TARGETS_PATH = Path(__file__).parent / "targets"
         ["example.nex", "example.nex.csv", "nexus", "csv", False],
         ## The example below fails due to charstatelabel parsing
         # ["example_s.nex", "example_s.nex", "nexus", "csv", True],
-        # ["example.nex", "example.nex.phy", "nexus", "phylip", False],
+        ["example.nex", "example.nex.phy", "nexus", "phylip", False],
         ## The example below fails due to charstatelabel parsing
         ##["example_s.nex", "example.nex.bin.phy", "nexus", "phylip", True],
         # ["example.nex", "example.nex.nex", "nexus", "nexus", False],
@@ -62,7 +62,7 @@ def test_convert(
         converted = panphylo.convert(source, args).strip()
         assert converted == reference
 
-    # converted = panphylo.convert(source, args).strip()
+    converted = panphylo.convert(source, args).strip()
     # if converted != reference:
-    #    with open("temp.tiago", "w", encoding="utf-8") as handler:
-    #        handler.write(converted)
+    #   with open("temp.tiago", "w", encoding="utf-8") as handler:
+    #       handler.write(converted)
