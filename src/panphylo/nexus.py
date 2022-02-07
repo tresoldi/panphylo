@@ -10,15 +10,14 @@ with that purpose, would make transpilation too hard.
 # TODO: sort using assumptions (charset) if provided
 # TODO: support comments (will need changes to the parser)
 
+import re
 # Import Python standard libraries
 from collections import defaultdict
 from enum import Enum, auto
 from itertools import chain
-import re
 
 # Import from local modules
 from .phylodata import PhyloData
-from .common import indexes2ranges
 
 
 def parse_nexus(source: str) -> dict:
@@ -253,24 +252,20 @@ def build_character_block(phyd: PhyloData) -> str:
     """
 
     # Express the actual labels only we have any state which is not a binary "0" or "1"
-    # TODO: what about mixed data?
-    states = sorted(set(chain.from_iterable(phyd.charstates.values())))
-    if tuple(states) == ("0", "1"):
-        charstatelabels = [
-            "        %i %s," % (charstate_idx + 1, character)
-            for charstate_idx, (character, _) in enumerate(
-                sorted(phyd.charstates.items())
-            )
-        ]
-    else:
-        # TODO: make sure this sorted order matches the one from phyd.matrix
-        charstatelabels = [
-            "        %i %s /%s,"
-            % (charstate_idx + 1, character, " ".join(sorted(state_set)))
-            for charstate_idx, (character, state_set) in enumerate(
-                sorted(phyd.charstates.items())
-            )
-        ]
+    # TODO: _charset should be provided by a method in PhyloData
+    # TODO: what about mixed, binary and non-binary, data?
+    charstatelabels = []
+    for key in sorted(phyd._charset):
+        character, charinfo = list(phyd._charset[key].items())[0]
+        states = charinfo.states
+        if states == ("0", "1"):
+            charstatelabels.append(character)
+        else:
+            # TODO: use an enumerate? Have it as an option?
+            charstatelabels.append("%s /%s" % (character, " ".join(states)))
+
+    charstatelabels_str = ",\n".join(["        %i %s" % (idx + 1, label)
+                                      for idx, label in enumerate(charstatelabels)])
 
     # TODO: keeping the final comma in charstatelabels should be an option
     buffer = """
@@ -284,9 +279,9 @@ BEGIN CHARACTERS;
 %s
 
 END;""" % (
-        len(phyd.charstates),
+        len(charstatelabels),
         " ".join(phyd.symbols),
-        "\n".join(charstatelabels),
+        charstatelabels_str,
         build_matrix_command(phyd),
     )
 
@@ -303,7 +298,7 @@ def build_matrix_command(phyd: PhyloData) -> str:
 
     # Obtain the matrix and the maximum taxon length for formatting
     matrix = phyd.matrix
-    taxon_length = max([len(entry["taxon"]) for entry in matrix])
+    taxon_length = max([len(entry[0]) for entry in matrix])
 
     # Build buffer
     buffer = """
@@ -312,8 +307,8 @@ MATRIX
 ;""" % (
         "\n".join(
             [
-                "%s    %s" % (entry["taxon"].ljust(taxon_length), entry["vector"])
-                for entry in matrix
+                "%s    %s" % (taxon.ljust(taxon_length), vector)
+                for (taxon, vector) in matrix
             ]
         )
     )
@@ -321,6 +316,8 @@ MATRIX
     return buffer.strip()
 
 
+# TODO: incorporate to the processing from other parts (e.g. BEGIN DATA)
+# TODO: this is probably failing right now with jumps, when indexes2ranges is needed
 def build_assumption_block(phyd: PhyloData) -> str:
     """
     Build a NEXUS ASSUMPTION block.
@@ -329,15 +326,13 @@ def build_assumption_block(phyd: PhyloData) -> str:
     :return: A textual representation of the NEXUS assumption block.
     """
 
-    if not phyd.charset:
-        return ""
-
-    # Get the individual indexes first, and then build the string representation
-    character_list = sorted(phyd.charstates.keys())
-    indexes = {
-        charset: [character_list.index(char) + 1 for char in characters]
-        for charset, characters in phyd.charset.items()
-    }
+    prev_idx = 0
+    charset = []
+    for key in sorted(phyd._charset):
+        parameter, char = list(phyd._charset[key].items())[0]
+        states = char.states
+        charset.append([parameter, prev_idx + 1, prev_idx + 1 + len(states)])
+        prev_idx += 1 + len(states)
 
     ##############
     # TODO; make sure it is sorted
@@ -348,14 +343,11 @@ END;
     """ % (
         "\n".join(
             [
-                "    CHARSET %s = %s;" % (charset, indexes2ranges(indexes[charset]))
-                for charset in sorted(indexes)
+                "    CHARSET %s = %i-%i;" % (parameter, start, end)
+                for (parameter, start, end) in charset
             ]
         )
     )
-
-    for charset, char_ranges in indexes.items():
-        print(charset, char_ranges, indexes2ranges(char_ranges))
 
     return buffer
 
@@ -376,8 +368,14 @@ def build_nexus(phyd: PhyloData, args) -> str:
         "#NEXUS",
         build_taxa_block(phyd),
         build_character_block(phyd),
-        build_assumption_block(phyd),
     ]
+
+    # Assumption are only there if the data is binary
+    # TODO: again horrible code, fix ._charset as soon as tests are passing
+    chars = list(chain.from_iterable([list(c.values()) for c in phyd._charset.values()]))
+    is_binary = [char.binary() for char in chars]
+    if all(is_binary):
+        components.append(build_assumption_block(phyd))
 
     buffer = "\n\n".join([comp for comp in components if comp])
 

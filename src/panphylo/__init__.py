@@ -55,8 +55,8 @@ def convert(source: str, args: Dict[str, str]) -> str:
         converted = build_tabular(phyd, ",", args)
     elif args["to"] == "tsv":
         converted = build_tabular(phyd, "\t", args)
-    #    elif args["to"] == "nexus":
-    #        converted = build_nexus(phyd, args)
+    elif args["to"] == "nexus":
+        converted = build_nexus(phyd, args)
     elif args["to"] == "phylip":
         converted = build_phylip(phyd, args)
     else:

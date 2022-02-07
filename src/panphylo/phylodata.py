@@ -2,6 +2,7 @@
 Module with the class for the internal representation of data.
 """
 
+import itertools
 import string
 # Import Python libraries
 from collections import defaultdict
@@ -30,15 +31,19 @@ class Character:
         else:
             self._states = states
 
+    # TODO: Implement a data structure for better dealing with missing data
     @property
     def states(self) -> Tuple[str]:
         """
         Return a comparable version of the states set.
 
+        Note that this will not include unknown states (i.e., "?"), whose
+        handling will depend on the output function.
+
         @return: A sorted tuple of the internal states set.
         """
 
-        return tuple(sorted(self._states))
+        return tuple(sorted([state for state in self._states if state != "?"]))
 
     def add_state(self, state: str):
         """
@@ -118,7 +123,12 @@ class PhyloData:
         @return: An integer with the cardinality of the largest character.
         """
 
-        return max([max([len(char) for char in charset.values()]) for charset in self._charset.values()])
+        # Note that we call .states so it takes care of special
+        # cases like missing data
+
+        # TODO: horrible code, fix as soon as tests are passing
+        chars = list(itertools.chain.from_iterable([list(char.values()) for char in self._charset.values()]))
+        return max([len(c.states) for c in chars])
 
     @property
     def symbols(self) -> Tuple[str]:
@@ -185,12 +195,18 @@ class PhyloData:
             states = self._charset[charset_id][char_id].states  # TODO: use frequency or something else?
             for taxon in self.taxa:
                 obs = self[taxon, char_id]
-                if obs:
-                    obs_repr = [symbols[states.index(o)] for o in obs]
-                    if len(obs_repr) == 1:
-                        matrix[taxon] += obs_repr[0]
+                if not obs:
+                    matrix[taxon] += "-"
+                else:
+                    # TODO: check partial missing data, as in beastling
+                    if "?" in obs:
+                        matrix[taxon] += "?"
                     else:
-                        matrix[taxon] += "(%s)" % ",".join(obs_repr)
+                        obs_repr = [symbols[states.index(o)] for o in obs]
+                        if len(obs_repr) == 1:
+                            matrix[taxon] += obs_repr[0]
+                        else:
+                            matrix[taxon] += "(%s)" % ",".join(obs_repr)
 
         # Build the representation and return; we don't sort here, as different slug
         # levels might be applied by the output functions

@@ -13,6 +13,7 @@ import panphylo
 SOURCES_PATH = Path(__file__).parent / "sources"
 TARGETS_PATH = Path(__file__).parent / "targets"
 
+
 # TODO: add a better (and shorter) nexus source example
 # TODO: build round-trip examples
 
@@ -26,15 +27,15 @@ TARGETS_PATH = Path(__file__).parent / "targets"
         # ["example.phy", "example.phy.bin.nex", "phylip", "nexus", True],
         # ["example.phy", "example.phy.phy", "phylip", "phylip", False],
         # ["example.phy", "example.phy.bin.phy", "phylip", "phylip", True],
-        # ["example.csv", "example.csv.phy", "csv", "phylip", False],
-        # ["example.csv", "example.csv.bin.phy", "csv", "phylip", True],
-        # ["example.csv", "example.csv.nex", "csv", "nexus", False],
+        ["example.csv", "example.csv.phy", "csv", "phylip", False],
+        ["example.csv", "example.csv.bin.phy", "csv", "phylip", True],
+        ["example.csv", "example.csv.nex", "csv", "nexus", False],
         # ["example.csv", "example.csv.bin.nex", "csv", "nexus", True],
         ["example.csv", "example.csv.csv", "csv", "csv", False],
         ["example.csv", "example.csv.bin.csv", "csv", "csv", True],
         ["example.nex", "example.nex.csv", "nexus", "csv", False],
         ## The example below fails due to charstatelabel parsing
-        #["example_s.nex", "example_s.nex", "nexus", "csv", True],
+        # ["example_s.nex", "example_s.nex", "nexus", "csv", True],
         # ["example.nex", "example.nex.phy", "nexus", "phylip", False],
         ## The example below fails due to charstatelabel parsing
         ##["example_s.nex", "example.nex.bin.phy", "nexus", "phylip", True],
@@ -61,7 +62,7 @@ def test_convert(
         converted = panphylo.convert(source, args).strip()
         assert converted == reference
 
-    # converted = panphylo.convert(source, args).strip()
-    # if converted != reference:
+    #converted = panphylo.convert(source, args).strip()
+    #if converted != reference:
     #    with open("temp.tiago", "w", encoding="utf-8") as handler:
     #        handler.write(converted)
