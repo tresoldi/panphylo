@@ -10,8 +10,8 @@ import pytest
 # Import the library for testing
 import panphylo
 
-RESOURCE_PATH = Path(__file__).parent / "test_data"
-
+SOURCES_PATH = Path(__file__).parent / "sources"
+TARGETS_PATH = Path(__file__).parent / "targets"
 
 # TODO: add a better (and shorter) nexus source example
 # TODO: build round-trip examples
@@ -47,10 +47,10 @@ def test_convert(
         input: str, reference: str, arg_from: str, arg_to: str, binarize: bool
 ):
     # Read input and reference
-    file_input = RESOURCE_PATH / input
+    file_input = SOURCES_PATH / input
     source = panphylo.fetch_stream_data(file_input)
 
-    file_reference = RESOURCE_PATH / reference
+    file_reference = TARGETS_PATH / reference
     with open(file_reference, encoding="utf-8") as handler:
         reference = handler.read().strip()
 
