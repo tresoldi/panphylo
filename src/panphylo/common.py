@@ -53,7 +53,7 @@ def slug(label: str, level: str) -> str:
     return label
 
 
-def unique_ids(labels: Sequence[str], level: str) -> List[str]:
+def unique_ids(labels: Collection[str], level: str) -> List[str]:
     """
     Map a sequence of identifiers to a slugged version with unique identifiers.
 

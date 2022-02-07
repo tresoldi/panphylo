@@ -18,7 +18,7 @@ class Character:
     Class for a column definition.
     """
 
-    def __init__(self, states: Optional[set] = None):
+    def __init__(self, states: Optional[Set[str]] = None):
         """
         Initialize the Character.
 
@@ -31,7 +31,6 @@ class Character:
         else:
             self._states = states
 
-    # TODO: Implement a data structure for better dealing with missing data
     @property
     def states(self) -> Tuple[str]:
         """
@@ -54,7 +53,7 @@ class Character:
 
         self._states.add(state)
 
-    def binary(self) -> bool:
+    def is_binary(self) -> bool:
         """
         Checks whether the character is a binary one.
 
@@ -63,16 +62,17 @@ class Character:
 
         @return: A flag on whether the character is a binary one.
         """
+
         if self.states in [("0",), ("1",), ("0", "1")]:
             return True
 
         return False
 
     def __len__(self) -> int:
-        return len(self._states)
+        return len(self.states)
 
     def __repr__(self) -> str:
-        return f"Character with {len(self._states)} states ({self.states})."
+        return f"Character with {len(self)} states ({self.states})."
 
 
 class PhyloData:
@@ -84,7 +84,7 @@ class PhyloData:
         # The list of taxa is store independently for convenience, as it could be drawn
         # from the list of observations
         self._taxa: Set[str] = set()
-        self._charset: Dict[str, Dict[str, Character]] = {}
+        self._charset: Dict[str, Character] = {}
 
         # Observations are dictionaries with a tuple of strings as keys (taxon, character)
         # and a set of strings as the observed value
@@ -100,11 +100,11 @@ class PhyloData:
 
         return tuple(sorted(self._taxa))
 
+    # TODO: fix to just return list(self._charset), and type List[str]
     @property
     def characters(self):
         # Collect the ordered list of charset_id/char_id to query; this allows to later
         # easily implement different strategies
-        # TODO: how to implement different strategies with a property?
         characters = []
         for charset_id, charset in sorted(self._charset.items()):
             for char_id in sorted(charset):
@@ -246,7 +246,7 @@ def binarize(phyd: PhyloData) -> PhyloData:
     # For each taxon/character, collect the list of observed states in binary
     binary_states = {}
     for character, label in phyd.characters:
-        states = [state for state in phyd._charset[character][label]._states if state != "?"]  # TODO: check "?"
+        states = [state for state in phyd._charset[character][label]._states if state != "?"]
         for taxon in phyd.taxa:
             obs = phyd[taxon, character]
             if not obs:

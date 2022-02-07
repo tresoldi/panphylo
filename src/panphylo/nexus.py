@@ -16,8 +16,8 @@ from collections import defaultdict
 from enum import Enum, auto
 from itertools import chain
 
-from .common import indexes2ranges
 # Import from local modules
+from .common import indexes2ranges
 from .phylodata import PhyloData
 
 
@@ -196,17 +196,21 @@ def read_data_nexus(source: str, args) -> PhyloData:
             for idx, state in enumerate(vector):
                 if state == nexus_data["missing"]:
                     states[taxon, alm2charset[idx + 1]].add("?")
-                elif state != "0":
+                elif state == nexus_data["gap"]:
+                    pass
+                elif state != "0":  # TODO: why this? still needed? only for binary?
                     states[taxon, alm2charset[idx + 1]].add(
                         nexus_data["charstate_labels"][idx + 1]
                     )
     else:
         for taxon, vector in nexus_data["matrix"].items():
-            for idx, state in enumerate(vector):
+            for character, state in zip(nexus_data["charstate_states"], vector):
                 if state == nexus_data["missing"]:
-                    states[taxon, idx].add("?")
-                elif state != "0":
-                    states[taxon, idx].add(state)
+                    states[taxon, character].add("?")
+                elif state == nexus_data["gap"]:
+                    pass
+                else:
+                    states[taxon, character].add(state)
 
     # Build the PhyloData object and return
     # TODO: deal with charstates when available
@@ -214,9 +218,6 @@ def read_data_nexus(source: str, args) -> PhyloData:
     for (taxon, character), state_set in states.items():
         for state in state_set:
             phyd.extend((taxon, character), state)
-
-    # if nexus_data["charstate_states"]:
-    #    phyd._charstates = nexus_data["charstate_states"]
 
     return phyd
 
@@ -243,7 +244,6 @@ END;""" % (
     return buffer.strip()
 
 
-# TODO: don't output charstatelabels values if all are binary
 def build_character_block(phyd: PhyloData) -> str:
     """
     Build a NEXUS CHARACTER block.
@@ -255,15 +255,22 @@ def build_character_block(phyd: PhyloData) -> str:
     # Express the actual labels only we have any state which is not a binary "0" or "1"
     # TODO: _charset should be provided by a method in PhyloData
     # TODO: what about mixed, binary and non-binary, data?
+    # TODO: should carry the original state names, if available
+    is_binary = True
+    for key in sorted(phyd._charset):
+        character, charinfo = list(phyd._charset[key].items())[0]
+        if charinfo.states not in [("0",), ("1",), ("0", "1")]:
+            is_binary = False
+            break
+
     charstatelabels = []
     for key in sorted(phyd._charset):
         character, charinfo = list(phyd._charset[key].items())[0]
-        states = charinfo.states
-        if states in [("0",), ("1",), ("0", "1")]:
+        if is_binary:
             charstatelabels.append(character)
         else:
-            # TODO: use an enumerate? Have it as an option?
-            charstatelabels.append("%s /%s" % (character, " ".join(states)))
+            states_str = ["%s_%s" % (character, state) for state in charinfo.states]
+            charstatelabels.append("%s /%s" % (character, " ".join(states_str)))
 
     charstatelabels_str = ",\n".join(["        %i %s" % (idx + 1, label)
                                       for idx, label in enumerate(charstatelabels)])
@@ -378,7 +385,7 @@ def build_nexus(phyd: PhyloData, args) -> str:
     # Assumption are only there if the data is binary
     # TODO: again horrible code, fix ._charset as soon as tests are passing
     chars = list(chain.from_iterable([list(c.values()) for c in phyd._charset.values()]))
-    is_binary = [char.binary() for char in chars]
+    is_binary = [char.is_binary() for char in chars]
     if all(is_binary):
         components.append(build_assumption_block(phyd))
 
