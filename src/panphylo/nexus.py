@@ -16,6 +16,7 @@ from collections import defaultdict
 from enum import Enum, auto
 from itertools import chain
 
+from .common import indexes2ranges
 # Import from local modules
 from .phylodata import PhyloData
 
@@ -258,7 +259,7 @@ def build_character_block(phyd: PhyloData) -> str:
     for key in sorted(phyd._charset):
         character, charinfo = list(phyd._charset[key].items())[0]
         states = charinfo.states
-        if states == ("0", "1"):
+        if states in [("0",), ("1",), ("0", "1")]:
             charstatelabels.append(character)
         else:
             # TODO: use an enumerate? Have it as an option?
@@ -326,13 +327,17 @@ def build_assumption_block(phyd: PhyloData) -> str:
     :return: A textual representation of the NEXUS assumption block.
     """
 
-    prev_idx = 0
-    charset = []
-    for key in sorted(phyd._charset):
-        parameter, char = list(phyd._charset[key].items())[0]
-        states = char.states
-        charset.append([parameter, prev_idx + 1, prev_idx + 1 + len(states)])
-        prev_idx += 1 + len(states)
+    indexes = defaultdict(list)
+    for idx, label in enumerate([char[0].split("_")[0] for char in phyd.characters]):
+        indexes[label].append(idx + 1)
+
+    # prev_idx = 0
+    # charset = []
+    # for key in sorted(phyd._charset):
+    #     parameter, char = list(phyd._charset[key].items())[0]
+    #     states = char.states
+    #     charset.append([parameter, prev_idx + 1, prev_idx + 1 + len(states)])
+    #     prev_idx += 1 + len(states)
 
     ##############
     # TODO; make sure it is sorted
@@ -343,8 +348,8 @@ END;
     """ % (
         "\n".join(
             [
-                "    CHARSET %s = %i-%i;" % (parameter, start, end)
-                for (parameter, start, end) in charset
+                "    CHARSET %s = %s;" % (charset, indexes2ranges(indexes[charset]))
+                for charset in sorted(indexes)
             ]
         )
     )

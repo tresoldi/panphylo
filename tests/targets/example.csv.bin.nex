@@ -57,7 +57,7 @@ BEGIN CHARACTERS;
         26 bone_75,
         27 bone_76,
         28 bone_77,
-        29 bone_ASCERTAINMENT,
+        29 bone_ASCERTAINMENT
     ;
 
 MATRIX

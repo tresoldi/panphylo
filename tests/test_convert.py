@@ -30,7 +30,7 @@ TARGETS_PATH = Path(__file__).parent / "targets"
         ["example.csv", "example.csv.phy", "csv", "phylip", False],
         ["example.csv", "example.csv.bin.phy", "csv", "phylip", True],
         ["example.csv", "example.csv.nex", "csv", "nexus", False],
-        # ["example.csv", "example.csv.bin.nex", "csv", "nexus", True],
+        ["example.csv", "example.csv.bin.nex", "csv", "nexus", True],
         ["example.csv", "example.csv.csv", "csv", "csv", False],
         ["example.csv", "example.csv.bin.csv", "csv", "csv", True],
         ["example.nex", "example.nex.csv", "nexus", "csv", False],
@@ -62,7 +62,7 @@ def test_convert(
         converted = panphylo.convert(source, args).strip()
         assert converted == reference
 
-    #converted = panphylo.convert(source, args).strip()
-    #if converted != reference:
+    # converted = panphylo.convert(source, args).strip()
+    # if converted != reference:
     #    with open("temp.tiago", "w", encoding="utf-8") as handler:
     #        handler.write(converted)

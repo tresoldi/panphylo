@@ -63,7 +63,7 @@ class Character:
 
         @return: A flag on whether the character is a binary one.
         """
-        if self.states == ("0", "1"):
+        if self.states in [("0",), ("1",), ("0", "1")]:
             return True
 
         return False
