@@ -15,7 +15,9 @@ import chardet
 
 
 @contextlib.contextmanager
-def smart_open(filename: str, mode: str = "r", *args: object, **kwargs: object) -> typing.IO:
+def smart_open(
+    filename: str, mode: str = "r", *args: object, **kwargs: object
+) -> typing.IO:
     """
     Open files and i/o streams transparently.
 

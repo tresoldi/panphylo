@@ -64,5 +64,6 @@ def convert(source: str, args: Dict[str, str]) -> str:
 
     return converted
 
+
 # Build namespace
 # __all__ = ["convert", "indexes2ranges"]

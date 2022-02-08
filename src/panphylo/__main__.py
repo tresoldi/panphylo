@@ -37,7 +37,7 @@ def parse_args() -> dict:
         type=str,
         default="-",
         help="Write output to *FILE* instead of *stdout*. If *FILE* is `-`, output will go to *stdout* even if a "
-             "non-textual format is specified.",
+        "non-textual format is specified.",
     )
 
     parser.add_argument(
@@ -45,7 +45,7 @@ def parse_args() -> dict:
         "--binarize",
         action="store_true",
         help="Binarizes the output. Whether and how to add ascertainment correction is specified by the "
-             "`--ascertainment` option.",
+        "`--ascertainment` option.",
     )
 
     parser.add_argument(

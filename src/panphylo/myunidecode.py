@@ -14,7 +14,6 @@ try:
     def unidecode(text):
         return unidecode_lib.unidecode(text)
 
-
 except ImportError:
     # Custom version of unidecode, as it is not offered by brython
 

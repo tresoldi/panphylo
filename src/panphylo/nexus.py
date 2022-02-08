@@ -11,6 +11,7 @@ with that purpose, would make transpilation too hard.
 # TODO: support comments (will need changes to the parser)
 
 import re
+
 # Import Python standard libraries
 from collections import defaultdict
 from enum import Enum, auto
@@ -126,7 +127,9 @@ def parse_nexus(source: str) -> dict:
                             if not charstatelabel:
                                 continue
                             if "/" in charstatelabel:
-                                match = re.search(r"(\d+)\s+(\S+)\s*/(.+)", charstatelabel)
+                                match = re.search(
+                                    r"(\d+)\s+(\S+)\s*/(.+)", charstatelabel
+                                )
                                 idx = match.group(1)
                                 charlabel = match.group(2)
                                 states = match.group(3).split()
@@ -138,7 +141,7 @@ def parse_nexus(source: str) -> dict:
                                 nexus_data["charstate_labels"][int(idx)] = charlabel
                     elif command == "MATRIX":
                         start_idx = buffer.find("MATRIX") + len("MATRIX")
-                        for entry in buffer[start_idx + 1: -1].strip().split("\n"):
+                        for entry in buffer[start_idx + 1 : -1].strip().split("\n"):
                             entry = re.sub(r"\s+", " ", entry.strip())
                             taxon, vector = entry.split()
                             nexus_data["matrix"][taxon] = vector
@@ -269,8 +272,12 @@ def build_character_block(phyd: PhyloData) -> str:
             states_str = ["%s_%s" % (character, state) for state in charinfo.states]
             charstatelabels.append("%s /%s" % (character, " ".join(states_str)))
 
-    charstatelabels_str = ",\n".join(["        %i %s" % (idx + 1, label)
-                                      for idx, label in enumerate(charstatelabels)])
+    charstatelabels_str = ",\n".join(
+        [
+            "        %i %s" % (idx + 1, label)
+            for idx, label in enumerate(charstatelabels)
+        ]
+    )
 
     # TODO: keeping the final comma in charstatelabels should be an option
     buffer = """

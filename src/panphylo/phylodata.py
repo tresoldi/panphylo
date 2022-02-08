@@ -2,10 +2,10 @@
 Module with the class for the internal representation of data.
 """
 
-import string
 # Import Python libraries
 from collections import defaultdict
 from typing import *
+import string
 
 # Import from local modules
 from .common import unique_ids
@@ -17,12 +17,18 @@ class Character:
     Class for a column definition.
     """
 
-    def __init__(self, states: Optional[Set[str]] = None):
+    def __init__(
+        self, states: Optional[Set[str]] = None, missing: str = "?", gap: str = "-"
+    ):
         """
         Initialize the Character.
 
         @param states: A sequence of states that the character
             allows, as a set of strings.
+        @param missing: A string for representing missing values.
+            Defaults to `"?"`.
+        @param missing: A string for representing gap values.
+            Defaults to `"-"`.
         """
 
         if not states:
@@ -30,22 +36,37 @@ class Character:
         else:
             self._states = states
 
+        self.missing = missing
+        self.gap = gap
+
     @property
     def states(self) -> Tuple[str]:
         """
         Return a comparable version of the states set.
 
-        Note that this will not include unknown states (i.e., "?"), whose
-        handling will depend on the output function.
+        Note that this will not include unknown states (i.e., missing
+        and gap), whose handling will depend on the output function.
 
         @return: A sorted tuple of the internal states set.
         """
 
-        return tuple(sorted([state for state in self._states if state != "?"]))
+        return tuple(
+            sorted(
+                [
+                    state
+                    for state in self._states
+                    if state not in [self.missing, self.gap]
+                ]
+            )
+        )
 
     def add_state(self, state: str):
         """
         Add a state to the character, if applicable.
+
+        Note that this will add missing and gap states to the
+        internal list, but they will not be included in
+        the `.states` property.
 
         @param state: The identifier for the state.
         """
@@ -56,7 +77,7 @@ class Character:
         """
         Checks whether the character is a binary one.
 
-        Binary characters are defined as those that have only "0" and
+        Binary characters are defined as those that have only "0" and/or
         "1" as potential states.
 
         @return: A flag on whether the character is a binary one.
@@ -141,7 +162,9 @@ class PhyloData:
         @return: A list with the characters for representing the states.
         """
 
-        return tuple([ch for ch in string.digits + string.ascii_uppercase][: self.cardinality])
+        return tuple(
+            [ch for ch in string.digits + string.ascii_uppercase][: self.cardinality]
+        )
 
     def __getitem__(self, item: Tuple[str, str]) -> Set[str]:
         """
@@ -228,8 +251,8 @@ class PhyloData:
 
         self._taxa = set(slug_map.values())
         self._obs = {
-            (slug_map[taxon], character): value_set for
-            (taxon, character), value_set in self._obs.items()
+            (slug_map[taxon], character): value_set
+            for (taxon, character), value_set in self._obs.items()
         }
 
 
@@ -251,31 +274,25 @@ def binarize(phyd: PhyloData) -> PhyloData:
             if not obs:
                 binary_states[taxon, character] = ["-" for _ in states]
             elif tuple(obs) == ("?",):
-                binary_states[taxon, character] = [
-                    "?" for _ in states
-                ]
+                binary_states[taxon, character] = ["?" for _ in states]
             else:
                 binary_states[taxon, character] = [
-                    "1" if state in obs else "0"
-                    for state in states
+                    "1" if state in obs else "0" for state in states
                 ]
 
     # Build a new phylogenetic data structure, adding the new characters one by one
     bin_phyd = PhyloData()
     for (taxon, character), states in binary_states.items():
-        charstates = [state for state in phyd._charset[character]._states if state != "?"]
+        charstates = [
+            state for state in phyd._charset[character]._states if state != "?"
+        ]
         for obs, state_label in zip(states, charstates):
             # Add ascertainment
             # TODO: review ascertainment
-            bin_phyd.extend(
-                (taxon, f"{character}_ASCERTAINMENT"), "0"
-            )
+            bin_phyd.extend((taxon, f"{character}_ASCERTAINMENT"), "0")
 
             # TODO: confirm if it is right to skip over gaps
             if obs != "-":
-                bin_phyd.extend(
-                    (taxon, f"{character}_{state_label}"),
-                    obs
-                )
+                bin_phyd.extend((taxon, f"{character}_{state_label}"), obs)
 
     return bin_phyd
