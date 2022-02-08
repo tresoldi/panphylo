@@ -35,12 +35,20 @@ TARGETS_PATH = Path(__file__).parent / "targets"
         ["ie_sample.nex", "ie_sample_nex.mst.phy", "nexus", "phylip", False],
         ["ie_sample.nex", "ie_sample_nex.bin.phy", "nexus", "phylip", True],
 
+        # Central pacific, from Greenhill & Hoffmann 2019
+        ["cpacific.nex", "cpacific_nex.mst.csv", "nexus", "csv", False],
+        ["cpacific.nex", "cpacific_nex.bin.csv", "nexus", "csv", True],
+        ["cpacific.nex", "cpacific_nex.mst.nex", "nexus", "nexus", False],
+        ["cpacific.nex", "cpacific_nex.bin.nex", "nexus", "nexus", True],
+        ["cpacific.nex", "cpacific_nex.mst.phy", "nexus", "phylip", False],
+        ["cpacific.nex", "cpacific_nex.bin.phy", "nexus", "phylip", True],
+
         # Hand-picked example with genetic data
         #["genetic.phy", "genetic_phy.mst.csv", "phylip", "csv", False],
         #["genetic.phy", "genetic_phy.bin.csv", "phylip", "csv", True],
         #["genetic.phy", "genetic_phy.mst.nex", "phylip", "nexus", False],
         #["genetic.phy", "genetic_phy.bin.nex", "phylip", "nexus", True],
-        ["genetic.phy", "genetic_phy.mst.phy", "phylip", "phylip", False],
+        #["genetic.phy", "genetic_phy.mst.phy", "phylip", "phylip", False],
         #["genetic.phy", "genetic_phy.bin.phy", "phylip", "phylip", True],
 
     #    ["example.phy", "example.phy.csv", "phylip", "csv", False],
