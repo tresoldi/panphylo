@@ -2,7 +2,6 @@
 Module with the class for the internal representation of data.
 """
 
-import itertools
 import string
 # Import Python libraries
 from collections import defaultdict
@@ -105,12 +104,14 @@ class PhyloData:
     def characters(self):
         # Collect the ordered list of charset_id/char_id to query; this allows to later
         # easily implement different strategies
-        characters = []
-        for charset_id, charset in sorted(self._charset.items()):
-            for char_id in sorted(charset):
-                characters.append((charset_id, char_id))
+        # characters = []
+        # for charset_id, charset in sorted(self._charset.items()):
+        #    for char_id in sorted(charset):
+        #        characters.append((charset_id, char_id))
 
-        return characters
+        # return characters
+
+        return sorted(list(self._charset))
 
     @property
     def cardinality(self) -> int:
@@ -127,8 +128,7 @@ class PhyloData:
         # cases like missing data
 
         # TODO: horrible code, fix as soon as tests are passing
-        chars = list(itertools.chain.from_iterable([list(char.values()) for char in self._charset.values()]))
-        return max([len(c.states) for c in chars])
+        return max([len(c.states) for c in self._charset.values()])
 
     @property
     def symbols(self) -> Tuple[str]:
@@ -170,17 +170,14 @@ class PhyloData:
         self._taxa.add(taxon)
 
         # Update internal information
+        # TODO: write proper code once update to new system is done
         if charset in self._charset:
             # If the character already exist, just try to extend the list of states; otherwise,
             # build a new character
-            if character in self._charset[charset]:
-                self._charset[charset][character].add_state(value)
-            else:
-                self._charset[charset][character] = Character(states={value})
+            self._charset[charset].add_state(value)
         else:
-            # If the charset does not exist, create a dummy one and add the current character
-            # TODO: check if it does not exist yet
-            self._charset[charset] = {character: Character(states={value})}
+            # If the charset does not exist, create a new one and add the current character
+            self._charset[charset] = Character(states={value})
 
         # Store information on the actual observed state; note that, as we allow multistates, this is
         # actually a set of values
@@ -191,8 +188,10 @@ class PhyloData:
         # Build the matrix representation
         matrix: Dict[str, str] = defaultdict(str)
         symbols: Tuple[str] = self.symbols  # cache
-        for charset_id, char_id in self.characters:
-            states = self._charset[charset_id][char_id].states  # TODO: use frequency or something else?
+        for char_id, charinfo in sorted(self._charset.items()):
+            # for charset_id, char_id in self.characters:
+            #    states = self._charset[charset_id][char_id].states  # TODO: use frequency or something else?
+            states = charinfo.states
             for taxon in self.taxa:
                 obs = self[taxon, char_id]
                 if not obs:
@@ -245,8 +244,8 @@ def binarize(phyd: PhyloData) -> PhyloData:
 
     # For each taxon/character, collect the list of observed states in binary
     binary_states = {}
-    for character, label in phyd.characters:
-        states = [state for state in phyd._charset[character][label]._states if state != "?"]
+    for character, charinfo in phyd._charset.items():
+        states = [state for state in charinfo._states if state != "?"]
         for taxon in phyd.taxa:
             obs = phyd[taxon, character]
             if not obs:
@@ -264,7 +263,7 @@ def binarize(phyd: PhyloData) -> PhyloData:
     # Build a new phylogenetic data structure, adding the new characters one by one
     bin_phyd = PhyloData()
     for (taxon, character), states in binary_states.items():
-        charstates = [state for state in phyd._charset[character][character]._states if state != "?"]  # TODO: cache?
+        charstates = [state for state in phyd._charset[character]._states if state != "?"]
         for obs, state_label in zip(states, charstates):
             # Add ascertainment
             # TODO: review ascertainment

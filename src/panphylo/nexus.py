@@ -14,7 +14,6 @@ import re
 # Import Python standard libraries
 from collections import defaultdict
 from enum import Enum, auto
-from itertools import chain
 
 # Import from local modules
 from .common import indexes2ranges
@@ -257,15 +256,13 @@ def build_character_block(phyd: PhyloData) -> str:
     # TODO: what about mixed, binary and non-binary, data?
     # TODO: should carry the original state names, if available
     is_binary = True
-    for key in sorted(phyd._charset):
-        character, charinfo = list(phyd._charset[key].items())[0]
+    for charinfo in phyd._charset.values():
         if charinfo.states not in [("0",), ("1",), ("0", "1")]:
             is_binary = False
             break
 
     charstatelabels = []
-    for key in sorted(phyd._charset):
-        character, charinfo = list(phyd._charset[key].items())[0]
+    for character, charinfo in sorted(phyd._charset.items()):
         if is_binary:
             charstatelabels.append(character)
         else:
@@ -337,11 +334,11 @@ def build_assumption_block(phyd: PhyloData) -> str:
     # TODO: geting the list of characters with a workaround for genetic data...
     chars = []
     for char in phyd.characters:
-        if char[0].startswith("CHAR_"):
+        if char.startswith("CHAR_"):
             tokens = char[0].split("_")
             chars.append("%s_%s" % (tokens[0], tokens[1]))
         else:
-            chars.append(char[0].split("_")[0])
+            chars.append(char.split("_")[0])
 
     indexes = defaultdict(list)
     for idx, label in enumerate(chars):
@@ -384,8 +381,7 @@ def build_nexus(phyd: PhyloData, args) -> str:
 
     # Assumption are only there if the data is binary
     # TODO: again horrible code, fix ._charset as soon as tests are passing
-    chars = list(chain.from_iterable([list(c.values()) for c in phyd._charset.values()]))
-    is_binary = [char.is_binary() for char in chars]
+    is_binary = [c.is_binary() for c in phyd._charset.values()]
     if all(is_binary):
         components.append(build_assumption_block(phyd))
 

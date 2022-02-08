@@ -44,28 +44,28 @@ TARGETS_PATH = Path(__file__).parent / "targets"
         ["cpacific.nex", "cpacific_nex.bin.phy", "nexus", "phylip", True],
 
         # Hand-picked example with genetic data
-        #["genetic.phy", "genetic_phy.mst.csv", "phylip", "csv", False],
-        #["genetic.phy", "genetic_phy.bin.csv", "phylip", "csv", True],
-        #["genetic.phy", "genetic_phy.mst.nex", "phylip", "nexus", False],
-        #["genetic.phy", "genetic_phy.bin.nex", "phylip", "nexus", True],
-        #["genetic.phy", "genetic_phy.mst.phy", "phylip", "phylip", False],
-        #["genetic.phy", "genetic_phy.bin.phy", "phylip", "phylip", True],
+        # ["genetic.phy", "genetic_phy.mst.csv", "phylip", "csv", False],
+        # ["genetic.phy", "genetic_phy.bin.csv", "phylip", "csv", True],
+        # ["genetic.phy", "genetic_phy.mst.nex", "phylip", "nexus", False],
+        # ["genetic.phy", "genetic_phy.bin.nex", "phylip", "nexus", True],
+        # ["genetic.phy", "genetic_phy.mst.phy", "phylip", "phylip", False],
+        # ["genetic.phy", "genetic_phy.bin.phy", "phylip", "phylip", True],
 
-    #    ["example.phy", "example.phy.csv", "phylip", "csv", False],
-    #    ["example.phy", "example.phy.bin.csv", "phylip", "csv", True],
-    #    ["example.phy", "example.phy.nex", "phylip", "nexus", False],
-    #    ["example.phy", "example.phy.bin.nex", "phylip", "nexus", True],
-    #    ["example.phy", "example.phy.phy", "phylip", "phylip", False],
-    #    ["example.phy", "example.phy.bin.phy", "phylip", "phylip", True],
-       # ["example.csv", "example.csv.phy", "csv", "phylip", False],
-       # ["example.csv", "example.csv.bin.phy", "csv", "phylip", True],
-       # ["example.csv", "example.csv.nex", "csv", "nexus", False],
-       # ["example.csv", "example.csv.bin.nex", "csv", "nexus", True],
-       # ["example.csv", "example.csv.csv", "csv", "csv", False],
-       # ["example.csv", "example.csv.bin.csv", "csv", "csv", True],
-    #    ["example.nex", "example.nex.csv", "nexus", "csv", False],
-    #    ["example.nex", "example.nex.phy", "nexus", "phylip", False],
-    #    ["example.nex", "example.nex.nex", "nexus", "nexus", False],
+        #    ["example.phy", "example.phy.csv", "phylip", "csv", False],
+        #    ["example.phy", "example.phy.bin.csv", "phylip", "csv", True],
+        #    ["example.phy", "example.phy.nex", "phylip", "nexus", False],
+        #    ["example.phy", "example.phy.bin.nex", "phylip", "nexus", True],
+        #    ["example.phy", "example.phy.phy", "phylip", "phylip", False],
+        #    ["example.phy", "example.phy.bin.phy", "phylip", "phylip", True],
+        # ["example.csv", "example.csv.phy", "csv", "phylip", False],
+        # ["example.csv", "example.csv.bin.phy", "csv", "phylip", True],
+        # ["example.csv", "example.csv.nex", "csv", "nexus", False],
+        # ["example.csv", "example.csv.bin.nex", "csv", "nexus", True],
+        # ["example.csv", "example.csv.csv", "csv", "csv", False],
+        # ["example.csv", "example.csv.bin.csv", "csv", "csv", True],
+        #    ["example.nex", "example.nex.csv", "nexus", "csv", False],
+        #    ["example.nex", "example.nex.phy", "nexus", "phylip", False],
+        #    ["example.nex", "example.nex.nex", "nexus", "nexus", False],
 
         ## The example below fails due to charstatelabel parsing
         # ["example_s.nex", "example_s.nex", "nexus", "csv", True],
@@ -90,7 +90,7 @@ def test_convert(
     converted = panphylo.convert(source, args).strip()
     if converted != reference:
         with open("temp.tiago", "w", encoding="utf-8") as handler:
-           handler.write(converted)
+            handler.write(converted)
 
     # Convert and check; we run the same test multiple times, to make
     # sure there is full reproducibility and no issues related to sorting
