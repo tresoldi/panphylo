@@ -3,6 +3,7 @@ Module with functions and methods for PHYLIP files.
 """
 
 # Import Python standard libraries
+import math
 import re
 
 # Import from local modules
@@ -46,12 +47,12 @@ def read_data_phylip(source: str, args: dict) -> PhyloData:
         raise ValueError("Alignment lengths differs from the one in the header.")
 
     # Add to PhyloData
-    # TODO: add padding in the character names
     phyd = PhyloData()
+    digits = math.ceil(math.log(len(vector))/math.log(10))
     for taxon, vector in data.items():
         for char_idx, char_state in enumerate(vector):
             if char_state != "-":
-                phyd.extend((taxon, f"CHAR_{char_idx}"), char_state)
+                phyd.extend((taxon, f"CHAR_{str(char_idx).zfill(digits)}"), char_state)
 
     return phyd
 
