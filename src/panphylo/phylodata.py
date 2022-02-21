@@ -88,6 +88,23 @@ class Character:
 
         return False
 
+    # TODO: add full iupac support
+    def is_genetic(self) -> bool:
+        """
+        Checks whether the character is a genetic one.
+
+        Genetic characters are defined as thos that have only "A", "C",
+        "G", and/or "T" as potential states. Note that the full IUPAC
+        support is not implemented yet.
+
+        @return: A flag on whether the character is a binary one.
+        """
+
+        if all([state.upper() in "ACGT" for state in self.states]):
+            return True
+
+        return False
+
     def __len__(self) -> int:
         return len(self.states)
 
@@ -257,7 +274,7 @@ class PhyloData:
 
 
 # TODO: collect assumptions?
-def binarize(phyd: PhyloData) -> PhyloData:
+def binarize(phyd: PhyloData, ascertainment: str) -> PhyloData:
     """
     Build a binarized version of the provided phylogenetic data.
 
@@ -280,8 +297,15 @@ def binarize(phyd: PhyloData) -> PhyloData:
                     "1" if state in obs else "0" for state in states
                 ]
 
-    # Build a new phylogenetic data structure, adding the new characters one by one
+    # Build a new phylogenetic data structure, adding the new characters one by one;
+    # this also checks whether or not to perform ascertainment correction
     bin_phyd = PhyloData()
+    if ascertainment == "default":
+        if all([character.is_genetic() for character in phyd._charset.values()]):
+            ascertainment = "false"
+        else:
+            ascertainment = "true"
+
     for (taxon, character), states in binary_states.items():
         charstates = [
             state for state in phyd._charset[character]._states if state != "?"
@@ -289,7 +313,8 @@ def binarize(phyd: PhyloData) -> PhyloData:
         for obs, state_label in zip(states, charstates):
             # Add ascertainment
             # TODO: review ascertainment
-            bin_phyd.extend((taxon, f"{character}_ASCERTAINMENT"), "0")
+            if ascertainment == "true":  # TODO: use actual boolean
+                bin_phyd.extend((taxon, f"{character}_ASCERTAINMENT"), "0")
 
             # TODO: confirm if it is right to skip over gaps
             if obs != "-":

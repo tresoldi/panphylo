@@ -46,7 +46,7 @@ def convert(source: str, args: Dict[str, str]) -> str:
     # Perform all requested data manipulations
     phyd.slug_taxa(args.get("slug_taxa", "none"))
     if args.get("binarize", False):
-        phyd = binarize(phyd)
+        phyd = binarize(phyd, args["ascertainment"])
 
     # Write converted data in the requested format; note that the command-line
     # handling should have taken care of replacing the "auto" value for

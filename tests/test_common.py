@@ -14,7 +14,19 @@ def test_indexes2ranges():
 
 def test_uniqueids():
     # Unique labels
-    assert tuple(panphylo.unique_ids(["a", "'a", "e", "é", "è"], "full")) == ("a-a", "a-b", "e-a", "e-b", "e-c")
+    assert tuple(panphylo.unique_ids(["a", "'a", "e", "é", "è"], "full")) == (
+        "a-a",
+        "a-b",
+        "e-a",
+        "e-b",
+        "e-c",
+    )
 
     # Non-unique labels
-    assert tuple(panphylo.unique_ids(["a", "a", "e", "e", "e"], "full")) == ("a-a", "a-b", "e-a", "e-b", "e-c")
+    assert tuple(panphylo.unique_ids(["a", "a", "e", "e", "e"], "full")) == (
+        "a-a",
+        "a-b",
+        "e-a",
+        "e-b",
+        "e-c",
+    )

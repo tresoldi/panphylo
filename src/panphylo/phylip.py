@@ -48,7 +48,7 @@ def read_data_phylip(source: str, args: dict) -> PhyloData:
 
     # Add to PhyloData
     phyd = PhyloData()
-    digits = math.ceil(math.log(len(vector))/math.log(10))
+    digits = math.ceil(math.log(len(vector)) / math.log(10))
     for taxon, vector in data.items():
         for char_idx, char_state in enumerate(vector):
             if char_state != "-":

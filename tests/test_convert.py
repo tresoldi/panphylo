@@ -34,7 +34,6 @@ TARGETS_PATH = Path(__file__).parent / "targets"
         ["ie_sample.nex", "ie_sample_nex.bin.nex", "nexus", "nexus", True],
         ["ie_sample.nex", "ie_sample_nex.mst.phy", "nexus", "phylip", False],
         ["ie_sample.nex", "ie_sample_nex.bin.phy", "nexus", "phylip", True],
-
         # Central pacific, from Greenhill & Hoffmann 2019
         ["cpacific.nex", "cpacific_nex.mst.csv", "nexus", "csv", False],
         ["cpacific.nex", "cpacific_nex.bin.csv", "nexus", "csv", True],
@@ -42,7 +41,6 @@ TARGETS_PATH = Path(__file__).parent / "targets"
         ["cpacific.nex", "cpacific_nex.bin.nex", "nexus", "nexus", True],
         ["cpacific.nex", "cpacific_nex.mst.phy", "nexus", "phylip", False],
         ["cpacific.nex", "cpacific_nex.bin.phy", "nexus", "phylip", True],
-
         # Hand-picked example with genetic data
         ["genetic.phy", "genetic_phy.mst.csv", "phylip", "csv", False],
         ["genetic.phy", "genetic_phy.bin.csv", "phylip", "csv", True],
@@ -50,7 +48,6 @@ TARGETS_PATH = Path(__file__).parent / "targets"
         # ["genetic.phy", "genetic_phy.bin.nex", "phylip", "nexus", True],
         # ["genetic.phy", "genetic_phy.mst.phy", "phylip", "phylip", False],
         # ["genetic.phy", "genetic_phy.bin.phy", "phylip", "phylip", True],
-
         #    ["example.phy", "example.phy.csv", "phylip", "csv", False],
         #    ["example.phy", "example.phy.bin.csv", "phylip", "csv", True],
         #    ["example.phy", "example.phy.nex", "phylip", "nexus", False],
@@ -66,7 +63,6 @@ TARGETS_PATH = Path(__file__).parent / "targets"
         #    ["example.nex", "example.nex.csv", "nexus", "csv", False],
         #    ["example.nex", "example.nex.phy", "nexus", "phylip", False],
         #    ["example.nex", "example.nex.nex", "nexus", "nexus", False],
-
         ## The example below fails due to charstatelabel parsing
         # ["example_s.nex", "example_s.nex", "nexus", "csv", True],
         # ["example_s.nex", "example.nex.bin.phy", "nexus", "phylip", True],
@@ -74,7 +70,7 @@ TARGETS_PATH = Path(__file__).parent / "targets"
     ],
 )
 def test_convert(
-        input: str, reference: str, arg_from: str, arg_to: str, binarize: bool
+    input: str, reference: str, arg_from: str, arg_to: str, binarize: bool
 ):
     # Read input and reference
     file_input = SOURCES_PATH / input
@@ -84,7 +80,13 @@ def test_convert(
     with open(file_reference, encoding="utf-8") as handler:
         reference = handler.read().strip()
 
-    args = {"from": arg_from, "to": arg_to, "input": "-", "binarize": binarize}
+    args = {
+        "from": arg_from,
+        "to": arg_to,
+        "input": "-",
+        "binarize": binarize,
+        "ascertainment": "default",
+    }
 
     # Temporary file for generating and checking results manually
     converted = panphylo.convert(source, args).strip()
