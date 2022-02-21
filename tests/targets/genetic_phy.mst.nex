@@ -1,0 +1,84 @@
+#NEXUS
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=8;
+    TAXLABELS
+        Barclaya
+        Cypirapea
+        Galphimia
+        Lycopersi
+        Nicotiana
+        Oenothera
+        Petunia
+        Victoria
+    ;
+END;
+
+BEGIN CHARACTERS;
+    DIMENSIONS NCHAR=50;
+    FORMAT DATATYPE=STANDARD MISSING=? GAP=- SYMBOLS="0 1";
+    CHARSTATELABELS
+        1 CHAR_00,
+        2 CHAR_01,
+        3 CHAR_02,
+        4 CHAR_03,
+        5 CHAR_04,
+        6 CHAR_05,
+        7 CHAR_06,
+        8 CHAR_07,
+        9 CHAR_08,
+        10 CHAR_09,
+        11 CHAR_10,
+        12 CHAR_11,
+        13 CHAR_12,
+        14 CHAR_13,
+        15 CHAR_14,
+        16 CHAR_15,
+        17 CHAR_16,
+        18 CHAR_17,
+        19 CHAR_18,
+        20 CHAR_19,
+        21 CHAR_20,
+        22 CHAR_21,
+        23 CHAR_22,
+        24 CHAR_23,
+        25 CHAR_24,
+        26 CHAR_25,
+        27 CHAR_26,
+        28 CHAR_27,
+        29 CHAR_28,
+        30 CHAR_29,
+        31 CHAR_30,
+        32 CHAR_31,
+        33 CHAR_32,
+        34 CHAR_33,
+        35 CHAR_34,
+        36 CHAR_35,
+        37 CHAR_36,
+        38 CHAR_37,
+        39 CHAR_38,
+        40 CHAR_39,
+        41 CHAR_40,
+        42 CHAR_41,
+        43 CHAR_42,
+        44 CHAR_43,
+        45 CHAR_44,
+        46 CHAR_45,
+        47 CHAR_46,
+        48 CHAR_47,
+        49 CHAR_48,
+        50 CHAR_49
+    ;
+
+MATRIX
+Barclaya     GTTGGATTCAAAGCTGGTGTTAAAGATTACAGATTGACTTATTACACTCC
+Cypirapea    ??????????????????GTTAAAGATTACAAATTGACTTATTATACTCC
+Galphimia    GTTGGATTCAAGGCTGGTGTTAAAGATTATAAATTGACTTACTATACTCC
+Lycopersi    GTTGGATTCAAAGCTGGTGTTAAAGAGTACAAATTGACTTATTATACTCC
+Nicotiana    GTTGGATTCAAAGCTGGTGTTAAAGAGTACAAATTGACTTATTATACTCC
+Oenothera    GTTGGATTCAAAGCCGGCGTTAAAGATTATAAATTGACTTATTATACTCC
+Petunia      GTTGGATTCAAAGCTGGTGTTAAAGAGTACAAGTTGACTTATTATACTCC
+Victoria     GTTGGATTCAAAGCTGGTGTTAAAGATTACAGATTGACTTATTACACTCC
+;
+
+END;

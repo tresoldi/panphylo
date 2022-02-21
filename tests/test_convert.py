@@ -44,10 +44,10 @@ TARGETS_PATH = Path(__file__).parent / "targets"
         # Hand-picked example with genetic data
         ["genetic.phy", "genetic_phy.mst.csv", "phylip", "csv", False],
         ["genetic.phy", "genetic_phy.bin.csv", "phylip", "csv", True],
-        # ["genetic.phy", "genetic_phy.mst.nex", "phylip", "nexus", False],
-        # ["genetic.phy", "genetic_phy.bin.nex", "phylip", "nexus", True],
-        # ["genetic.phy", "genetic_phy.mst.phy", "phylip", "phylip", False],
-        # ["genetic.phy", "genetic_phy.bin.phy", "phylip", "phylip", True],
+        ["genetic.phy", "genetic_phy.mst.nex", "phylip", "nexus", False],
+        ["genetic.phy", "genetic_phy.bin.nex", "phylip", "nexus", True],
+        ["genetic.phy", "genetic_phy.mst.phy", "phylip", "phylip", False],
+        ["genetic.phy", "genetic_phy.bin.phy", "phylip", "phylip", True],
         #    ["example.phy", "example.phy.csv", "phylip", "csv", False],
         #    ["example.phy", "example.phy.bin.csv", "phylip", "csv", True],
         #    ["example.phy", "example.phy.nex", "phylip", "nexus", False],
@@ -88,14 +88,9 @@ def test_convert(
         "ascertainment": "default",
     }
 
-    # Temporary file for generating and checking results manually
+    # Convert and check
     converted = panphylo.convert(source, args).strip()
     if converted != reference:
         with open("temp.tiago", "w", encoding="utf-8") as handler:
             handler.write(converted)
-
-    # Convert and check; we run the same test multiple times, to make
-    # sure there is full reproducibility and no issues related to sorting
-    for i in range(3):
-        converted = panphylo.convert(source, args).strip()
-        assert converted == reference
+    assert converted == reference

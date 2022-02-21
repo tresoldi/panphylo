@@ -171,7 +171,7 @@ class PhyloData:
     @property
     def symbols(self) -> Tuple[str]:
         """
-        Return a collection of unique symbols for representing states.
+        Return a collection of unique symbols for representing generic states.
 
         The length of the vector will follow the cardinality of the data
         (i.e., `self.cardinality`).
@@ -227,25 +227,36 @@ class PhyloData:
     def matrix(self) -> Tuple[str, str]:
         # Build the matrix representation
         matrix: Dict[str, str] = defaultdict(str)
-        symbols: Tuple[str] = self.symbols  # cache
-        for char_id, charinfo in sorted(self._charset.items()):
-            # for charset_id, char_id in self.characters:
-            #    states = self._charset[charset_id][char_id].states  # TODO: use frequency or something else?
-            states = charinfo.states
-            for taxon in self.taxa:
-                obs = self[taxon, char_id]
-                if not obs:
-                    matrix[taxon] += "-"
-                else:
-                    # TODO: check partial missing data, as in beastling
-                    if "?" in obs:
-                        matrix[taxon] += "?"
+
+        is_genetic = all([charinfo.is_genetic() for charinfo in self._charset.values()])
+        if is_genetic:
+            # TODO: check missing, multiple, etc.
+            for char_id, charinfo in sorted(self._charset.items()):
+                for taxon in self.taxa:
+                    obs = self[taxon, char_id]
+                    if not obs:
+                        matrix[taxon] += "-"
                     else:
-                        obs_repr = [symbols[states.index(o)] for o in obs]
-                        if len(obs_repr) == 1:
-                            matrix[taxon] += obs_repr[0]
+                        # todo: check multiple
+                        matrix[taxon] += list(obs)[0]
+        else:
+            symbols: Tuple[str] = self.symbols  # cache
+            for char_id, charinfo in sorted(self._charset.items()):
+                states = charinfo.states
+                for taxon in self.taxa:
+                    obs = self[taxon, char_id]
+                    if not obs:
+                        matrix[taxon] += "-"
+                    else:
+                        # TODO: check partial missing data, as in beastling
+                        if "?" in obs:
+                            matrix[taxon] += "?"
                         else:
-                            matrix[taxon] += "(%s)" % ",".join(sorted(obs_repr))
+                            obs_repr = [symbols[states.index(o)] for o in obs]
+                            if len(obs_repr) == 1:
+                                matrix[taxon] += obs_repr[0]
+                            else:
+                                matrix[taxon] += "(%s)" % ",".join(sorted(obs_repr))
 
         # Build the representation and return; we don't sort here, as different slug
         # levels might be applied by the output functions

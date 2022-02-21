@@ -258,15 +258,19 @@ def build_character_block(phyd: PhyloData) -> str:
     # TODO: _charset should be provided by a method in PhyloData
     # TODO: what about mixed, binary and non-binary, data?
     # TODO: should carry the original state names, if available
-    is_binary = True
-    for charinfo in phyd._charset.values():
-        if charinfo.states not in [("0",), ("1",), ("0", "1")]:
-            is_binary = False
-            break
+    is_genetic = all([charinfo.is_genetic() for charinfo in phyd._charset.values()])
+    if is_genetic:
+        is_binary = False
+    else:
+        is_binary = True
+        for charinfo in phyd._charset.values():
+            if charinfo.states not in [("0",), ("1",), ("0", "1")]:
+                is_binary = False
+                break
 
     charstatelabels = []
     for character, charinfo in sorted(phyd._charset.items()):
-        if is_binary:
+        if is_genetic or is_binary:
             charstatelabels.append(character)
         else:
             states_str = ["%s_%s" % (character, state) for state in charinfo.states]
@@ -342,8 +346,8 @@ def build_assumption_block(phyd: PhyloData) -> str:
     chars = []
     for char in phyd.characters:
         if char.startswith("CHAR_"):
-            tokens = char[0].split("_")
-            chars.append("%s_%s" % (tokens[0], tokens[1]))
+            tokens = char.split("_")
+            chars.append("_".join(tokens[:-1]))
         else:
             chars.append(char.split("_")[0])
 
@@ -377,7 +381,6 @@ def build_nexus(phyd: PhyloData, args) -> str:
     :return: A textual representation of the NEXUS data representation.
     """
 
-    # TODO: this only implements multistate
     # TODO: not rendering polymorphy
 
     components = [
