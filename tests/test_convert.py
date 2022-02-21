@@ -44,8 +44,8 @@ TARGETS_PATH = Path(__file__).parent / "targets"
         ["cpacific.nex", "cpacific_nex.bin.phy", "nexus", "phylip", True],
 
         # Hand-picked example with genetic data
-        # ["genetic.phy", "genetic_phy.mst.csv", "phylip", "csv", False],
-        # ["genetic.phy", "genetic_phy.bin.csv", "phylip", "csv", True],
+        ["genetic.phy", "genetic_phy.mst.csv", "phylip", "csv", False],
+        ["genetic.phy", "genetic_phy.bin.csv", "phylip", "csv", True],
         # ["genetic.phy", "genetic_phy.mst.nex", "phylip", "nexus", False],
         # ["genetic.phy", "genetic_phy.bin.nex", "phylip", "nexus", True],
         # ["genetic.phy", "genetic_phy.mst.phy", "phylip", "phylip", False],
