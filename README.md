@@ -122,16 +122,16 @@ the [Cultural Evolution of Texts](https://github.com/evotext/) project, with fun
 
 If you use `panphylo`, please cite it as:
 
-> Tresoldi, T., (2021). panphylo: a tool for converting and manipulating phylogenetic data. Version 0.1. Uppsala: Uppsala Universitet
+> Tresoldi, T., (2022). panphylo: a tool for converting and manipulating phylogenetic data. Version 0.3. Uppsala: Uppsala Universitet
 
 In BibTeX:
 
 ```
 @misc{Tresoldi2021panphylo,
   url = {https://github.com/tresoldi/panphylo},
-  year = {2021},
+  year = {2022},
   author = {Tiago Tresoldi},
-  title = {panphylo: a tool for converting and manipulating phylogenetic data. Version 0.1.},
+  title = {panphylo: a tool for converting and manipulating phylogenetic data. Version 0.3.},
   address = {Uppsala},
   publisher = {Uppsala Universitet}
 }
