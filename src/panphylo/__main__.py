@@ -15,7 +15,8 @@ import re
 import panphylo
 
 
-# NOTE: remember to sync all changes with README
+# NOTE: remember to sync all changes with README.md
+# TODO: could the syncing be done automatically?
 def parse_args() -> dict:
     """
     Parse command-line arguments and return them as a dictionary.
@@ -24,6 +25,7 @@ def parse_args() -> dict:
     """
 
     parser = argparse.ArgumentParser(description="Convert and manipulate phylodata.")
+
     parser.add_argument(
         "-i",
         "--input",
@@ -31,6 +33,7 @@ def parse_args() -> dict:
         default="-",
         help="Read input from *FILE*. If *FILE* is `-`, input will come from *stdin*.",
     )
+
     parser.add_argument(
         "-o",
         "--output",
@@ -47,6 +50,7 @@ def parse_args() -> dict:
         help="Binarizes the output. Whether and how to add ascertainment correction is specified by the "
         "`--ascertainment` option.",
     )
+
     parser.add_argument(
         "--ascertainment",
         type=str,
@@ -64,6 +68,7 @@ def parse_args() -> dict:
         choices=["auto", "tabular", "csv", "tsv", "nexus", "phylip"],
         help="Specify input format.",
     )
+
     parser.add_argument(
         "-e",
         "--encoding",
@@ -71,6 +76,7 @@ def parse_args() -> dict:
         default="auto",
         help="Character encoding for the input (use `auto` to detect).",
     )
+
     parser.add_argument(
         "-t",
         "--to",
@@ -85,11 +91,13 @@ def parse_args() -> dict:
         type=str,
         help="Input label, column, or name for taxa. Does not apply to all formats.",
     )
+
     parser.add_argument(
         "--i-char",
         type=str,
         help="Input label, column, or name for characters. Does not apply to all formats.",
     )
+
     parser.add_argument(
         "--i-state",
         type=str,
@@ -102,12 +110,14 @@ def parse_args() -> dict:
         default="Taxon",
         help="Output label, column, or name for taxa. Does not apply to all formats.",
     )
+
     parser.add_argument(
         "--o-char",
         type=str,
         default="Character",
         help="Output label, column, or name for characters. Does not apply to all formats.",
     )
+
     parser.add_argument(
         "--o-state",
         type=str,
@@ -115,6 +125,7 @@ def parse_args() -> dict:
         help="Output label, column, or name for states. Does not apply to all formats.",
     )
 
+    # TODO: have a single `--slug` for slugging everything
     parser.add_argument(
         "--slug_taxa",
         type=str,
@@ -122,6 +133,7 @@ def parse_args() -> dict:
         choices=["none", "simple", "full"],
         help="Level of slugging for taxa names.",
     )
+
     parser.add_argument(
         "--slug_chars",
         type=str,
@@ -189,7 +201,7 @@ def main():
     # Read source data and detect the format if necessary
     source = panphylo.fetch_stream_data(args["input"], args["encoding"])
     if args["from"] == "auto":
-        logging.debug("Autodetecting input format.")
+        logging.debug("Auto-detecting input format.")
         if source.strip().startswith("#NEXUS"):
             args["from"] = "nexus"
         elif re.search(r"$\s*\d+\s*\d+", source):
@@ -200,7 +212,7 @@ def main():
     # Convert to a string
     converted = panphylo.convert(source, args)
 
-    # Write to the stream; we string and add a final newline to make sure there is one and only one
+    # Write to the stream; we strip and add a final newline to make sure there is one and only one
     with panphylo.smart_open(args["output"], "w", encoding="utf-8") as handler:
         handler.write(converted.strip())
         handler.write("\n")

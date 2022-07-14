@@ -10,7 +10,7 @@ import string
 from typing import *
 
 # Import local modules
-from .myunidecode import unidecode
+from unidecode import unidecode
 
 
 def slug(label: str, level: str) -> str:

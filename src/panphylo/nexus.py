@@ -10,9 +10,8 @@ with that purpose, would make transpilation too hard.
 # TODO: sort using assumptions (charset) if provided
 # TODO: support comments (will need changes to the parser)
 
-import re
-
 # Import Python standard libraries
+import re
 from collections import defaultdict
 from enum import Enum, auto
 
@@ -258,11 +257,14 @@ def build_character_block(phyd: PhyloData) -> str:
     # TODO: _charset should be provided by a method in PhyloData
     # TODO: what about mixed, binary and non-binary, data?
     # TODO: should carry the original state names, if available
+
     is_genetic = all([charinfo.is_genetic() for charinfo in phyd._charset.values()])
     if is_genetic:
         is_binary = False
+        symbols = "ACGT"
     else:
         is_binary = True
+        symbols = "".join(phyd.symbols)
         for charinfo in phyd._charset.values():
             if charinfo.states not in [("0",), ("1",), ("0", "1")]:
                 is_binary = False
@@ -296,7 +298,7 @@ BEGIN CHARACTERS;
 
 END;""" % (
         len(charstatelabels),
-        " ".join(phyd.symbols),
+        symbols,
         charstatelabels_str,
         build_matrix_command(phyd),
     )

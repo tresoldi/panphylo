@@ -93,7 +93,7 @@ class Character:
         """
         Checks whether the character is a genetic one.
 
-        Genetic characters are defined as thos that have only "A", "C",
+        Genetic characters are defined as those that have only "A", "C",
         "G", and/or "T" as potential states. Note that the full IUPAC
         support is not implemented yet.
 

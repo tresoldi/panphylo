@@ -27,7 +27,7 @@ END;
 
 BEGIN CHARACTERS;
     DIMENSIONS NCHAR=7;
-    FORMAT DATATYPE=STANDARD MISSING=? GAP=- SYMBOLS="0 1 2 3 4";
+    FORMAT DATATYPE=STANDARD MISSING=? GAP=- SYMBOLS="01234";
     CHARSTATELABELS
         1 all /all_2 all_3 all_5 all_6 all_7,
         2 ashes /ashes_10 ashes_12 ashes_13 ashes_8,
