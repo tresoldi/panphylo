@@ -51,6 +51,9 @@ While the package is not computationally complex or innovative,
 with alternatives such as XXX, it compares favorably by providing a
 common tool that can address all the minutiae of format conversion.
 
+plethora of user-friendly scripts ; bioinformatics
+formats don't tend to be formalized with grammars and examples, and many dialects exist
+
 # Installation, Usage, & Examples
 
 Users can install the package with the standard `pip` tool for managing Python packages. The

@@ -54,7 +54,7 @@ def parse_args() -> dict:
     parser.add_argument(
         "--ascertainment",
         type=str,
-        options=["default", "true", "false"],
+        choices=["default", "true", "false"],
         default="default",
         help="Whether to perform ascertainment correction when generating binary data. "
         "The default is to let the writing function decide based on the data type.",

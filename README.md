@@ -3,12 +3,19 @@
 [![PyPI](https://img.shields.io/pypi/v/panphylo.svg)](https://pypi.org/project/panphylo)
 [![CI](https://github.com/tresoldi/panphylo/actions/workflows/CI.yml/badge.svg)](https://github.com/tresoldi/panphylo/actions/workflows/CI.yml)
 
-`panphylo` is a free and open-source tool for converting and manipulating phylogenetic data, especially for non-biological datasets.
+`panphylo` is a free and open-source tool for converting and manipulating phylogenetic data, especially for
+non-biological datasets.
 
 ![Panfilo, from Boccaccio's *Decameron*, as pictured in Bodleian Library MS. Holkham 49, fol. 148r](panfilo_small.png)
 
-There are a wide variety of similar tools for both local and remote execution. panphylo is distinguished by its focus on phylogenetic data of non-biological origin, especially in the fields of historical linguistics and stematology. The standard data type is the standard with attention to multistate characters and one of the most supported formats is textual tabular (e.g. CSV), allowing an easier integration with the tools used in these areas. Likewise, our library offers off-the-shelf support for data manipulation, such as automatic binarization (with or without addition of ascertainment characters), label adaptation to the restrictions of many programs (for example, remapping Unicode sequences to ASCII but keeping the uniqueness of the identifiers), removal of constant features,
-addition of characters for ascertainment correction, and more.
+There are a wide variety of similar tools for both local and remote execution. panphylo is distinguished by its
+focus on phylogenetic data of non-biological origin, especially in the fields of historical linguistics and
+stemmatology. The standard data type is the standard with attention to multistate characters and one of the most
+supported formats is textual tabular (e.g. CSV), allowing an easier integration with the tools used in these areas.
+Likewise, our library offers off-the-shelf support for data manipulation, such as automatic binarization (with
+or without addition of ascertainment characters), label adaptation to the restrictions of many programs (for
+example, remapping Unicode sequences to ASCII but keeping the uniqueness of the identifiers), removal of constant
+features, addition of characters for ascertainment correction, and more.
 
 The library is organized following a structure inspired by the well known [pandoc](https://pandoc.org) tool for converting between textual document formats, that is, in "filters" that convert different formats to an internal representation with multistates. Other "filters" allow you to convert this internal representation into different formats and dialects, carrying out the manipulations requested by the user. Since the same data format can be indicated as input and output, the tool can also be used to tidy up existing files.
 
