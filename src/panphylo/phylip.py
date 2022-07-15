@@ -3,16 +3,18 @@ Module with functions and methods for PHYLIP files.
 """
 
 # Import Python standard libraries
+import math
 import re
 
 # Import from local modules
-from .internal import PhyloData
+from .phylodata import PhyloData
+
 
 # TODO: implement https://www.bioinformatics.org/sms/iupac.html
 # TODO: currently only supporting non interleaved
 
 
-def read_data_phylip(source: str, args) -> PhyloData:
+def read_data_phylip(source: str, args: dict) -> PhyloData:
     """
     Parse a PHYLIP source into an internal representation.
 
@@ -45,28 +47,30 @@ def read_data_phylip(source: str, args) -> PhyloData:
         raise ValueError("Alignment lengths differs from the one in the header.")
 
     # Add to PhyloData
-    # TODO: add padding in the character names
     phyd = PhyloData()
+    digits = math.ceil(math.log(len(vector)) / math.log(10))
     for taxon, vector in data.items():
         for char_idx, char_state in enumerate(vector):
             if char_state != "-":
-                phyd.add_state(taxon, f"CHAR_{char_idx}", char_state)
+                phyd.extend((taxon, f"CHAR_{str(char_idx).zfill(digits)}"), char_state)
 
     return phyd
 
 
-# TODO: sharing matrix code in common with NEXUS, should move to PhyloData
-def build_phylip(phyd: PhyloData, args) -> str:
+# Note: even though this shares code in common with the NEXUS output, for matters
+# of organization it is better to keep them separate, as combining them into a single
+# method (possibly residing in PhyloData) would introduce unnecessary overhead
+def build_phylip(phyd: PhyloData, args: dict) -> str:
     """
     Build a PHYLIP data representation.
 
-    :param phyd: The PhyloData object used as source of the data representation.
-    :return: A textual representation of the PHYLIP data representation.
+    @param phyd The PhyloData object used as source of the data representation.
+    @return A textual representation of the PHYLIP data representation.
     """
 
     # Obtain the matrix and the maximum taxon length for formatting
     matrix = phyd.matrix
-    taxon_length = max([len(entry["taxon"]) for entry in matrix])
+    taxon_length = max([len(taxon) for taxon, _ in matrix])
 
     # Build buffer
     buffer = """
@@ -77,8 +81,8 @@ def build_phylip(phyd: PhyloData, args) -> str:
         len(phyd.characters),
         "\n".join(
             [
-                "%s    %s" % (entry["taxon"].ljust(taxon_length), entry["vector"])
-                for entry in matrix
+                "%s    %s" % (taxon.ljust(taxon_length), vector)
+                for taxon, vector in matrix
             ]
         ),
     )

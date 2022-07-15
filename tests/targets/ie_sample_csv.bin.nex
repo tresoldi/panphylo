@@ -1,0 +1,96 @@
+#NEXUS
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=19;
+    TAXLABELS
+        Armenian
+        Bulgarian
+        Czech
+        Danish
+        Dutch
+        English
+        French
+        German
+        Greek
+        Hindi
+        Icelandic
+        Italian
+        Norwegian
+        Polish
+        Portuguese
+        Romanian
+        Russian
+        Spanish
+        Swedish
+    ;
+END;
+
+BEGIN CHARACTERS;
+    DIMENSIONS NCHAR=29;
+    FORMAT DATATYPE=STANDARD MISSING=? GAP=- SYMBOLS="01";
+    CHARSTATELABELS
+        1 all_2,
+        2 all_3,
+        3 all_5,
+        4 all_6,
+        5 all_7,
+        6 all_ASCERTAINMENT,
+        7 ashes_10,
+        8 ashes_12,
+        9 ashes_13,
+        10 ashes_8,
+        11 ashes_ASCERTAINMENT,
+        12 bark_15,
+        13 bark_19,
+        14 bark_ASCERTAINMENT,
+        15 bird_48,
+        16 bird_51,
+        17 bird_52,
+        18 bird_ASCERTAINMENT,
+        19 bite (V)_56,
+        20 bite (V)_ASCERTAINMENT,
+        21 black_60,
+        22 black_61,
+        23 black_ASCERTAINMENT,
+        24 bone_73,
+        25 bone_74,
+        26 bone_75,
+        27 bone_76,
+        28 bone_77,
+        29 bone_ASCERTAINMENT
+    ;
+
+MATRIX
+Armenian      -----0----0--01000-0--0100000
+Bulgarian     010000----0--00100-0--0001000
+Czech         -----000010--00100-0--0001000
+Danish        001000----0--00100-0--0000100
+Dutch         001000----0010---0-0100000100
+English       001000----0--0---0-0010000100
+French        -----001000--00010-0--0100000
+German        001000----0--00100-0100000010
+Greek         000010----0--0???0-0--0?????0
+Hindi         -----000100--0---0-0--0010000
+Icelandic     -----010000--00100-0--0000100
+Italian       -----001000--0---0-0--0100000
+Norwegian     -----0????0--00100-0--0000100
+Polish        -----000010--00100-0--0001000
+Portuguese    -----001000--0---000--0100000
+Romanian      000100----0--01000-0--0100000
+Russian       -----000010--00100-0--0001000
+Spanish       100000----0--01000-0--0100000
+Swedish       001000----0100---0-0100000100
+;
+
+END;
+
+
+BEGIN ASSUMPTIONS;
+    CHARSET all = 1-6;
+    CHARSET ashes = 7-11;
+    CHARSET bark = 12-14;
+    CHARSET bird = 15-18;
+    CHARSET bite (V) = 19-20;
+    CHARSET black = 21-23;
+    CHARSET bone = 24-29;
+END;

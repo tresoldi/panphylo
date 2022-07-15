@@ -8,28 +8,44 @@ This is including methods that cannon be easily converted to JavaScript.
 import contextlib
 import logging
 import sys
+import typing
 
 # Import 3rd party libraries
 import chardet
 
 
 @contextlib.contextmanager
-def smart_open(filename: str, mode: str = "r", *args, **kwargs):
+def smart_open(
+    filename: str, mode: str = "r", *args: object, **kwargs: object
+) -> typing.IO:
     """
     Open files and i/o streams transparently.
 
     Code originally from https://stackoverflow.com/a/45735618.
+
+    @param filename: The full path to the file to be opened; if "-",
+        it will open `sys.stdin` when in reading mode and `sys.stdout`
+        when in writing mode.
+    @param mode: The mode for opening the file, accepting normal values
+        such as "r", "rb", "w", and "wb".
+    @param args: Additional arguments for opening the stream, as passed
+        to `open()`.
+    @param kwargs: Any additional argument for opening the stream, as passed
+        to `open()`.
     """
 
     if filename == "-":
-        if "r" in mode:
-            stream = sys.stdin
+        if mode == "r":
+            fh = sys.stdin
+        elif mode == "w":
+            fh = sys.stdout
+        elif mode == "rb":
+            fh = sys.stdin.buffer
+        elif mode == "wb":
+            fh = sys.stdout.buffer
         else:
-            stream = sys.stdout
-        if "b" in mode:
-            fh = stream.buffer
-        else:
-            fh = stream
+            raise ValueError("Invalid stream mode.")
+
         close = False
     else:
         fh = open(filename, mode, *args, **kwargs)
@@ -45,7 +61,7 @@ def smart_open(filename: str, mode: str = "r", *args, **kwargs):
                 pass
 
 
-def fetch_stream_data(input, encoding="auto") -> str:
+def fetch_stream_data(input_source: str, encoding: str = "auto") -> str:
     """
     Read the input data as a string.
 
@@ -53,18 +69,18 @@ def fetch_stream_data(input, encoding="auto") -> str:
     files, decoding the stream of bytes according to the user-specified
     character encoding (including automatic detection if necessary).
 
-    :param input: The input source file; `-`, as handled by
+    @param input_source: The input source file; "-", as handled by
         `smart_open()`, indicates stdin/stdout.
-    :param encoding: The encoding for the stream of data, with `auto`
+    @param encoding: The encoding for the stream of data, with "auto"
         for autodetection via `chardet`.
-    :return: A string with the full source for the data, encoded
+    @return: A string with the full source for the data, encoded
         according to the specified charset encoding.
     """
 
     # Fetch all input as a sequence of bytes, so that we don't consume stdout
-    # and can still run autodetection on format and encoding
-    with smart_open(input, "rb") as handler:
-        logging.debug("Reading contents from `%s`.", input)
+    # and can still run auto-detection on format and encoding
+    with smart_open(input_source, "rb") as handler:
+        logging.debug("Reading contents from `%s`.", input_source)
         raw_source = handler.read()
 
         # Detect encoding if necessary, building a string

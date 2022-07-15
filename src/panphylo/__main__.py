@@ -14,13 +14,18 @@ import re
 # Import our library
 import panphylo
 
-# NOTE: remember to sync all changes with README
-def parse_args():
+
+# NOTE: remember to sync all changes with README.md
+# TODO: could the syncing be done automatically?
+def parse_args() -> dict:
     """
     Parse command-line arguments and return them as a dictionary.
+
+    @return: The command-line arguments in a dictionary format.
     """
 
     parser = argparse.ArgumentParser(description="Convert and manipulate phylodata.")
+
     parser.add_argument(
         "-i",
         "--input",
@@ -28,19 +33,31 @@ def parse_args():
         default="-",
         help="Read input from *FILE*. If *FILE* is `-`, input will come from *stdin*.",
     )
+
     parser.add_argument(
         "-o",
         "--output",
         type=str,
         default="-",
-        help="Write output to *FILE* instead of *stdout*. If *FILE* is `-`, output will go to *stdout* even if a non-textual format is specified.",
+        help="Write output to *FILE* instead of *stdout*. If *FILE* is `-`, output will go to *stdout* even if a "
+        "non-textual format is specified.",
     )
 
     parser.add_argument(
         "-b",
         "--binarize",
         action="store_true",
-        help="Binarizes the output. Whether and how to add ascertainment correction is specified by the `--ascertainment` option.",
+        help="Binarizes the output. Whether and how to add ascertainment correction is specified by the "
+        "`--ascertainment` option.",
+    )
+
+    parser.add_argument(
+        "--ascertainment",
+        type=str,
+        choices=["default", "true", "false"],
+        default="default",
+        help="Whether to perform ascertainment correction when generating binary data. "
+        "The default is to let the writing function decide based on the data type.",
     )
 
     parser.add_argument(
@@ -51,6 +68,7 @@ def parse_args():
         choices=["auto", "tabular", "csv", "tsv", "nexus", "phylip"],
         help="Specify input format.",
     )
+
     parser.add_argument(
         "-e",
         "--encoding",
@@ -58,6 +76,7 @@ def parse_args():
         default="auto",
         help="Character encoding for the input (use `auto` to detect).",
     )
+
     parser.add_argument(
         "-t",
         "--to",
@@ -72,11 +91,13 @@ def parse_args():
         type=str,
         help="Input label, column, or name for taxa. Does not apply to all formats.",
     )
+
     parser.add_argument(
         "--i-char",
         type=str,
         help="Input label, column, or name for characters. Does not apply to all formats.",
     )
+
     parser.add_argument(
         "--i-state",
         type=str,
@@ -89,12 +110,14 @@ def parse_args():
         default="Taxon",
         help="Output label, column, or name for taxa. Does not apply to all formats.",
     )
+
     parser.add_argument(
         "--o-char",
         type=str,
         default="Character",
         help="Output label, column, or name for characters. Does not apply to all formats.",
     )
+
     parser.add_argument(
         "--o-state",
         type=str,
@@ -102,6 +125,7 @@ def parse_args():
         help="Output label, column, or name for states. Does not apply to all formats.",
     )
 
+    # TODO: have a single `--slug` for slugging everything
     parser.add_argument(
         "--slug_taxa",
         type=str,
@@ -109,6 +133,7 @@ def parse_args():
         choices=["none", "simple", "full"],
         help="Level of slugging for taxa names.",
     )
+
     parser.add_argument(
         "--slug_chars",
         type=str,
@@ -176,10 +201,10 @@ def main():
     # Read source data and detect the format if necessary
     source = panphylo.fetch_stream_data(args["input"], args["encoding"])
     if args["from"] == "auto":
-        logging.debug("Autodetecting input format.")
+        logging.debug("Auto-detecting input format.")
         if source.strip().startswith("#NEXUS"):
             args["from"] = "nexus"
-        elif re.search("$\s*\d+\s*\d+", source):
+        elif re.search(r"$\s*\d+\s*\d+", source):
             args["from"] = "phylip"
         else:
             args["from"] = "tabular"
@@ -187,8 +212,7 @@ def main():
     # Convert to a string
     converted = panphylo.convert(source, args)
 
-    # Write to the stream; we string and add a final newline to make sure there is
-    # one and only one
+    # Write to the stream; we strip and add a final newline to make sure there is one and only one
     with panphylo.smart_open(args["output"], "w", encoding="utf-8") as handler:
         handler.write(converted.strip())
         handler.write("\n")

@@ -6,19 +6,18 @@ Module with functions and methods for tabular files.
 import logging
 
 # Import from local modules
-from .common import slug
-from .internal import PhyloData
+from .common import slug, unique_ids
+from .phylodata import PhyloData
 
 
 def detect_delimiter(source: str) -> str:
     """
     Detect the tabular dialect (e.g. CSV and TSV of a file).
 
-    The detection is extremely simplified, based on frequency in the
-    first line.
+    The detection is extremely simplified, based on frequency in the first line.
 
-    :param str: The tabular source for the data.
-    :return: The character detected as field separator.
+    @param source: The tabular source for the data.
+    @return: The character detected as field separator.
     """
 
     lines = source.split("\n")
@@ -96,8 +95,8 @@ def read_data_tabular(source_str: str, delimiter: str, args: dict) -> PhyloData:
     :return: An object with the internal representation of the data.
     """
 
-    # Read all data
-    rows = source_str.split("\n")
+    # Read all data, dealing with Windows "\r"
+    rows = source_str.replace("\r", "").split("\n")
     rows = [row for row in rows if row.strip()]
     header = rows[0].split(delimiter)
     source = [
@@ -112,7 +111,7 @@ def read_data_tabular(source_str: str, delimiter: str, args: dict) -> PhyloData:
     # Build internal representation
     phyd = PhyloData()
     for entry in source:
-        phyd.add_state(entry[col_taxa], entry[col_char], entry[col_vals])
+        phyd.extend((entry[col_taxa], entry[col_char]), entry[col_vals])
 
     return phyd
 
@@ -134,12 +133,44 @@ def build_tabular(phyd: PhyloData, delimiter: str, args: dict) -> str:
     col_char = args.get("o-char", "Character")
     col_state = args.get("o-state", "State")
 
-    # Build output data
+    # Build output data, slugging identifiers as needed
+    taxa_map = {
+        source: target
+        for source, target in zip(
+            phyd.taxa, unique_ids(phyd.taxa, args.get("slug_taxa", "none"))
+        )
+    }
+    char_map = {
+        source: target
+        for source, target in zip(
+            phyd.characters, unique_ids(phyd.characters, args.get("slug_chars", "none"))
+        )
+    }
+
+    # Build sorted output
     output = []
-    for character in sorted(phyd.characters):
-        for taxon in sorted(phyd.taxa):
-            for state in sorted(phyd[taxon, character]):  # TODO: deal with missing
-                output.append({col_taxa: taxon, col_char: character, col_state: state})
+    for character in phyd.characters:
+        for taxon in phyd.taxa:
+            for state in phyd[taxon, character]:  # TODO: deal with missing; sort
+                output.append(
+                    {
+                        col_taxa: taxa_map[taxon],
+                        col_char: char_map[character],
+                        col_state: state,
+                    }
+                )
+
+    # Sort, taking care of placing ascertained features first (computationally
+    # quite expensive)
+    output = sorted(
+        output,
+        key=lambda e: (
+            e[col_char].replace("_ASCERTAINMENT", ""),
+            "_ASCERTAINMENT" in e[col_char],
+            e[col_taxa],
+            e[col_state],
+        ),
+    )
 
     # Build buffer
     fieldnames = [col_taxa, col_char, col_state]
