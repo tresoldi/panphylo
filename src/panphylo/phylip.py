@@ -57,13 +57,15 @@ def read_data_phylip(source: str, args: dict) -> PhyloData:
     return phyd
 
 
-# TODO: sharing matrix code in common with NEXUS, should move to PhyloData
+# Note: even though this shares code in common with the NEXUS output, for matters
+# of organization it is better to keep them separate, as combining them into a single
+# method (possibly residing in PhyloData) would introduce unnecessary overhead
 def build_phylip(phyd: PhyloData, args: dict) -> str:
     """
     Build a PHYLIP data representation.
 
-    :param phyd: The PhyloData object used as source of the data representation.
-    :return: A textual representation of the PHYLIP data representation.
+    @param phyd The PhyloData object used as source of the data representation.
+    @return A textual representation of the PHYLIP data representation.
     """
 
     # Obtain the matrix and the maximum taxon length for formatting

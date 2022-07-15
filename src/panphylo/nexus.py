@@ -41,7 +41,6 @@ def parse_nexus(source: str) -> dict:
 
     # Data that will be filled during parsing; in the future, this could be expanded
     # to an actual class, with sanity checks etc.
-    # TODO: make an object?
     nexus_data = {
         "ntax": None,
         "nchar": None,
@@ -113,7 +112,9 @@ def parse_nexus(source: str) -> dict:
                             nexus_data["gap"] = gap_match.group(1)
                         if symbols_match:
                             # We need to deal with space separated symbols
-                            nexus_data["symbols"] = symbols_match.group(1).replace(" ", "")
+                            nexus_data["symbols"] = symbols_match.group(1).replace(
+                                " ", ""
+                            )
                     elif command == "CHARSTATELABELS":
                         # Get each individual charstatelabel and parse it
                         # TODO: use a single parser for binary and multistate?
@@ -254,24 +255,23 @@ def build_character_block(phyd: PhyloData) -> str:
     """
 
     # Express the actual labels only we have any state which is not a binary "0" or "1"
-    # TODO: _charset should be provided by a method in PhyloData
     # TODO: what about mixed, binary and non-binary, data?
     # TODO: should carry the original state names, if available
 
-    is_genetic = all([charinfo.is_genetic() for charinfo in phyd._charset.values()])
+    is_genetic = all([charinfo.is_genetic() for charinfo in phyd.charset.values()])
     if is_genetic:
         is_binary = False
-        symbols = "ACGT" # TODO: iupac support
+        symbols = "ACGT"  # TODO: iupac support
     else:
         is_binary = True
         symbols = "".join(phyd.symbols)
-        for charinfo in phyd._charset.values():
+        for charinfo in phyd.charset.values():
             if charinfo.states not in [("0",), ("1",), ("0", "1")]:
                 is_binary = False
                 break
 
     charstatelabels = []
-    for character, charinfo in sorted(phyd._charset.items()):
+    for character, charinfo in sorted(phyd.charset.items()):
         if is_genetic or is_binary:
             charstatelabels.append(character)
         else:
@@ -356,7 +356,6 @@ def build_assumption_block(phyd: PhyloData) -> str:
     for idx, label in enumerate(chars):
         indexes[label].append(idx + 1)
 
-    # TODO; make sure it is sorted
     buffer = """
 BEGIN ASSUMPTIONS;
 %s
@@ -391,8 +390,7 @@ def build_nexus(phyd: PhyloData, args) -> str:
     ]
 
     # Assumption are only there if the data is binary
-    # TODO: again horrible code, fix ._charset as soon as tests are passing
-    is_binary = [c.is_binary() for c in phyd._charset.values()]
+    is_binary = [c.is_binary() for c in phyd.charset.values()]
     if all(is_binary):
         components.append(build_assumption_block(phyd))
 

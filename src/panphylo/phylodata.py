@@ -4,6 +4,7 @@ Module with the class for the internal representation of data.
 
 # Import Python libraries
 from collections import defaultdict
+import copy
 from typing import *
 import string
 
@@ -147,8 +148,27 @@ class PhyloData:
         return tuple(sorted(self._taxa))
 
     @property
-    def characters(self) -> List[str]:
-        return sorted(list(self._charset))
+    def characters(self) -> Tuple[str]:
+        """
+        Return a comparable version of the character set.
+
+        Note how this is different from the .charset property, which just
+        relays the value of the internal private ._charset.
+
+        @return: A sorted tuple of the internal character set.
+        """
+        return tuple(sorted(list(self._charset)))
+
+    # TODO: confirm that .deepcopy() is not needed
+    @property
+    def charset(self) -> Dict[str, Character]:
+        """
+        Return a copy of the internal .charset.
+
+        This property is intended for the exclusive usage of the intenral
+        conversion methods.
+        """
+        return copy.copy(self._charset)
 
     @property
     def cardinality(self) -> int:

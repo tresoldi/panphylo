@@ -61,7 +61,7 @@ def smart_open(
                 pass
 
 
-def fetch_stream_data(input: str, encoding: str = "auto") -> str:
+def fetch_stream_data(input_source: str, encoding: str = "auto") -> str:
     """
     Read the input data as a string.
 
@@ -69,7 +69,7 @@ def fetch_stream_data(input: str, encoding: str = "auto") -> str:
     files, decoding the stream of bytes according to the user-specified
     character encoding (including automatic detection if necessary).
 
-    @param input: The input source file; "-", as handled by
+    @param input_source: The input source file; "-", as handled by
         `smart_open()`, indicates stdin/stdout.
     @param encoding: The encoding for the stream of data, with "auto"
         for autodetection via `chardet`.
@@ -79,8 +79,8 @@ def fetch_stream_data(input: str, encoding: str = "auto") -> str:
 
     # Fetch all input as a sequence of bytes, so that we don't consume stdout
     # and can still run auto-detection on format and encoding
-    with smart_open(input, "rb") as handler:
-        logging.debug("Reading contents from `%s`.", input)
+    with smart_open(input_source, "rb") as handler:
+        logging.debug("Reading contents from `%s`.", input_source)
         raw_source = handler.read()
 
         # Detect encoding if necessary, building a string

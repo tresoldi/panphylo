@@ -31,40 +31,39 @@ def convert(source: str, args: Dict[str, str]) -> str:
 
     # Dispatch to the right reading method
     if args["from"] == "tabular":
-        phylodata = read_data_tabular(source, detect_delimiter(source), args)
+        data = read_data_tabular(source, detect_delimiter(source), args)
     elif args["from"] == "csv":
-        phylodata = read_data_tabular(source, ",", args)
+        data = read_data_tabular(source, ",", args)
     elif args["from"] == "tsv":
-        phylodata = read_data_tabular(source, "\t", args)
+        data = read_data_tabular(source, "\t", args)
     elif args["from"] == "nexus":
-        phylodata = read_data_nexus(source, args)
+        data = read_data_nexus(source, args)
     elif args["from"] == "phylip":
-        phylodata = read_data_phylip(source, args)
+        data = read_data_phylip(source, args)
     else:
         raise ValueError("Invalid input format `%s`.", args["from"])
 
     # Perform all requested data manipulations
-    phylodata.slug_taxa(args.get("slug_taxa", "none"))
+    data.slug_taxa(args.get("slug_taxa", "none"))
     if args.get("binarize", False):
-        phylodata = binarize(phylodata, args["ascertainment"])
+        data = binarize(data, args["ascertainment"])
 
     # Write converted data in the requested format; note that the command-line
     # handling should have taken care of replacing the "auto" value for
     # auto-detecting the output
     if args["to"] == "csv":
-        converted = build_tabular(phylodata, ",", args)
+        converted = build_tabular(data, ",", args)
     elif args["to"] == "tsv":
-        converted = build_tabular(phylodata, "\t", args)
+        converted = build_tabular(data, "\t", args)
     elif args["to"] == "nexus":
-        converted = build_nexus(phylodata, args)
+        converted = build_nexus(data, args)
     elif args["to"] == "phylip":
-        converted = build_phylip(phylodata, args)
+        converted = build_phylip(data, args)
     else:
         raise ValueError("Invalid output format `%s`.", args["to"])
 
     return converted
 
 
-# TODO: implement upon release
 # Build namespace
-# __all__ = ["convert", "indexes2ranges"]
+__all__ = ["convert", "indexes2ranges"]
