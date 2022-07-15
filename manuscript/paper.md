@@ -45,7 +45,7 @@ The [`panphylo`](https://pypi.org/project/panphylo/) package is
 # Statement of need
 
 The package addresses the need for off-the-shelf tools to convert between phylogenetic
-data formats, 
+data formats [@Bouckaert:2012], 
 It is developed so it can be integrated into reproducible pipelines of analysis, 
 While the package is not computationally complex or innovative,
 with alternatives such as XXX, it compares favorably by providing a
