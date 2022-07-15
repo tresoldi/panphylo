@@ -33,8 +33,6 @@ def slug(label: str, level: str) -> str:
     # bit cumbersome at first, but makes it easy for us to explore alternatives
     if level in ["simple", "full"]:
         label = unidecode(label)
-    if level in ["simple", "full"]:
-        label = re.sub(r"\s+", "_", label.strip())
     if level in ["full"]:
         label = label.lower()
     if level in ["simple"]:
@@ -47,6 +45,8 @@ def slug(label: str, level: str) -> str:
         )
     if level in ["full"]:
         label = "".join([char for char in label if char in string.ascii_letters])
+    if level in ["simple", "full"]:
+        label = re.sub(r"\s+", "_", label.strip())
 
     logging.debug("Label slugged to `%s`.", label)
 

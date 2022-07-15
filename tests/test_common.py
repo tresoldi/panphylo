@@ -2,6 +2,8 @@
 Test methods in the `common` module.
 """
 
+import pytest
+
 # Import the library for testing
 import panphylo
 
@@ -30,3 +32,12 @@ def test_uniqueids():
         "e-b",
         "e-c",
     )
+
+
+def test_slug():
+    assert panphylo.slug("Åland (#3) [?]", "none") == "Åland (#3) [?]"
+    assert panphylo.slug("Åland (#3) [?]", "simple") == "Aland3"
+    assert panphylo.slug("Åland (#3) [?]", "full") == "aland"
+
+    with pytest.raises(ValueError):
+        panphylo.slug("Åland (#3) [?]", "WRONG LABEL")

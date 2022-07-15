@@ -12,7 +12,8 @@ import string
 from .common import unique_ids
 
 
-# TODO: add more automatic checks, such as for IUPAC
+# TODO: add more automatic checks, such as for IUPAC (should be independent from genetic?)
+#       should ACTG be a "strict" one with IUPAC as default?
 class Character:
     """
     Class for a column definition.
@@ -102,7 +103,7 @@ class Character:
         @param iupac: A flag indicating that the full IUPAC set should
             be used. Defaults to `False`.
 
-        @return: A flag on whether the character is a binary one.
+        @return: A flag on whether the character is a genetic one.
         """
 
         if iupac:
@@ -111,6 +112,20 @@ class Character:
             charset = "ACGT"
 
         if all([state.upper() in charset for state in self.states]):
+            return True
+
+        return False
+
+    def is_aminoacid(self) -> bool:
+        """
+        Checks whether the character is an aminoacid one.
+
+        @return: A flag on whether the character is an aminoacid one.
+        """
+
+        if all(
+            [state.upper() in "ABCDEFGHIJKLMNOPQRSTUVWYZX*" for state in self.states]
+        ):
             return True
 
         return False

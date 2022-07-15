@@ -11,7 +11,7 @@ __email__ = "tiago.tresoldi@lingfil.uu.se"
 from typing import *
 
 # Import from local modules
-from .common import indexes2ranges, unique_ids  # For testing purposes
+from .common import indexes2ranges, unique_ids, slug
 from .common_io import smart_open, fetch_stream_data
 from .nexus import read_data_nexus, build_nexus
 from .phylip import read_data_phylip, build_phylip
@@ -66,4 +66,4 @@ def convert(source: str, args: Dict[str, str]) -> str:
 
 
 # Build namespace
-__all__ = ["convert", "indexes2ranges"]
+__all__ = ["convert", "indexes2ranges", "detect_delimiter", "slug"]
