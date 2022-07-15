@@ -112,8 +112,8 @@ def parse_nexus(source: str) -> dict:
                         if gap_match:
                             nexus_data["gap"] = gap_match.group(1)
                         if symbols_match:
-                            # TODO: deal with space separated symbols
-                            nexus_data["symbols"] = symbols_match.group(1)
+                            # We need to deal with space separated symbols
+                            nexus_data["symbols"] = symbols_match.group(1).replace(" ", "")
                     elif command == "CHARSTATELABELS":
                         # Get each individual charstatelabel and parse it
                         # TODO: use a single parser for binary and multistate?
@@ -261,7 +261,7 @@ def build_character_block(phyd: PhyloData) -> str:
     is_genetic = all([charinfo.is_genetic() for charinfo in phyd._charset.values()])
     if is_genetic:
         is_binary = False
-        symbols = "ACGT"
+        symbols = "ACGT" # TODO: iupac support
     else:
         is_binary = True
         symbols = "".join(phyd.symbols)
@@ -285,7 +285,6 @@ def build_character_block(phyd: PhyloData) -> str:
         ]
     )
 
-    # TODO: keeping the final comma in charstatelabels should be an option
     buffer = """
 BEGIN CHARACTERS;
     DIMENSIONS NCHAR=%i;

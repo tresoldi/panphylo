@@ -13,64 +13,160 @@ import panphylo
 SOURCES_PATH = Path(__file__).parent / "sources"
 TARGETS_PATH = Path(__file__).parent / "targets"
 
+# Write unexpected results to disk
+WRITE_DEBUG = True
 
 # TODO: build round-trip examples
 
 
+# Tests are parametrized for each test source file, making it easier to experiment
+# with different input and output options
+
+
+def _write_debug(converted: str, reference: str, filename: Path):
+    """
+    Write a debug file with the actual test output.
+
+    This auxiliary function makes it easier to compare expected and computed
+    output, and can be shared across all tests conversion tests.
+
+    Note that unexpected results are only written if the global WRITE_DEBUG
+    flag is set to `True`.
+
+    @param converted: The output of the conversion test.
+    @param reference: The expected output of the conversion test.
+    @param filename: The file holding the expected output.
+    """
+
+    if WRITE_DEBUG:
+        if converted != reference:
+            with open(str(filename) + ".debug", "w", encoding="utf-8") as handler:
+                handler.write(converted)
+
+
+# Test "ie_sample.csv", a sample with a small subset of IELEX and no multistate (by selection)
 @pytest.mark.parametrize(
-    "input,reference,arg_from,arg_to,binarize",
+    "reference_file,arg_to,binarize",
     [
-        # IE sample has a small subset and no multistate (by selection)
-        ["ie_sample.csv", "ie_sample_csv.mst.csv", "csv", "csv", False],
-        ["ie_sample.csv", "ie_sample_csv.bin.csv", "csv", "csv", True],
-        ["ie_sample.csv", "ie_sample_csv.mst.nex", "csv", "nexus", False],
-        ["ie_sample.csv", "ie_sample_csv.bin.nex", "csv", "nexus", True],
-        ["ie_sample.csv", "ie_sample_csv.mst.phy", "csv", "phylip", False],
-        ["ie_sample.csv", "ie_sample_csv.bin.phy", "csv", "phylip", True],
-        ["ie_sample.nex", "ie_sample_nex.mst.csv", "nexus", "csv", False],
-        ["ie_sample.nex", "ie_sample_nex.bin.csv", "nexus", "csv", True],
-        ["ie_sample.nex", "ie_sample_nex.mst.nex", "nexus", "nexus", False],
-        ["ie_sample.nex", "ie_sample_nex.bin.nex", "nexus", "nexus", True],
-        ["ie_sample.nex", "ie_sample_nex.mst.phy", "nexus", "phylip", False],
-        ["ie_sample.nex", "ie_sample_nex.bin.phy", "nexus", "phylip", True],
-        # Central pacific, from Greenhill & Hoffmann 2019
-        ["cpacific.nex", "cpacific_nex.mst.csv", "nexus", "csv", False],
-        ["cpacific.nex", "cpacific_nex.bin.csv", "nexus", "csv", True],
-        ["cpacific.nex", "cpacific_nex.mst.nex", "nexus", "nexus", False],
-        ["cpacific.nex", "cpacific_nex.bin.nex", "nexus", "nexus", True],
-        ["cpacific.nex", "cpacific_nex.mst.phy", "nexus", "phylip", False],
-        ["cpacific.nex", "cpacific_nex.bin.phy", "nexus", "phylip", True],
-        # Hand-picked example with genetic data
-        ["genetic.phy", "genetic_phy.mst.csv", "phylip", "csv", False],
-        ["genetic.phy", "genetic_phy.bin.csv", "phylip", "csv", True],
-        ["genetic.phy", "genetic_phy.mst.nex", "phylip", "nexus", False],
-        ["genetic.phy", "genetic_phy.bin.nex", "phylip", "nexus", True],
-        ["genetic.phy", "genetic_phy.mst.phy", "phylip", "phylip", False],
-        ["genetic.phy", "genetic_phy.bin.phy", "phylip", "phylip", True],
+        ["ie_sample_csv.mst.csv", "csv", False],
+        ["ie_sample_csv.bin.csv", "csv", True],
+        ["ie_sample_csv.mst.nex", "nexus", False],
+        ["ie_sample_csv.bin.nex", "nexus", True],
+        ["ie_sample_csv.mst.phy", "phylip", False],
+        ["ie_sample_csv.bin.phy", "phylip", True],
     ],
 )
-def test_convert(
-    input: str, reference: str, arg_from: str, arg_to: str, binarize: bool
-):
+def test_convert_ie_sample_csv(reference_file: str, arg_to: str, binarize: bool):
     # Read input and reference
-    file_input = SOURCES_PATH / input
-    source = panphylo.fetch_stream_data(file_input)
+    source = panphylo.fetch_stream_data(str(SOURCES_PATH / "ie_sample.csv"))
+    with open(TARGETS_PATH / reference_file, encoding="utf-8") as handler:
+        reference = handler.read().strip()
 
-    file_reference = TARGETS_PATH / reference
-    with open(file_reference, encoding="utf-8") as handler:
-        reference_source = handler.read().strip()
-
+    # Build arguments, convert and assert, writing debug output if so requested
     args = {
-        "from": arg_from,
+        "from": "csv",
         "to": arg_to,
         "input": "-",
         "binarize": binarize,
         "ascertainment": "default",
     }
-
-    # Convert and check
     converted = panphylo.convert(source, args).strip()
-    if converted != reference_source:
-        with open(f"{reference}.tiago", "w", encoding="utf-8") as handler:
-            handler.write(converted)
-    assert converted == reference_source
+
+    _write_debug(converted, reference, TARGETS_PATH / reference_file)
+    assert converted == reference
+
+
+# Test "ie_sample.nex", a sample with a small subset of IELEX and no multistate (by selection)
+@pytest.mark.parametrize(
+    "reference_file,arg_to,binarize",
+    [
+        ["ie_sample_nex.mst.csv", "csv", False],
+        ["ie_sample_nex.bin.csv", "csv", True],
+        ["ie_sample_nex.mst.nex", "nexus", False],
+        ["ie_sample_nex.bin.nex", "nexus", True],
+        ["ie_sample_nex.mst.phy", "phylip", False],
+        ["ie_sample_nex.bin.phy", "phylip", True],
+    ],
+)
+def test_convert_ie_sample_nex(reference_file: str, arg_to: str, binarize: bool):
+    # Read input and reference
+    source = panphylo.fetch_stream_data(str(SOURCES_PATH / "ie_sample.nex"))
+    with open(TARGETS_PATH / reference_file, encoding="utf-8") as handler:
+        reference = handler.read().strip()
+
+    # Build arguments, convert and assert, writing debug output if so requested
+    args = {
+        "from": "nexus",
+        "to": arg_to,
+        "input": "-",
+        "binarize": binarize,
+        "ascertainment": "default",
+    }
+    converted = panphylo.convert(source, args).strip()
+
+    _write_debug(converted, reference, TARGETS_PATH / reference_file)
+    assert converted == reference
+
+
+# Test "cpacific.nex", from Greenhill & Hoffmann 2019
+@pytest.mark.parametrize(
+    "reference_file,arg_to,binarize",
+    [
+        ["cpacific_nex.mst.csv", "csv", False],
+        ["cpacific_nex.bin.csv", "csv", True],
+        ["cpacific_nex.mst.nex", "nexus", False],
+        ["cpacific_nex.bin.nex", "nexus", True],
+        ["cpacific_nex.mst.phy", "phylip", False],
+        ["cpacific_nex.bin.phy", "phylip", True],
+    ],
+)
+def test_convert_cpacific_nex(reference_file: str, arg_to: str, binarize: bool):
+    # Read input and reference
+    source = panphylo.fetch_stream_data(str(SOURCES_PATH / "cpacific.nex"))
+    with open(TARGETS_PATH / reference_file, encoding="utf-8") as handler:
+        reference = handler.read().strip()
+
+    # Build arguments, convert and assert, writing debug output if so requested
+    args = {
+        "from": "nexus",
+        "to": arg_to,
+        "input": "-",
+        "binarize": binarize,
+        "ascertainment": "default",
+    }
+    converted = panphylo.convert(source, args).strip()
+
+    _write_debug(converted, reference, TARGETS_PATH / reference_file)
+    assert converted == reference
+
+
+# Test "genetic.phy", with hand-build genetic data
+@pytest.mark.parametrize(
+    "reference_file,arg_to,binarize",
+    [
+        ["genetic_phy.mst.csv", "csv", False],
+        ["genetic_phy.bin.csv", "csv", True],
+        ["genetic_phy.mst.nex", "nexus", False],
+        ["genetic_phy.bin.nex", "nexus", True],
+        ["genetic_phy.mst.phy", "phylip", False],
+        ["genetic_phy.bin.phy", "phylip", True],
+    ],
+)
+def test_convert_genetic_phy(reference_file: str, arg_to: str, binarize: bool):
+    # Read input and reference
+    source = panphylo.fetch_stream_data(str(SOURCES_PATH / "genetic.phy"))
+    with open(TARGETS_PATH / reference_file, encoding="utf-8") as handler:
+        reference = handler.read().strip()
+
+    # Build arguments, convert and assert, writing debug output if so requested
+    args = {
+        "from": "phylip",
+        "to": arg_to,
+        "input": "-",
+        "binarize": binarize,
+        "ascertainment": "default",
+    }
+    converted = panphylo.convert(source, args).strip()
+
+    _write_debug(converted, reference, TARGETS_PATH / reference_file)
+    assert converted == reference
