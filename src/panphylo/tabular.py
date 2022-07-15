@@ -160,8 +160,17 @@ def build_tabular(phyd: PhyloData, delimiter: str, args: dict) -> str:
                     }
                 )
 
-    # TODO: list ASCERTAINMENT fields first
-    output = sorted(output, key=lambda e: (e[col_char], e[col_taxa], e[col_state]))
+    # Sort, taking care of placing ascertained features first (computationally
+    # quite expensive)
+    output = sorted(
+        output,
+        key=lambda e: (
+            e[col_char].replace("_ASCERTAINMENT", ""),
+            "_ASCERTAINMENT" in e[col_char],
+            e[col_taxa],
+            e[col_state],
+        ),
+    )
 
     # Build buffer
     fieldnames = [col_taxa, col_char, col_state]

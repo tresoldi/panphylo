@@ -14,7 +14,6 @@ SOURCES_PATH = Path(__file__).parent / "sources"
 TARGETS_PATH = Path(__file__).parent / "targets"
 
 
-# TODO: add a better (and shorter) nexus source example
 # TODO: build round-trip examples
 
 
@@ -59,7 +58,7 @@ def test_convert(
 
     file_reference = TARGETS_PATH / reference
     with open(file_reference, encoding="utf-8") as handler:
-        reference = handler.read().strip()
+        reference_source = handler.read().strip()
 
     args = {
         "from": arg_from,
@@ -71,7 +70,7 @@ def test_convert(
 
     # Convert and check
     converted = panphylo.convert(source, args).strip()
-    if converted != reference:
-        with open("temp.tiago", "w", encoding="utf-8") as handler:
+    if converted != reference_source:
+        with open(f"{reference}.tiago", "w", encoding="utf-8") as handler:
             handler.write(converted)
-    assert converted == reference
+    assert converted == reference_source

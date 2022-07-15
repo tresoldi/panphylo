@@ -89,18 +89,27 @@ class Character:
         return False
 
     # TODO: add full iupac support
-    def is_genetic(self) -> bool:
+    def is_genetic(self, iupac: bool = False) -> bool:
         """
         Checks whether the character is a genetic one.
 
         Genetic characters are defined as those that have only "A", "C",
-        "G", and/or "T" as potential states. Note that the full IUPAC
-        support is not implemented yet.
+        "G", and/or "T" as potential states.  If the `iupac` flag is
+        set to true, the full IUPAC (IUB) set of nucleic acid code
+        (ACGTUMBDH) can be used.
+
+        @param iupac: A flag indicating that the full IUPAC set should
+            be used. Defaults to `False`.
 
         @return: A flag on whether the character is a binary one.
         """
 
-        if all([state.upper() in "ACGT" for state in self.states]):
+        if iupac:
+            charset = "ACGTUMBDH"
+        else:
+            charset = "ACGT"
+
+        if all([state.upper() in charset for state in self.states]):
             return True
 
         return False
@@ -137,18 +146,8 @@ class PhyloData:
 
         return tuple(sorted(self._taxa))
 
-    # TODO: fix to just return list(self._charset), and type List[str]
     @property
-    def characters(self):
-        # Collect the ordered list of charset_id/char_id to query; this allows to later
-        # easily implement different strategies
-        # characters = []
-        # for charset_id, charset in sorted(self._charset.items()):
-        #    for char_id in sorted(charset):
-        #        characters.append((charset_id, char_id))
-
-        # return characters
-
+    def characters(self) -> List[str]:
         return sorted(list(self._charset))
 
     @property
@@ -162,11 +161,9 @@ class PhyloData:
         @return: An integer with the cardinality of the largest character.
         """
 
-        # Note that we call .states so it takes care of special
+        # Note that we call .states, so that it takes care of special
         # cases like missing data
-
-        # TODO: horrible code, fix as soon as tests are passing
-        return max([len(c.states) for c in self._charset.values()])
+        return max([len(charvals.states) for charvals in self._charset.values()])
 
     @property
     def symbols(self) -> Tuple[str]:
@@ -200,9 +197,11 @@ class PhyloData:
         # The key can be either in format (taxon, character) or (taxon, character, charset);
         # if `charset` is not provided (usually in cases of non-binary data) we create a
         # "dummy" one with the same name as the character.
-        if len(key) == 2:
+        if len(key) < 2 or len(key) > 3:
+            raise ValueError(f"Invalid number of key parameters for extension `{key}`")
+        elif len(key) == 2:
             taxon, character, charset = key[0], key[1], key[1]
-        elif len(key) == 3:
+        else:
             # Decompose the key
             taxon, character, charset = key
 
@@ -290,6 +289,8 @@ def binarize(phyd: PhyloData, ascertainment: str) -> PhyloData:
     Build a binarized version of the provided phylogenetic data.
 
     @param phyd: The PhyloData to binarize.
+    @param ascertainment: The type of ascertainment correction to be
+        performed.
     @return: A binarized version of the provided data.
     """
 
@@ -309,7 +310,7 @@ def binarize(phyd: PhyloData, ascertainment: str) -> PhyloData:
                 ]
 
     # Build a new phylogenetic data structure, adding the new characters one by one;
-    # this also checks whether or not to perform ascertainment correction
+    # this also checks whether to perform ascertainment correction
     bin_phyd = PhyloData()
     if ascertainment == "default":
         if all([character.is_genetic() for character in phyd._charset.values()]):
