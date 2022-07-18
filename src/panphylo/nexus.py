@@ -54,6 +54,10 @@ def parse_nexus(source: str) -> dict:
         "charset": [],
     }
 
+    # Drop comments from the NEXUS contents; it is possible to do this with a regular expression
+    # because there is no expectation of escaped closing parentheses
+    source = re.sub(r"\[[^]]*]", "", source)
+
     # TODO: keep track of line numbers by counting newline chars, using them in debug
     buffer = ""
     block_name = ""
@@ -140,7 +144,7 @@ def parse_nexus(source: str) -> dict:
                                 idx, charlabel = charstatelabel.split()
                                 nexus_data["charstate_labels"][int(idx)] = charlabel
                     elif command == "MATRIX":
-                        start_idx = buffer.find("MATRIX") + len("MATRIX")
+                        start_idx = buffer.upper().find("MATRIX") + len("MATRIX")
                         for entry in buffer[start_idx + 1 : -1].strip().split("\n"):
                             entry = re.sub(r"\s+", " ", entry.strip())
                             taxon, vector = entry.split()
@@ -163,6 +167,14 @@ def parse_nexus(source: str) -> dict:
 
                     # Clean the buffer and continue
                     buffer = ""
+
+    # If symbols were not collected, collect them from the matrix
+    if not nexus_data["symbols"]:
+        symbol_set = set()
+        for vector in nexus_data["matrix"].values():
+            for symbol in vector:
+                symbol_set.add(symbol)
+        nexus_data["symbols"] = sorted(symbol_set)
 
     return nexus_data
 
@@ -206,6 +218,15 @@ def read_data_nexus(source: str, args) -> PhyloData:
                     )
     else:
         for taxon, vector in nexus_data["matrix"].items():
+            # Create `charstate_states` if necessary
+            # TODO: collect the actual symbols being used in each char?
+            # TODO: pad with zeros the char number
+            if not nexus_data["charstate_states"]:
+                nexus_data["charstate_states"] = {
+                    "CHAR_%i" % idx: [s for s in nexus_data["symbols"]]
+                    for idx in range(nexus_data["nchar"])
+                }
+
             for character, state in zip(nexus_data["charstate_states"], vector):
                 if state == nexus_data["missing"]:
                     states[taxon, character].add("?")
